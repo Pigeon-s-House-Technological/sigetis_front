@@ -1,54 +1,62 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+function AgregarTarea({ addTask }) {
+  const [task, setTask] = useState({
+    name: '',
+    assigned: '',
+    status: '',
+    startDate: '',
+    endDate: '',
+    result: ''
+  });
 
-function AgregarTarea() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [images, setImages] = useState([]);
-
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setTask({ ...task, [name]: value });
   };
 
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
-  };
-
-  const handleImageUpload = (event) => {
-    const files = Array.from(event.target.files);
-    setImages([...images, ...files]);
-  };
-
-  const handleSubmit = () => {
-    // Aquí deberías enviar los datos a tu backend para crear la historia de usuario
-    console.log('Title:', title);
-    console.log('Description:', description);
-    console.log('Images:', images);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    addTask(task);
+    setTask({
+      name: '',
+      assigned: '',
+      status: '',
+      startDate: '',
+      endDate: '',
+      result: ''
+    });
   };
 
   return (
-    <div className="container d-flex flex-column align-items-center">
-      <h1 className="my-4">Nueva Tarea</h1>
-      <div className="mb-3 w-50">
-        <label htmlFor="title" className="form-label">Título:</label>
-        <input type="text" id="title" className="form-control" value={title} onChange={handleTitleChange} />
+    <form onSubmit={handleSubmit}>
+      <div className="mb-3">
+        <label htmlFor="name" className="form-label">Nombre</label>
+        <input type="text" className="form-control" id="name" name="name" value={task.name} onChange={handleChange} required />
       </div>
-      <div className="mb-3 w-50">
-        <label htmlFor="description" className="form-label">Descripción:</label>
-        <textarea id="description" className="form-control" value={description} onChange={handleDescriptionChange} />
+      <div className="mb-3">
+        <label htmlFor="assigned" className="form-label">Asignado</label>
+        <input type="text" className="form-control" id="assigned" name="assigned" value={task.assigned} onChange={handleChange} />
       </div>
-      <div className="mb-3 w-50">
-        <label htmlFor="images" className="form-label">Imágenes:</label>
-        <input type="file" id="images" className="form-control" multiple accept="image/*" onChange={handleImageUpload} />
+      <div className="mb-3">
+        <label htmlFor="status" className="form-label">Estado</label>
+        <input type="text" className="form-control" id="status" name="status" value={task.status} onChange={handleChange} />
       </div>
-      <div className="mb-3 w-50">
-        {images.map((image, index) => (
-          <img key={index} src={URL.createObjectURL(image)} alt="Imagen" className="img-thumbnail mb-2" height="100" />
-        ))}
+      <div className="mb-3">
+        <label htmlFor="startDate" className="form-label">Fecha inicio</label>
+        <input type="date" className="form-control" id="startDate" name="startDate" value={task.startDate} onChange={handleChange} />
       </div>
-      <button style={{backgroundColor: '#007bff', color: 'white', padding:'5px',width:'150px', border:'none', borderRadius:'20px'}} onClick={handleSubmit}>Crear</button>
-    </div>
+      <div className="mb-3">
+        <label htmlFor="endDate" className="form-label">Fecha fin</label>
+        <input type="date" className="form-control" id="endDate" name="endDate" value={task.endDate} onChange={handleChange} />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="result" className="form-label">Resultado</label>
+        <input type="text" className="form-control" id="result" name="result" value={task.result} onChange={handleChange} />
+      </div>
+      <button type="submit" className="btn btn-primary">Agregar Tarea</button>
+    </form>
   );
 }
 

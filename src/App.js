@@ -13,10 +13,9 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/Gestion" />} />
-          <Route path="/Gestion" element={<GestionAct />} />
+          <Route path="/Gestion" element={<HistoriaHU />} />
           <Route path="/AgregarHU" element={<AgregarHU />} />
           <Route path="/AgregarTarea" element={<AgregarTarea />} />
-          <Route path="/HistoriaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
 
         </Routes>

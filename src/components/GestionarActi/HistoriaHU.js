@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AgregarHU from './AgregarHU';
@@ -10,6 +10,17 @@ function HistoriaHU() {
   const [newTask, setNewTask] = useState({ title: '', description: '', images: [] });
   const [editIndex, setEditIndex] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedHistorias = localStorage.getItem('historiasUsuario');
+    if (storedHistorias) {
+      setHistoriasUsuario(JSON.parse(storedHistorias));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('historiasUsuario', JSON.stringify(historiasUsuario));
+  }, [historiasUsuario]);
 
   const openModalForNewStory = () => {
     setEditIndex(null);
