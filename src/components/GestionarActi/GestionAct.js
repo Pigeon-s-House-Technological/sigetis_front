@@ -1,27 +1,55 @@
 import React, { useState } from 'react';
-import './GestionAct.css';
+import { Modal, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import AgregarHU from './AgregarHU';
 
 function GestionAct() {
-  const [tasks, setTasks] = useState([
-    //{ id: 1, name: 'H1', assigned: 'Tarea1', taskStatus: '', startDate: '', endDate: '', result: '' },
-    //{ id: 2, name: 'H2', assigned: 'Tarea2', taskStatus: '', startDate: '', endDate: '', result: '' },
-    //{ id: 3, name: 'H3', assigned: '', taskStatus: '', startDate: '', endDate: '', result: '' },
-    //{ id: 4, name: 'H4', assigned: '', taskStatus: '', startDate: '', endDate: '', result: '' },
-  ]);
+  const [tasks, setTasks] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [newTask, setNewTask] = useState({ title: '', description: '', images: [] });
 
   const handleAddTask = () => {
-    setTasks([
-      ...tasks,
-      { id: tasks.length + 1, name: `H${tasks.length + 1}`, assigned: '', taskStatus: '', startDate: '', endDate: '', result: '' },
-    ]);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleCreateTask = () => {
+    if (newTask.title) { 
+      setTasks([...tasks, { id: tasks.length + 1, name: newTask.title, assigned: '', taskStatus: '', startDate: '', endDate: '', result: '' }]);
+      setNewTask({ title: '', description: '', images: [] });
+      handleCloseModal();
+    } else {
+      alert('Por favor, ingresa un título.');
+    }
   };
 
   return (
-    <div className="container">
-      <button className="add-button" onClick={handleAddTask}>
+    <div className="container mt-4">
+      <button className="btn btn-primary mb-3" onClick={handleAddTask}>
         AGREGAR HU
       </button>
-      <table className="table">
+
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Nueva historia de usuario</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <AgregarHU newTask={newTask} setNewTask={setNewTask} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cerrar
+          </Button>
+          <Button variant="primary" onClick={handleCreateTask}>
+            Crear
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <table className="table" >
         <thead>
           <tr>
             <th>Nombre</th>
@@ -35,20 +63,8 @@ function GestionAct() {
         <tbody>
           {tasks.map((task) => (
             <tr key={task.id}>
-              <td>
-                <div className="task-name">
-                  <span className="arrow-up">^</span>
-                  {task.name}
-                </div>
-              </td>
-              <td>
-                <div className="assigned">
-                  <span className="user-icon">👤</span>
-                  {task.assigned}
-                  <span className="text">Tarea</span>
-                  <span className="plus-icon">+</span>
-                </div>
-              </td>
+              <td>{task.name}</td>
+              <td>{task.assigned}</td>
               <td>{task.taskStatus}</td>
               <td>{task.startDate}</td>
               <td>{task.endDate}</td>
