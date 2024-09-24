@@ -33,6 +33,19 @@ function DetalleHistoria() {
         <h2>Tareas</h2>
         {/* Aquí puedes agregar una lista o formulario para agregar tareas */}
         <button className="btn btn-primary">+ Agregar Tarea</button>
+        <table className="table" >
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Asignado</th>
+            <th>Estado</th>
+            <th>Fecha inicio</th>
+            <th>Fecha fin</th>
+            <th>Resultado</th>
+          </tr>
+        </thead>
+       
+      </table>
       </div>
     </div>
   );
