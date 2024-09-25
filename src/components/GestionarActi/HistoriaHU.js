@@ -15,14 +15,15 @@ function HistoriaHU() {
     const storedHistorias = localStorage.getItem('historiasUsuario');
     if (storedHistorias) {
       setHistoriasUsuario(JSON.parse(storedHistorias));
+    } else {
+      setHistoriasUsuario([]);
     }
   }, []);
 
   useEffect(() => {
     localStorage.setItem('historiasUsuario', JSON.stringify(historiasUsuario));
   }, [historiasUsuario]);
-
-  const openModalForNewStory = () => {
+ const openModalForNewStory = () => {
     setEditIndex(null);
     setShowModal(true);
   };
@@ -59,6 +60,9 @@ function HistoriaHU() {
   const viewStoryDetails = (index) => {
     navigate(`/detalle/${index}`, { state: { historia: historiasUsuario[index] } });
   };
+
+
+  
 
   return (
     <div className="container mt-5">
