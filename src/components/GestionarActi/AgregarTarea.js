@@ -57,7 +57,7 @@ const AgregarTarea = ({ show, onHide, addTask, currentTask }) => {
       return;
     }
 
-    console.log("Tarea a agregar:", task); // Debugging
+    console.log("Tarea a agregar:", task);
     addTask(task);
     setTask({
       name: '',
@@ -66,16 +66,16 @@ const AgregarTarea = ({ show, onHide, addTask, currentTask }) => {
       startDate: '',
       endDate: '',
     });
-    onHide(); // Cierra el modal después de agregar la tarea
+    onHide();
   };
 
   const handleAsignarUsuario = (usuario) => {
-    console.log("Usuario asignado:", usuario); // Debugging
+    console.log("Usuario asignado:", usuario);
     setTask({ ...task, assigned: usuario });
-    setShowAsignarModal(false); // Cierra el modal de asignar usuario
+    setShowAsignarModal(false); 
   };
 
-  if (!show) return null; // Asegúrate de que el modal se muestre solo si 'show' es true
+  if (!show) return null; 
 
   return (
     <div className="modal" style={{ display: 'block' }}>
@@ -139,7 +139,7 @@ const AgregarTarea = ({ show, onHide, addTask, currentTask }) => {
               name="endDate"
               value={task.endDate}
               onChange={handleChange}
-              min={task.startDate} // No permitir elegir una fecha anterior a la fecha de inicio
+              min={task.startDate}
             />
           </div>
           {dateError && <div className="text-danger">{dateError}</div>}
@@ -156,7 +156,7 @@ const AgregarTarea = ({ show, onHide, addTask, currentTask }) => {
           show={showAsignarModal}
           onHide={() => setShowAsignarModal(false)}
           handleAsignarUsuario={handleAsignarUsuario}
-          currentTask={task} // Pasa la tarea actual
+          currentTask={task}
         />
       )}
     </div>
