@@ -65,7 +65,7 @@ function HistoriaHU() {
   
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5" style={{ backgroundColor: '#215f88', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h1>HISTORIA DE USUARIO</h1>
         <button onClick={openModalForNewStory} className="btn btn-primary">

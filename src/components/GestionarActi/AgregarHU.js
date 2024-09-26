@@ -1,6 +1,8 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios'
 
+const endPoint = 'http//localhost:8000/sigetis_api-main'
 function AgregarHU({ newTask, setNewTask }) {
   const handleTitleChange = (event) => {
     setNewTask((prev) => ({ ...prev, title: event.target.value }));

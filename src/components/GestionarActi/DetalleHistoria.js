@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Dropdown } from 'react-bootstrap'; // Importa el Dropdown
 import AgregarTarea from './AgregarTarea';
 import AsignarUsuario from './AsignarUsuario';
 
@@ -21,11 +22,9 @@ function DetalleHistoria() {
 
   const addTask = (task) => {
     if (currentTask) {
-      // Actualiza la tarea existente
       setTasks(tasks.map(t => (t.name === currentTask.name ? task : t)));
       setCurrentTask(null);
     } else {
-      // Agrega una nueva tarea
       setTasks([...tasks, { ...task, assigned: 'No asignado' }]);
     }
     setShowTaskModal(false);
@@ -43,7 +42,7 @@ function DetalleHistoria() {
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     setFiles([...files, ...selectedFiles]);
-    e.target.value = ''; // Resetea el input
+    e.target.value = '';
   };
 
   const openFilePicker = () => {
@@ -110,6 +109,7 @@ function DetalleHistoria() {
               <th>Fecha inicio</th>
               <th>Fecha fin</th>
               <th>Resultado</th>
+              <th>Acciones</th> {/* Añade una columna para las acciones */}
             </tr>
           </thead>
           <tbody>
@@ -141,8 +141,15 @@ function DetalleHistoria() {
                 <td>{task.endDate}</td>
                 <td>{task.result}</td>
                 <td>
-                  <button className="btn btn-primary" onClick={() => editTask(task)}>Editar</button>
-                  <button className="btn btn-danger" onClick={() => deleteTask(task.name)}>Eliminar</button>
+                  <Dropdown>
+                    <Dropdown.Toggle variant="link" id="dropdown-basic">
+                      •••
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={() => editTask(task)}>Editar</Dropdown.Item>
+                      <Dropdown.Item onClick={() => deleteTask(task.name)}>Eliminar</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </td>
               </tr>
             ))}

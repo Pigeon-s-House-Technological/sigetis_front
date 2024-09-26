@@ -5,13 +5,14 @@ import AsignarUsuario from './AsignarUsuario';
 const AgregarTarea = ({ show, onHide, addTask, currentTask }) => {
   const [task, setTask] = useState({
     name: '',
-    assigned: 'No asignado', // Valor predeterminado
-    status: 'Nuevo', // Valor predeterminado
+    assigned: 'No asignado',
+    status: 'Nuevo',
     startDate: '',
     endDate: '',
   });
 
   const [showAsignarModal, setShowAsignarModal] = useState(false);
+  const [dateError, setDateError] = useState('');
 
   useEffect(() => {
     if (currentTask) {
@@ -30,10 +31,32 @@ const AgregarTarea = ({ show, onHide, addTask, currentTask }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTask({ ...task, [name]: value });
+
+    // Validar fechas si se cambian
+    if (name === 'startDate' || name === 'endDate') {
+      validateDates(task.startDate, name === 'startDate' ? value : task.endDate);
+    }
+  };
+
+  const validateDates = (startDate, endDate) => {
+    if (startDate && endDate) {
+      if (startDate === endDate) {
+        setDateError('La fecha de inicio y la fecha de fin no pueden ser iguales.');
+      } else {
+        setDateError('');
+      }
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validar fechas antes de agregar la tarea
+    if (dateError) {
+      alert(dateError);
+      return;
+    }
+
     console.log("Tarea a agregar:", task); // Debugging
     addTask(task);
     setTask({
@@ -76,7 +99,7 @@ const AgregarTarea = ({ show, onHide, addTask, currentTask }) => {
             <button
               type="button"
               className="form-control btn btn-secondary"
-              onClick={() => setShowAsignarModal(true)} // Abre el modal de asignar usuario
+              onClick={() => setShowAsignarModal(true)}
             >
               {task.assigned}
             </button>
@@ -116,8 +139,10 @@ const AgregarTarea = ({ show, onHide, addTask, currentTask }) => {
               name="endDate"
               value={task.endDate}
               onChange={handleChange}
+              min={task.startDate} // No permitir elegir una fecha anterior a la fecha de inicio
             />
           </div>
+          {dateError && <div className="text-danger">{dateError}</div>}
           <button type="submit" className="btn btn-primary">
             {currentTask ? 'Actualizar Tarea' : 'Agregar Tarea'}
           </button>
