@@ -1,0 +1,68 @@
+.evaluation-groups {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .group {
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f1f1f1;
+  }
+  
+  .group-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+  }
+  
+  .group-header:hover {
+    background-color: #d0d0d0;
+  }
+  
+  .group-details {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+  }
+  
+  .members h4 {
+    margin-bottom: 10px;
+  }
+  
+  .members ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .members ul li {
+    margin-bottom: 5px;
+  }
+  
+  .view-group-btn {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .view-group-btn:hover {
+    background-color: #0056b3;
+  }
+  

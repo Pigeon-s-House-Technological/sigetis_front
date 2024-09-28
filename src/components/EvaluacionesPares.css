@@ -1,0 +1,63 @@
+.evaluaciones-pares {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .evaluation {
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f1f1f1;
+  }
+  
+  .evaluation-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+  }
+  
+  .evaluation-header:hover {
+    background-color: #d0d0d0;
+  }
+  
+  .evaluation-details {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  td {
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .criterios {
+    margin-top: 10px;
+  }
+  
