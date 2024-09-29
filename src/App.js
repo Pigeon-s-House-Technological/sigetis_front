@@ -1,7 +1,16 @@
-// src/App.js
+
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import EvaluationCard from './components/EvaluationCard'; // Componente para la página inicial
+import EvaluationForm from './components/EvaluationForm'; // Formulario de la evaluación
+import ParesGrupal from './components/ParesGrupal';
+import AutoevaluacionGrupal from './components/AutoevaluacionGrupal';
+import CruzGrupal from './components/CruzGrupal';
+import ParesIndividual from './components/ParesIndividual';
+import AutoevaluacionIndividual from './components/AutoevaluacionIndividual';
+import EvaluacionesPares from './components/EvaluacionesPares';
+import EvaluationType from './components/EvaluationType';
 import TiposDeEvaluacion from './components/TiposDeEvaluacion/TiposDeEvaluacion.jsx';
 import Autoevaluacion from './components/TiposDeEvaluacion/Autoevaluacion/Autoevaluacion.jsx';
 import EvaluacionCruzada from './components/TiposDeEvaluacion/EvaluacionCruzada/EvaluacionCruzada.jsx';
@@ -9,14 +18,42 @@ import EvaluacionEnPares from './components/TiposDeEvaluacion/EvaluacionEnPares/
 import HomeAutoevaluacion from './components/TiposDeEvaluacion/Autoevaluacion/HomeAutoevaluacion.jsx';
 import HomeEvaluacionCruzada from './components/TiposDeEvaluacion/EvaluacionCruzada/HomeEvaluacionCruzada.jsx';
 import HomeEvaluacionEnPares from './components/TiposDeEvaluacion/EvaluacionEnPares/HomeEvaluacionEnPares.jsx';
+import HistoriaHU from './components/Gestion/HistoriaHU';
+import DetalleHistoria from './components/Gestion/DetalleHistoria';
 
-const App = () => {
+
+import Footer from './components/Footer';
+import './App.css';
+
+
+function App() {
   return (
     <Router>
-      <div>
-        <Navbar />  {/* Agrega el Navbar aquí */}
+      <div className="App">
+        <Navbar />
         <Routes>
+          {/* Ruta para "/evaluacion" que muestra EvaluationCard */}
+          <Route path="/evaluacion" element={<EvaluationCard />} />
+          {/* Ruta anidada "/evaluacion/formulario" para el formulario */}
+          <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
+           {/* Ruta para Asignar tipo de evaluación */}
+          <Route path="/tipoevaluacion" element={<EvaluationType />} />
+           {/* Ruta para Asignar tipo de evaluación */}
+          <Route path="/pares-grupal" element={<ParesGrupal />} />
+          {/* Ruta para Asignar tipo de evaluación */}
+          <Route path="/autoevaluacion-grupal" element={<AutoevaluacionGrupal />} />
+          {/* Ruta para Asignar tipo de evaluación */}
+          <Route path="/cruzada-grupal" element={<CruzGrupal />} />
+          {/* Ruta para Asignar tipo de evaluación */}
+          <Route path="/pares-individual" element={<ParesIndividual />} />
+          {/* Ruta para Asignar tipo de evaluación */}
+          <Route path="/autoevaluacion-individual" element={<AutoevaluacionIndividual />} />
+        
+          <Route path="/evaluacionespares" element={<EvaluacionesPares />} />
           <Route path="/tiposDeEvaluacion" element={<TiposDeEvaluacion />} />
+          <Route path="/historiaHU" element={<HistoriaHU />} />
+          <Route path="/detalle/:id" element={<DetalleHistoria />} />
+
           <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
           <Route path="/autoevaluacion" element={<Autoevaluacion />} />
           <Route path="/evaluacionCruzada" element={<EvaluacionCruzada />} />
@@ -24,10 +61,10 @@ const App = () => {
           <Route path="/evaluacionEnPares" element={<EvaluacionEnPares />} />
           <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
         </Routes>
+        <Footer />
       </div>
     </Router>
   );
-};
+}
 
 export default App;
-
