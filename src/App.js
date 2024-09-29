@@ -50,7 +50,6 @@ function App() {
           <Route path="/autoevaluacion-individual" element={<AutoevaluacionIndividual />} />
         
           <Route path="/evaluacionespares" element={<EvaluacionesPares />} />
-          <Route path="/tiposDeEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
 
