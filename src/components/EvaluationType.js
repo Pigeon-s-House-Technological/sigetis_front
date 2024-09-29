@@ -10,15 +10,16 @@ const EvaluationType = () => {
   // Definimos las evaluaciones que estarán disponibles para cada tipo
   const evaluations = {
     Individual: [
-      { title: 'Evaluacion por pares', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' },
-      { title: 'Autoevaluacion', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' }
+      { title: 'Evaluacion por pares', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.', route: '/tipoevaluacion/individual/pares' },
+      { title: 'Autoevaluacion', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.', route: '/tipoevaluacion/individual/autoevaluacion' }
     ],
     Grupal: [
-      { title: 'Evaluacion por pares', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' },
-      { title: 'Autoevaluacion', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' },
-      { title: 'Evaluacion Cruzada', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' }
+      { title: 'Evaluacion por pares', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.', route: '/tipoevaluacion/grupal/pares' },
+      { title: 'Autoevaluacion', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.', route: '/tipoevaluacion/grupal/autoevaluacion' },
+      { title: 'Evaluacion Cruzada', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.', route: '/tipoevaluacion/grupal/cruzada' }
     ]
   };
+  
 
   const handleEvaluationClick = (evaluation) => {
     if (evaluation.route) {
@@ -56,7 +57,7 @@ const EvaluationType = () => {
       {/* Listado de evaluaciones dinámico según el tipo seleccionado */}
       <div className="evaluation-list">
         {evaluations[activeType].map((evaluation, index) => (
-          <div key={index} className="evaluation-item" onClick={() => handleEvaluationClick(evaluation.title)}>
+          <div key={index} className="evaluation-item" onClick={() => handleEvaluationClick(evaluation)}>
             <div>
               <h4>{evaluation.title}</h4>
               <p>{evaluation.description}</p>

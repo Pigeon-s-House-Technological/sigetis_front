@@ -6,7 +6,7 @@
   
   h2 {
     font-size: 24px;
-    color: #333;
+    color: #007bff;
     margin-bottom: 20px;
   }
   
@@ -60,4 +60,35 @@
   .criterios {
     margin-top: 10px;
   }
+
+  /* Estilo para el botón de agregar evaluación */
+.button-container {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.add-evaluation-btn {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007bff; /* Fondo azul */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.add-evaluation-btn:hover {
+  background-color: #0056b3; /* Hover en botón */
+}
+
+.add-evaluation-icon {
+  display: inline-block;
+  font-size: 24px;
+  margin-right: 10px;
+  font-weight: bold;
+}
   

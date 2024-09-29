@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './EvaluacionesPares.css';  // Importamos los estilos CSS
 
-const EvaluacionesPares = () => {
+const EvaluacionGrupalCruzada = () => {
   const [expandedEvaluation, setExpandedEvaluation] = useState(null);  // Estado para manejar qué evaluación está expandida
 
   const toggleEvaluation = (evaluationIndex) => {
@@ -23,28 +23,44 @@ const EvaluacionesPares = () => {
         { name: 'Compromiso', preguntas: 9 },
         { name: 'Habilidad', preguntas: 8 },
       ],
-      fechaInicio: '20/12/29',
-      fechaFin: '12/34/65',
+      fechaInicio: '20/09/24',
+      fechaFin: '28/09/24',
     },
     {
       name: 'Evaluación 2',
       description: 'Menu description.',
-      criterios: [],
-      fechaInicio: '',
-      fechaFin: '',
+      criterios: [
+        { name: 'Puntualidad', preguntas: 10 },
+        { name: 'Responsabilidad', preguntas: 12 },
+        { name: 'Compromiso', preguntas: 9 },
+        { name: 'Habilidad', preguntas: 8 },
+      ],
+      fechaInicio: '20/09/24',
+      fechaFin: '28/09/24',
     },
     {
       name: 'Evaluación 3',
       description: 'Menu description.',
-      criterios: [],
-      fechaInicio: '',
-      fechaFin: '',
+      criterios: [
+        { name: 'Puntualidad', preguntas: 10 },
+        { name: 'Responsabilidad', preguntas: 12 },
+        { name: 'Compromiso', preguntas: 9 },
+        { name: 'Habilidad', preguntas: 8 },
+      ],
+      fechaInicio: '20/09/24',
+      fechaFin: '28/09/24',
     },
   ];
 
   return (
     <div className="evaluaciones-pares">
-      <h2>Evaluaciones por pares (Grupal)</h2>
+      <div className="button-container">
+        <button className="add-evaluation-btn">
+          <span className="add-evaluation-icon">+</span> AGREGAR EVALUACIÓN
+        </button>
+      </div>
+
+      <h2>Evaluacion Cruzada (Grupal)</h2>
       {evaluaciones.map((evaluacion, index) => (
         <div key={index} className="evaluation">
           <div className="evaluation-header" onClick={() => toggleEvaluation(index)}>
@@ -88,4 +104,4 @@ const EvaluacionesPares = () => {
   );
 };
 
-export default EvaluacionesPares;
+export default EvaluacionGrupalCruzada;

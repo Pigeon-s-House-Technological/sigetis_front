@@ -8,8 +8,15 @@ import AutoevaluacionGrupal from './components/AutoevaluacionGrupal';
 import CruzGrupal from './components/CruzGrupal';
 import ParesIndividual from './components/ParesIndividual';
 import AutoevaluacionIndividual from './components/AutoevaluacionIndividual';
-import EvaluacionesPares from './components/EvaluacionesPares';
+import EvaluacionesGrupalPares from './components/EvaluacionesGrupalPares';
 import EvaluationType from './components/EvaluationType';
+import EvaluacionIndividualPares from './components/EvaluacionIndividualPares';
+import EvaluacionIndividualAuto from './components/EvaluacionIndividualAuto';
+import EvaluacionGrupalAuto from './components/EvaluacionGrupalAuto';
+
+import EvaluacionGrupalCruzada from './components/EvaluacionGrupalCruzada';
+
+
 
 
 
@@ -48,9 +55,21 @@ function App() {
              {/* Ruta para Asignar tipo de evaluación */}
         <Route path="/autoevaluacion-individual" element={<AutoevaluacionIndividual />} />
         
-        <Route path="/evaluacionespares" element={<EvaluacionesPares />} />
+        <Route path="/" element={<EvaluationType />} />
+        <Route path="/tipoevaluacion/grupal/pares" element={<EvaluacionesGrupalPares />} />  {/* Ruta para Evaluación por pares */}
+
+        <Route path="/" element={<EvaluationType />} />
+        <Route path="/tipoevaluacion/individual/pares" element={<EvaluacionIndividualPares />} />  {/* Ruta para Evaluación por pares */}
 
 
+        <Route path="/" element={<EvaluationType />} />
+        <Route path="/tipoevaluacion/individual/autoevaluacion" element={<EvaluacionIndividualAuto />} />  {/* Ruta para Evaluación por pares */}
+
+        <Route path="/" element={<EvaluationType />} />
+        <Route path="/tipoevaluacion/grupal/autoevaluacion" element={<EvaluacionGrupalAuto />} />  {/* Ruta para Evaluación por pares */}
+
+        <Route path="/" element={<EvaluationType />} />
+        <Route path="/tipoevaluacion/grupal/cruzada" element={<EvaluacionGrupalCruzada />} />  {/* Ruta para Evaluación por pares */}
 
 
         </Routes>
