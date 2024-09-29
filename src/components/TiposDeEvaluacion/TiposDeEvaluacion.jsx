@@ -8,12 +8,12 @@ import evaluacionEnPares from '../../assets/img/evaluacionEnPares.png'
 
 const TiposDeEvaluacion = () => {
     return (
-        <div className="container tipos-de-evaluacion">
+        <div className="tipos-de-evaluacion">
             <div className="titulo">
                 <h1>Evaluaciones</h1>
             </div>
             <div className="evaluaciones-grid">
-                <Link to="/autoevaluacion" style={{ textDecoration: 'none' }}>
+                <Link to="/homeAutoevaluacion" style={{ textDecoration: 'none' }}>
                     <Card className="evaluacion-card">
                         <Card.Img variant="top" src={autoevaluacion} />
                         <Card.Body>
@@ -25,7 +25,7 @@ const TiposDeEvaluacion = () => {
                         </Card.Body>
                     </Card>
                 </Link>
-                <Link to="/evaluacionCruzada" style={{ textDecoration: 'none' }}>
+                <Link to="/homeEvaluacionCruzada" style={{ textDecoration: 'none' }}>
                     <Card className="evaluacion-card">
                         <Card.Img variant="top" src={evaluacionCruzada} />
                         <Card.Body>
@@ -37,7 +37,7 @@ const TiposDeEvaluacion = () => {
                         </Card.Body>
                     </Card>
                 </Link>
-                <Link to="/autoevaluacion" style={{ textDecoration: 'none' }}>
+                <Link to="/homeEvaluacionEnPares" style={{ textDecoration: 'none' }}>
                     <Card className="evaluacion-card">
                         <Card.Img variant="top" src={evaluacionEnPares} />
                         <Card.Body>
