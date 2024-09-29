@@ -62,3 +62,67 @@
         padding: 10px;
     }
 }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Sobrescribir las clases de Bootstrap */
+.btn-custom-primary {
+    background-color: #4CAF50; /* Color verde personalizado */
+    color: white;
+    border: none;
+  }
+  
+  .btn-custom-secondary {
+    background-color: #f44336; /* Color rojo personalizado */
+    color: white;
+    border: none;
+  }
+  
+  .btn-custom-warning {
+    background-color: #ff9800; /* Color naranja personalizado */
+    color: white;
+    border: none;
+  }
+  
+  .btn-custom-danger {
+    background-color: #e91e63; /* Color rosa personalizado */
+    color: white;
+    border: none;
+  }
+  
+  /* Asegúrate de que los botones cambien de color al pasar el mouse */
+  .btn-custom-primary:hover,
+  .btn-custom-secondary:hover,
+  .btn-custom-warning:hover,
+  .btn-custom-danger:hover {
+    opacity: 0.8;
+  }
