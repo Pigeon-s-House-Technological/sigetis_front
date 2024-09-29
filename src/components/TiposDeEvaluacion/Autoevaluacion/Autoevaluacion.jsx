@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Modal from '../Modal';
-import EvaluationForm from '../PreguntaEvaluationForm';
+import EvaluationForm from '../PreguntaEvaluation';
 import '../../../assets/css/Autoevaluacion.css';
 
 const AutoEvaluationForm = () => {

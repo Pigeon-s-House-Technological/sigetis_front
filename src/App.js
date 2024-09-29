@@ -25,6 +25,7 @@ import HomeEvaluacionEnPares from './components/TiposDeEvaluacion/EvaluacionEnPa
 import HistoriaHU from './components/Gestion/HistoriaHU';
 import DetalleHistoria from './components/Gestion/DetalleHistoria';
 import CriteriosEvaluacion from './components/TiposDeEvaluacion/CriteriosEvaluacion';
+import PreguntaEvaluation from './components/TiposDeEvaluacion/PreguntaEvaluation';
 
 
 
@@ -70,6 +71,7 @@ function App() {
           <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
           <Route path="/evaluacionEnPares" element={<EvaluacionEnPares />} />
           <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
+          <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
         </Routes>
         </div>
         <Footer />
