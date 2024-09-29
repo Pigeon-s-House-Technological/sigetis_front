@@ -1,34 +1,25 @@
-/* Navbar */
-.navbar {
-  background-color: #215F88;
-  padding: 10px;
+/* App.css */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-.navbar ul {
-  list-style: none;
+.app-container {
   display: flex;
-  gap: 15px;
+  flex-direction: column;
+  flex: 1;
 }
 
-.navbar ul li {
-  color: white;
+.content {
+  flex: 1;
 }
 
- .register-button {
-  background-color: #185075;
-  border: none;
-  padding: 5px 10px;
-  margin-left: 5px;
-}
-.login-button {
-  background-color: #E3E3E3;
-  border: none;
-  padding: 5px 10px;
-  margin-left: 5px;
-}
 /* EvaluationCard */
 .evaluation-card {
   background-color: #f4f4f4;
@@ -56,19 +47,9 @@
   cursor: pointer;
 }
 
-/* Footer */
-.footer {
-  background-color: #215F88;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
 
-.footer a {
-  color: white;
-  margin: 0 10px;
-  text-decoration: none;
-}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

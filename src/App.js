@@ -1,7 +1,10 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import Navbar from './components/Principal/Navbar.js';
+import Footer from './components/Principal/Footer.js';
+import Homepage from './components/Principal/Homepage.js';
+
 import EvaluationCard from './components/EvaluationCard'; // Componente para la página inicial
 import EvaluationForm from './components/EvaluationForm'; // Formulario de la evaluación
 import ParesGrupal from './components/ParesGrupal';
@@ -22,16 +25,20 @@ import HistoriaHU from './components/Gestion/HistoriaHU';
 import DetalleHistoria from './components/Gestion/DetalleHistoria';
 
 
-import Footer from './components/Footer';
+
 import './App.css';
 
 
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div className="app-container">
         <Navbar />
+        <div className='content'>        
         <Routes>
+          <Route path="/" element={<Homepage />} />
+
+
           {/* Ruta para "/evaluacion" que muestra EvaluationCard */}
           <Route path="/evaluacion" element={<EvaluationCard />} />
           {/* Ruta anidada "/evaluacion/formulario" para el formulario */}
@@ -53,6 +60,7 @@ function App() {
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
 
+          <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
           <Route path="/autoevaluacion" element={<Autoevaluacion />} />
           <Route path="/evaluacionCruzada" element={<EvaluacionCruzada />} />
@@ -60,6 +68,7 @@ function App() {
           <Route path="/evaluacionEnPares" element={<EvaluacionEnPares />} />
           <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
         </Routes>
+        </div>
         <Footer />
       </div>
     </Router>
