@@ -5,6 +5,8 @@ import AgregarHU from './AgregarHU';
 import { Modal, Button, Dropdown } from 'react-bootstrap';
 import axios from 'axios';
 
+const endPoint = 'http://localhost:8000/api/historiaUsuarios';
+
 function HistoriaHU() {
   const [historiasUsuario, setHistoriasUsuario] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -15,19 +17,18 @@ function HistoriaHU() {
   useEffect(() => {
     const fetchHistorias = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/historiaUsuarios');
+        const response = await axios.get(endPoint);
         setHistoriasUsuario(response.data);
       } catch (error) {
         console.error("Error al obtener las historias:", error.response.data);
       }
     };
-
     fetchHistorias();
   }, []);
 
   const openModalForNewStory = () => {
     setEditIndex(null);
-    setNewTask({ title: '', description: '', images: [] }); // Reinicia el estado para una nueva historia
+    setNewTask({ title: '', description: '', images: [] });
     setShowModal(true);
   };
 
@@ -37,37 +38,53 @@ function HistoriaHU() {
 
   const saveStory = async () => {
     if (newTask.title.trim()) {
-      if (editIndex !== null) {
-        // Actualizar historia existente
-        // (Aquí deberías implementar la lógica para actualizar en la API)
-      } else {
-        // Crear nueva historia
-        try {
-          const response = await axios.post('http://localhost:8000/api/historiaUsuarios', {
-            titulo_hu: newTask.title,
-            descripcion_hu: newTask.description,
-            // Agrega otros campos si es necesario
+      const formData = new FormData();
+      formData.append('titulo_hu', newTask.title);
+      formData.append('descripcion_hu', newTask.description);
+      newTask.images.forEach((image) => {
+        formData.append('images[]', image);
+      });
+
+      try {
+        if (editIndex !== null) {
+          const historia = historiasUsuario[editIndex];
+          const response = await axios.put(`${endPoint}/${historia.id}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
           });
-          setHistoriasUsuario([...historiasUsuario, response.data.message]); // Asegúrate de ajustar esto según tu respuesta
-        } catch (error) {
-          console.error("Error al crear la historia:", error.response.data);
+          const updatedHistorias = [...historiasUsuario];
+          updatedHistorias[editIndex] = response.data;
+          setHistoriasUsuario(updatedHistorias);
+        } else {
+          const response = await axios.post(endPoint, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          setHistoriasUsuario([...historiasUsuario, response.data]);
         }
+        setNewTask({ title: '', description: '', images: [] });
+        closeModal();
+      } catch (error) {
+        console.error("Error al guardar la historia:", error.response.data);
       }
-      setNewTask({ title: '', description: '', images: [] });
-      closeModal();
     }
   };
 
   const editStory = (index) => {
     setEditIndex(index);
-    setNewTask(historiasUsuario[index]);
+    setNewTask({
+      title: historiasUsuario[index].titulo_hu || '',
+      description: historiasUsuario[index].descripcion_hu || '',
+    });
     setShowModal(true);
   };
 
   const deleteStory = async (index) => {
     const historia = historiasUsuario[index];
     try {
-      await axios.delete(`http://localhost:8000/api/historiaUsuarios/${historia.id}`); // Asegúrate de que 'id' está disponible
+      await axios.delete(`${endPoint}/${historia.id}`);
       const updatedStories = historiasUsuario.filter((_, i) => i !== index);
       setHistoriasUsuario(updatedStories);
     } catch (error) {
@@ -80,28 +97,19 @@ function HistoriaHU() {
   };
 
   return (
-    <div className="container mt-5" style={{ backgroundColor: '#215f88', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}>
+    <div className="container mt-5" style={{ backgroundColor: '#215f88', color: 'white', padding: '10px 20px', borderRadius: '5px' }}>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h1>HISTORIA DE USUARIO</h1>
-        <button onClick={openModalForNewStory} className="btn btn-primary">
-          + AGREGAR HU
-        </button>
+        <button onClick={openModalForNewStory} className="btn btn-primary">+ AGREGAR HU</button>
       </div>
-      <div className="mb-3">
-        <label>HISTORIA DE USUARIO</label>
-      </div>
-
       <ul className="list-group">
         {historiasUsuario.map((historia, index) => (
           <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
             <span onClick={() => viewStoryDetails(index)} style={{ cursor: 'pointer' }}>
-              {historia.titulo_hu} {/* Asegúrate de usar el campo correcto */}
+              {historia.titulo_hu}
             </span>
             <Dropdown>
-              <Dropdown.Toggle variant="link" id="dropdown-basic">
-                •••
-              </Dropdown.Toggle>
-
+              <Dropdown.Toggle variant="link" id="dropdown-basic">•••</Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item onClick={() => editStory(index)}>Editar</Dropdown.Item>
                 <Dropdown.Item onClick={() => deleteStory(index)}>Eliminar</Dropdown.Item>
@@ -113,18 +121,20 @@ function HistoriaHU() {
 
       <Modal show={showModal} onHide={closeModal}>
         <Modal.Header closeButton>
-          <Modal.Title>{editIndex !== null ? "Editar Historia de Usuario" : "Agregar Historia de Usuario"}</Modal.Title>
+ <Modal.Title>{editIndex !== null ? "Editar Historia de Usuario" : "Agregar Historia de Usuario"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <AgregarHU newTask={newTask} setNewTask={setNewTask} />
+          <AgregarHU 
+            newTask={newTask} 
+            setNewTask={setNewTask} 
+            isEditMode={editIndex !== null} 
+            taskId={editIndex !== null ? historiasUsuario[editIndex].id : null} 
+            saveStory={saveStory} // Agrega esta línea
+          />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={closeModal}>
-            Cerrar
-          </Button>
-          <Button variant="primary" onClick={saveStory}>
-            {editIndex !== null ? "Actualizar" : "Crear"}
-          </Button>
+          <Button variant="secondary" onClick={closeModal}>Cerrar</Button>
+          <Button variant="primary" onClick={saveStory}>{editIndex !== null ? "Actualizar" : "Crear"}</Button>
         </Modal.Footer>
       </Modal>
     </div>

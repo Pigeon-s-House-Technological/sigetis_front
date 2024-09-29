@@ -1,9 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Dropdown } from 'react-bootstrap';
 import AgregarTarea from './AgregarTarea';
 import AsignarUsuario from './AsignarUsuario';
+
+const endPoint = 'http://localhost:8000/api/actividades';
 
 function DetalleHistoria() {
   const location = useLocation();
@@ -12,41 +14,91 @@ function DetalleHistoria() {
   const [tasks, setTasks] = useState([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
-  const [files, setFiles] = useState([]);
-  const fileInputRef = useRef(null);
   const [showAsignarModal, setShowAsignarModal] = useState(false);
 
-  if (!historia) {
-    return <div className="alert alert-warning" role="alert">No hay historia seleccionada</div>;
-  }
+  // Fetch activities from the API
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const response = await fetch(endPoint);
+        if (!response.ok) {
+          throw new Error('Error al obtener las actividades');
+        }
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setTasks(data);
+        } else {
+          console.error(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
 
-  const addTask = (task) => {
+    fetchActivities();
+  }, []);
+
+  const addTask = async (task) => {
     if (currentTask) {
-      setTasks(tasks.map(t => (t.name === currentTask.name ? task : t)));
-      setCurrentTask(null);
+      // Update task
+      try {
+        const response = await fetch(`${endPoint}/${currentTask.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(task),
+        });
+
+        if (!response.ok) {
+          throw new Error('Error al actualizar la tarea');
+        }
+
+        const updatedTask = await response.json();
+        setTasks(tasks.map(t => (t.id === updatedTask.id ? updatedTask : t)));
+      } catch (error) {
+        console.error('Error:', error);
+      }
     } else {
-      setTasks([...tasks, { ...task, assigned: 'No asignado' }]);
+      // Add new task
+      try {
+        const response = await fetch(endPoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(task),
+        });
+
+        if (!response.ok) {
+          throw new Error('Error al agregar la tarea');
+        }
+
+        const newTask = await response.json();
+        setTasks([...tasks, newTask]);
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
+
+    setCurrentTask(null);
     setShowTaskModal(false);
   };
 
-  const editTask = (task) => {
-    setCurrentTask(task);
-    setShowTaskModal(true);
-  };
+  const deleteTask = async (taskId) => {
+    try {
+      const response = await fetch(`${endPoint}/${taskId}`, {
+        method: 'DELETE',
+      });
 
-  const deleteTask = (taskName) => {
-    setTasks(tasks.filter(task => task.name !== taskName));
-  };
+      if (!response.ok) {
+        throw new Error('Error al eliminar la tarea');
+      }
 
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    setFiles([...files, ...selectedFiles]);
-    e.target.value = '';
-  };
-
-  const openFilePicker = () => {
-    fileInputRef.current.click();
+      setTasks(tasks.filter(task => task.id !== taskId));
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleAsignarClick = (task) => {
@@ -61,7 +113,7 @@ function DetalleHistoria() {
   const handleAsignarUsuario = (usuario) => {
     if (currentTask) {
       const updatedTasks = tasks.map((task) =>
-        task.name === currentTask.name ? { ...task, assigned: usuario } : task
+        task.id === currentTask.id ? { ...task, assigned: usuario } : task
       );
       setTasks(updatedTasks);
     }
@@ -78,23 +130,6 @@ function DetalleHistoria() {
         <p>{historia.description || 'No proporcionado'}</p>
       </div>
       <div className="card p-3 mb-3">
-        <h2>Archivos Adjuntos</h2>
-        {files.length > 0 ? (
-          <p>{files.length} archivos adjuntos</p>
-        ) : (
-          <p>No hay archivos adjuntos.</p>
-        )}
-        <button className="btn btn-primary" onClick={openFilePicker}>+ Agregar Archivo</button>
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          accept="image/*"
-          onChange={handleFileChange}
-          multiple
-        />
-      </div>
-      <div className="card p-3 mb-3">
         <h2>Tareas</h2>
         <button className="btn btn-primary" onClick={() => {
           setCurrentTask(null);
@@ -109,13 +144,12 @@ function DetalleHistoria() {
               <th>Fecha inicio</th>
               <th>Fecha fin</th>
               <th>Resultado</th>
-              <th>Acciones</th> {/* Añade una columna para las acciones */}
             </tr>
           </thead>
           <tbody>
             {tasks.map((task) => (
-              <tr key={task.name}>
-                <td>{task.name}</td>
+              <tr key={task.id}>
+                <td>{task.nombre_actividad}</td>
                 <td>
                   <button
                     className="btn btn-secondary"
@@ -126,10 +160,10 @@ function DetalleHistoria() {
                 </td>
                 <td>
                   <select
-                    value={task.status}
+                    value={task.estado_actividad}
                     onChange={(e) => {
-                      const updatedTask = { ...task, status: e.target.value };
-                      setTasks(tasks.map((t) => (t.name === task.name ? updatedTask : t)));
+                      const updatedTask = { ...task, estado_actividad: e.target.value };
+                      setTasks(tasks.map((t) => (t.id === task.id ? updatedTask : t)));
                     }}
                   >
                     <option value="pendiente">Pendiente</option>
@@ -137,17 +171,20 @@ function DetalleHistoria() {
                     <option value="completada">Completada</option>
                   </select>
                 </td>
-                <td>{task.startDate}</td>
-                <td>{task.endDate}</td>
-                <td>{task.result}</td>
+                <td>{task.fecha_inicio}</td>
+                <td>{task.fecha_fin}</td>
+                <td>{task.resultado}</td>
                 <td>
                   <Dropdown>
                     <Dropdown.Toggle variant="link" id="dropdown-basic">
                       •••
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      <Dropdown.Item onClick={() => editTask(task)}>Editar</Dropdown.Item>
-                      <Dropdown.Item onClick={() => deleteTask(task.name)}>Eliminar</Dropdown.Item>
+                      <Dropdown.Item onClick={() => {
+                        setCurrentTask(task);
+                        setShowTaskModal(true);
+                      }}>Editar</Dropdown.Item>
+                      <Dropdown.Item onClick={() => deleteTask(task.id)}>Eliminar</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </td>

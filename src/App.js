@@ -11,7 +11,6 @@ import ParesIndividual from './components/ParesIndividual';
 import AutoevaluacionIndividual from './components/AutoevaluacionIndividual';
 import EvaluacionesPares from './components/EvaluacionesPares';
 import EvaluationType from './components/EvaluationType';
-import TiposDeEvaluacion from './components/TiposDeEvaluacion/TiposDeEvaluacion.jsx';
 import HistoriaHU from './components/Gestion/HistoriaHU';
 import DetalleHistoria from './components/Gestion/DetalleHistoria';
 
@@ -52,7 +51,6 @@ function App() {
           <Route path="/autoevaluacion-individual" element={<AutoevaluacionIndividual />} />
         
           <Route path="/evaluacionespares" element={<EvaluacionesPares />} />
-          <Route path="/tiposDeEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
 
