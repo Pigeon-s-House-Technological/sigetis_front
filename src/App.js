@@ -5,6 +5,7 @@ import Navbar from './components/Principal/Navbar.js';
 import Footer from './components/Principal/Footer.js';
 import Homepage from './components/Principal/Homepage.js';
 
+
 import EvaluationCard from './components/EvaluationCard'; // Componente para la página inicial
 import EvaluationForm from './components/EvaluationForm'; // Formulario de la evaluación
 import ParesGrupal from './components/ParesGrupal';
@@ -23,6 +24,7 @@ import HomeEvaluacionCruzada from './components/TiposDeEvaluacion/EvaluacionCruz
 import HomeEvaluacionEnPares from './components/TiposDeEvaluacion/EvaluacionEnPares/HomeEvaluacionEnPares.jsx';
 import HistoriaHU from './components/Gestion/HistoriaHU';
 import DetalleHistoria from './components/Gestion/DetalleHistoria';
+import CriteriosEvaluacion from './components/TiposDeEvaluacion/CriteriosEvaluacion';
 
 
 
@@ -62,6 +64,7 @@ function App() {
 
           <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
+          <Route path="/gestionEvaluacion/:id" element={<CriteriosEvaluacion />} />
           <Route path="/autoevaluacion" element={<Autoevaluacion />} />
           <Route path="/evaluacionCruzada" element={<EvaluacionCruzada />} />
           <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />

@@ -126,3 +126,9 @@
   .btn-custom-danger:hover {
     opacity: 0.8;
   }
+
+.td_nombres{
+    font-size: 18px;
+    background-color: '#f0f0f0'; display: 'flex'; align-items: 'center';
+}
+
