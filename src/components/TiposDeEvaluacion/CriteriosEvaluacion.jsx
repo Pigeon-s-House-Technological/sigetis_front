@@ -5,9 +5,8 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import axios from 'axios';
 import './Evaluaciones.css';
+import { API_BASE_URL } from '../config';
 
-
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
 const CriteriosEvaluacion = () => {
     const { id } = useParams();
 

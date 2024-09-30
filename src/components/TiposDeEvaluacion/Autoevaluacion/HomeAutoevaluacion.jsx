@@ -5,9 +5,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../../../assets/css/Autoevaluacion.css';
 import '../Evaluaciones.css';
+import { API_BASE_URL } from '../../config';
 
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
 const HomeAutoevaluacion = () => {
     const [autoevaluaciones, setAutoevaluaciones] = useState([]);
     const [showModal, setShowModal] = useState(false);

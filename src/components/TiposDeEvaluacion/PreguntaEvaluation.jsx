@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Modal, Form} from 'react-bootstrap';
+import { Button, Table, Modal} from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 import axios from 'axios';
 import './Evaluaciones.css';
 import AddPregunta from './addPregunta';
@@ -110,6 +111,10 @@ const handleCloseEditModal = () => {
   setSelectedTipo('');
 };
 
+const handleBack = () => {
+  navigate(-1); // Navegar a la página anterior
+};
+
 return (
   <div className='HomeAutoevaluacion'>
     <div className='row-home'>
@@ -120,6 +125,9 @@ return (
       <div className='col col-button'>
         <Button style={{backgroundColor: '#215f88'}} className="btn-custom-primary" onClick={handleClick}>Agregar Pregunta</Button>
         <AddPregunta show={showModal} handleClose={handleClose} fetchPreguntas={fetchPreguntas} />
+        <Button className="boton_atras" onClick={handleBack} style={{ marginLeft: '10px', backgroundColor:'#09DDCC', color:'black'}}>
+              <FaArrowLeft />
+            </Button>
       </div>
     </div>
     <Table striped bordered hover>
@@ -136,9 +144,9 @@ return (
           <tr key={pregunta.id}>
             <td>{index + 1}</td>
             <td className="td_nombres">
-              <Link to={`/gestionEvaluacion/${pregunta.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+              
                 {pregunta.pregunta_opcion_multiple}
-              </Link>
+              
             </td>
             <td>Pregunta de opción multiple</td>
             <td>
@@ -156,9 +164,9 @@ return (
           <tr key={pregunta.id}>
             <td>{index + 1}</td>
             <td className="td_nombres">
-              <Link to={`/gestionEvaluacion/${pregunta.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+              
                 {pregunta.pregunta_complemento}
-              </Link>
+              
             </td>
             <td>Pregunta de complemento</td>
             <td>
@@ -176,9 +184,9 @@ return (
           <tr key={pregunta.id}>
             <td>{index + 1}</td>
             <td className="td_nombres">
-              <Link to={`/gestionEvaluacion/${pregunta.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+              
                 {pregunta.pregunta_puntuacion}
-              </Link>
+              
             </td>
             <td>Pregunta de puntuación</td>
             <td>

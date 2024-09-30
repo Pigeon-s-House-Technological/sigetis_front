@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 
 import RatingCircles from '../RatingCircles';
@@ -96,7 +96,7 @@ const AddPregunta = ({ show, handleClose, fetchPreguntas }) => {
         default:
           throw new Error('Tipo de pregunta desconocido');
       }
-      const response = await axios.post(url, data);
+      await axios.post(url, data);
 
       
 

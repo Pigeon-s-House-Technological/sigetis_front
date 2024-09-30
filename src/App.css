@@ -20,36 +20,6 @@ html, body {
   flex: 1;
 }
 
-/* EvaluationCard */
-.evaluation-card {
-  background-color: #f4f4f4;
-  border-radius: 5px;
-  padding: 20px;
-  margin: 20px;
-  text-align: left;
-}
-
-.evaluation-card h2 {
-  color: #007BFF;
-}
-
-.evaluation-status {
-  color: gray;
-  margin-bottom: 10px;
-}
-
-.start-button {
-  background-color: #007BFF;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-
-
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
