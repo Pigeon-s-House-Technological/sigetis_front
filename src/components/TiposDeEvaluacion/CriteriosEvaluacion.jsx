@@ -1,29 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Modal, Form} from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 import axios from 'axios';
-import '../../../assets/css/Autoevaluacion.css';
-import '../Evaluaciones.css';
-import { API_BASE_URL } from '../../config';
+import './Evaluaciones.css';
+import { API_BASE_URL } from '../config';
 
+const CriteriosEvaluacion = () => {
+    const { id } = useParams();
 
-const HomeAutoevaluacion = () => {
-    const [autoevaluaciones, setAutoevaluaciones] = useState([]);
+    const [criterios, setCriterios] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [newEvaluationName, setNewEvaluationName] = useState('');
-    const [selectedEvaluation, setSelectedEvaluation] = useState(null);
-    const [selectedEvaluationId, setSelectedEvaluationId] = useState(null);
+    const [newCriterioName, setNewCriterioName] = useState('');
+    const [selectedCriterio, setSelectedCriterio] = useState(null);
+    const [selectedCriterioId, setSelectedCriterioId] = useState(null);
     const navigate = useNavigate();
 
   // Función para obtener los datos de la API
-  const fetchAutoevaluaciones = async () => {
+  const fetchCriterios = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/evaluaciones`); // Reemplaza con la URL de tu API
-      const autoevaluacionesTipo1 = response.data.filter(evaluacion => evaluacion.tipo_evaluacion === 1);
-      setAutoevaluaciones(autoevaluacionesTipo1);
+      const response = await axios.get(`${API_BASE_URL}/criterios`); // Reemplaza con la URL de tu API
+      const criteriosFiltrado = response.data.filter(criterio => criterio.id_evaluacion === parseInt(id));
+      setCriterios(criteriosFiltrado);
     } catch (error) {
       console.error('Error al obtener los datos de la API', error);
     }
@@ -31,7 +32,7 @@ const HomeAutoevaluacion = () => {
 
   // useEffect para obtener los datos de la API al cargar el componente
   useEffect(() => {
-    fetchAutoevaluaciones();
+    fetchCriterios();
   }, []);
 
   const handleClick = () => {
@@ -44,30 +45,33 @@ const HomeAutoevaluacion = () => {
 
   const handleSave = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/evaluaciones`, {
-        nombre_evaluacion: newEvaluationName,
-        tipo_evaluacion: 1, // Asegúrate de que el tipo de evaluación es 1
-        tipo_destinatario: false // Ajusta este valor según sea necesario
+      const response = await axios.post(`${API_BASE_URL}/criterios`, {
+        titulo_criterio: newCriterioName,
+        id_evaluacion: parseInt(id), // Asegúrate de que el tipo de evaluación es 1
       });
       // Actualizar el estado con la nueva autoevaluación
-      setAutoevaluaciones([...autoevaluaciones, response.data]);
-      fetchAutoevaluaciones();
-      setNewEvaluationName('');
+      setCriterios([...criterios, response.data]);
+      fetchCriterios();
+      setNewCriterioName('');
       setShowModal(false);
     } catch (error) {
       console.error('Error al guardar la nueva autoevaluación', error);
     }
   };
 
+  const handleBack = () => {
+    navigate(-1); // Navegar a la página anterior
+  };
+
   const eliminarClick = (id) => {
-    setSelectedEvaluationId(id);
+    setSelectedCriterioId(id);
     setShowConfirmModal(true);
   };
 
   const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/evaluaciones/${selectedEvaluationId}`);
-      setAutoevaluaciones(autoevaluaciones.filter((autoevaluacion) => autoevaluacion.id !== selectedEvaluationId));
+      await axios.delete(`${API_BASE_URL}/criterios/${selectedCriterioId}`);
+      setCriterios(criterios.filter((criterio) => criterio.id !== selectedCriterioId));
       setShowConfirmModal(false);
     } catch (error) {
       console.error('Error al eliminar la autoevaluación', error);
@@ -79,23 +83,23 @@ const HomeAutoevaluacion = () => {
   };
 
   const editarClick = (id) => {
-    const autoevaluacionEditar = autoevaluaciones.find((autoevaluacion) => autoevaluacion.id === id);
-    setSelectedEvaluation(autoevaluacionEditar);
-    setNewEvaluationName(autoevaluacionEditar.nombre_evaluacion);
+    const criterioEditar = criterios.find((criterio) => criterio.id === id);
+    setSelectedCriterio(criterioEditar);
+    setNewCriterioName(criterioEditar.titulo_criterio);
     setShowEditModal(true);
   };
 
   const handleEditSave = async () => {
     try {
-      const response = await axios.patch(`${API_BASE_URL}/evaluacionesP/${selectedEvaluation.id}`, {
-        nombre_evaluacion: newEvaluationName,
+      const response = await axios.patch(`${API_BASE_URL}/criteriosP/${selectedCriterio.id}`, {
+        titulo_criterio: newCriterioName,
       });
       // Actualizar el estado con la autoevaluación editada
-      setAutoevaluaciones(autoevaluaciones.map((autoevaluacion) =>
-        autoevaluacion.id === selectedEvaluation.id ? response.data : autoevaluacion
+      setCriterios(criterios.map((criterio) =>
+        criterio.id === selectedCriterio.id ? response.data : criterio
       ));
-      fetchAutoevaluaciones();
-      setNewEvaluationName('');
+      fetchCriterios();
+      setNewCriterioName('');
       setShowEditModal(false);
     } catch (error) {
       console.error('Error al editar la autoevaluación', error);
@@ -108,12 +112,18 @@ const HomeAutoevaluacion = () => {
   return (
     <div className='HomeAutoevaluacion'>
       <div className='row-home'>
-        <h2 className='col col-h1'>Autoevaluaciones</h2>
+        <h2 className='col col-h1'>Criterios</h2>
         <div className='col col-h3'>
-          <h4>{autoevaluaciones.length} Autoevaluaciones</h4>
+          <h4>{criterios.length} criterios</h4>
         </div>
+        
         <div className='col col-button'>
-          <Button style={{backgroundColor: '#215f88'}} className="btn-custom-primary" onClick={handleClick}>Agregar Autoevaluación</Button>
+          <div className='button-group'>
+            <Button style={{backgroundColor: '#215f88'}} className="btn-custom-primary" onClick={handleClick}>Agregar Criterio</Button>
+            <Button className="boton_atras" onClick={handleBack} style={{ marginLeft: '10px', backgroundColor:'#09DDCC', color:'black'}}>
+              <FaArrowLeft />
+            </Button>
+          </div>
         </div>
       </div>
       <Table striped bordered hover>
@@ -125,20 +135,20 @@ const HomeAutoevaluacion = () => {
           </tr>
         </thead>
         <tbody>
-          {autoevaluaciones.map((autoevaluacion, index) => (
-            <tr key={autoevaluacion.id}>
+          {criterios.map((criterio, index) => (
+            <tr key={criterio.id}>
               <td>{index + 1}</td>
               <td className="td_nombres">
-                <Link to={`/gestionEvaluacion/${autoevaluacion.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
-                  {autoevaluacion.nombre_evaluacion}
+                <Link to={`/criterio/${criterio.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                  {criterio.titulo_criterio}
                 </Link>
               </td>
               <td>
-                <Button style={{ backgroundColor: '#09DDCC', color: 'black' }} className="btn-custom-warning" onClick={() => editarClick(autoevaluacion.id)}>
+                <Button style={{ backgroundColor: '#09DDCC', color: 'black' }} className="btn-custom-warning" onClick={() => editarClick(criterio.id)}>
                   <BsPencilSquare />
                 </Button>
                 {' '}
-                <Button style={{ backgroundColor: 'red' }} className="btn-custom-danger" onClick={() => eliminarClick(autoevaluacion.id)}>
+                <Button style={{ backgroundColor: 'red' }} className="btn-custom-danger" onClick={() => eliminarClick(criterio.id)}>
                   <BsTrashFill />
                 </Button>
               </td>
@@ -149,17 +159,17 @@ const HomeAutoevaluacion = () => {
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Agregar Autoevaluación</Modal.Title>
+          <Modal.Title>Agregar Criterio</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formEvaluationName">
-              <Form.Label>Nombre de la Evaluación</Form.Label>
+              <Form.Label>Nombre del Criterio</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Ingresa el nombre de la evaluación"
-                value={newEvaluationName}
-                onChange={(e) => setNewEvaluationName(e.target.value)}
+                value={newCriterioName}
+                onChange={(e) => setNewCriterioName(e.target.value)}
               />
             </Form.Group>
           </Form>
@@ -179,7 +189,7 @@ const HomeAutoevaluacion = () => {
           <Modal.Title>Confirmar Eliminación</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          ¿Estás seguro de que deseas eliminar esta autoevaluación?
+          ¿Estás seguro de que deseas eliminar este criterio?
         </Modal.Body>
         <Modal.Footer>
           <Button style={{backgroundColor: '#09DDCC', color: 'black'}}  className="btn-custom-secondary" onClick={handleCloseConfirmModal}>
@@ -193,17 +203,17 @@ const HomeAutoevaluacion = () => {
 
       <Modal show={showEditModal} onHide={handleCloseEditModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Editar Autoevaluación</Modal.Title>
+          <Modal.Title>Editar Criterio</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formEditEvaluationName">
-              <Form.Label>Nombre de la Evaluación</Form.Label>
+              <Form.Label>Nombre del Criterio</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Ingresa el nuevo nombre de la evaluación"
-                value={newEvaluationName}
-                onChange={(e) => setNewEvaluationName(e.target.value)}
+                value={newCriterioName}
+                onChange={(e) => setNewCriterioName(e.target.value)}
               />
             </Form.Group>
           </Form>
@@ -221,4 +231,4 @@ const HomeAutoevaluacion = () => {
   );
 };
 
-export default HomeAutoevaluacion;
+export default CriteriosEvaluacion;

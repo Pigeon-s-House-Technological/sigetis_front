@@ -1,42 +1,47 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Dropdown } from 'react-bootstrap';
+import axios from 'axios';
 import AgregarTarea from './AgregarTarea';
 import AsignarUsuario from './AsignarUsuario';
+import {API_BASE_URL} from '../config';
 
-const endPoint = 'http://localhost:8000/api/actividades';
+const endPoint = `${API_BASE_URL}`;
 
 function DetalleHistoria() {
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { historia } = location.state || {};
+  const [historia, setHistoria] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [showAsignarModal, setShowAsignarModal] = useState(false);
 
-  // Fetch activities from the API
-  useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        const response = await fetch(endPoint);
-        if (!response.ok) {
-          throw new Error('Error al obtener las actividades');
-        }
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setTasks(data);
-        } else {
-          console.error(data.message);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
+  const fetchHistorias = async () => {
+    try {
+      const response = await axios.get(`${endPoint}/historiaUsuarios/${id}`);
+      setHistoria(response.data);
+    } catch (error) {
+      console.error("Error al obtener las historias:", error.response ? error.response.data : error.message);
+    }
+  };
 
-    fetchActivities();
-  }, []);
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(`${endPoint}/${id}/actividades`);
+
+    } catch (error) {
+      console.error("Error al obtener las tareas:", error.response ? error.response.data : error.message);
+    }
+  }
+
+  // Fetch activities from the API
+
+  useEffect(() => {
+    fetchHistorias();
+  }, [])
 
   const addTask = async (task) => {
     if (currentTask) {
@@ -120,21 +125,21 @@ function DetalleHistoria() {
     setShowAsignarModal(false);
   };
 
+  if (!historia || !historia.titulo_hu) {
+    return <div>Error: Historia no encontrada o no tiene título</div>;
+  }
+
   return (
-    <div className="container mt-5">
-      <button className="btn btn-secondary" onClick={() => navigate(-1)}>Volver</button>
-      <h3 className='text-center mb-4'>Historia de Usuarios</h3>
-      <h1 className="text-center">{historia.title || 'Historia de Usuario'}</h1>
-      <div className="card p-3 mb-3">
-        <h2>Descripción</h2>
-        <p>{historia.description || 'No proporcionado'}</p>
-      </div>
+    <div className="container mt-5" style={{backgroundColor:"#215F88"}}>
+      <button className="btn btn-secondary" onClick={() => navigate(-1)} style={{ backgroundColor: '#09DDCC', color:"black"}}>Volver</button>
+      <h1 className="text-center" style={{ color: 'white' }}>{historia.titulo_hu || 'Historia de Usuario'}</h1>
+      
       <div className="card p-3 mb-3">
         <h2>Tareas</h2>
         <button className="btn btn-primary" onClick={() => {
           setCurrentTask(null);
           setShowTaskModal(true);
-        }}>+ Agregar Tarea</button>
+        }}style={{ backgroundColor: '#245F88' }}>Agregar Tarea</button>
         <table className="table mt-3">
           <thead>
             <tr>
@@ -193,7 +198,7 @@ function DetalleHistoria() {
           </tbody>
         </table>
       </div>
-
+  
       {showTaskModal && (
         <div className="modal-container">
           <AgregarTarea
@@ -204,7 +209,7 @@ function DetalleHistoria() {
           />
         </div>
       )}
-
+  
       {showAsignarModal && (
         <div className="modal-container">
           <AsignarUsuario
