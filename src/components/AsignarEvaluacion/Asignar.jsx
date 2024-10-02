@@ -1,8 +1,30 @@
-import React, { useState } from 'react';
-import './CruzGrupal.css';  // Importamos los estilos CSS
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
-const CruzGrupal = () => {
-  const [expandedGroup, setExpandedGroup] = useState(null);  // Estado para manejar qué grupo está expandido
+import { API_BASE_URL } from '../config';  // Importamos la URL de la API
+import './Asignar.css';  // Importamos los estilos CSS
+
+const Asignar = () => {
+  const { tipo } = useParams();
+  const { destinatario } = useParams();
+
+  const destinatarioVar = destinatario === 'grupal' ? 'Grupal' : 'Individual';
+  const tipoVar = tipo === '1' ? 'Autoevaluación' : tipo === '2' ? 'Evaluación Cruzada' : 'Evaluación de Pares';
+  
+  const [ expandedGroup, setExpandedGroup ] = useState(null);  // Estado para manejar qué grupo está expandido
+  const [ grupos, setGrupos ] = useState([]);  // Estado para manejar los grupos
+  const [ evaluaciones, setCriterios ] = useState([]); // Estado para manejar las evaluaciones
+
+  const obtenerEvaluaciones = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/evaluaciones`); // Reemplaza con la URL de tu API
+      const evaluacionesFiltradas = response.data.filter(evaluacion => evaluacion.id_tipo_evaluacion === parseInt(tipo));
+      setCriterios(evaluacionesFiltradas.data);
+    } catch (error) {
+      console.error('Error al obtener los datos de la API', error);
+    }
+  };
 
   const toggleGroup = (groupIndex) => {
     if (expandedGroup === groupIndex) {
@@ -13,7 +35,7 @@ const CruzGrupal = () => {
   };
 
   // Datos simulados de los grupos
-  const groups = [
+  const gruposEjemplo = [
     {
       name: 'Grupo 1',
       description: 'Menu description.',
@@ -37,10 +59,16 @@ const CruzGrupal = () => {
     }
   ];
 
+  useEffect(() => {
+    setGrupos(gruposEjemplo);
+    obtenerEvaluaciones();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <div className="evaluation-groups">
-      <h2>Evaluacion Cruzada (Grupal)</h2>
-      {groups.map((group, index) => (
+    <div className="evaluation-grupos">
+      <h2>{tipoVar} ({destinatarioVar})</h2>
+      {grupos.map((group, index) => (
         <div key={index} className="group">
           <div className="group-header" onClick={() => toggleGroup(index)}>
             <span>{group.name}</span>
@@ -72,4 +100,4 @@ const CruzGrupal = () => {
   );
 };
 
-export default CruzGrupal;
+export default Asignar;
