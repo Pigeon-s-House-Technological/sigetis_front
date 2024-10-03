@@ -88,7 +88,7 @@ const Asignar = () => {
     <div className="evaluation-grupos">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>{tipoVar} ({destinatarioVar})</h2>
-        <Button className="boton_atras" onClick={handleBack} style={{ marginLeft: '10px', backgroundColor:'#09DDCC', color:'black'}}>
+        <Button onClick={handleBack} style={{ marginLeft: '10px', backgroundColor:'#09DDCC', color:'black', border:'none'}}>
           <FaArrowLeft />
         </Button>
       </div>

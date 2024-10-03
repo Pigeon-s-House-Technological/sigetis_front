@@ -10,17 +10,14 @@ const EvaluationType = () => {
   // Definimos las evaluaciones que estarán disponibles para cada tipo
   const evaluations = {
     Individual: [
+      { title: 'Autoevaluacion', description: 'Evaluación que permite a los equipos de trabajo y a sus integrantes realizar una retroalimentación sobre su trabajo.' 
+        , destinatario: 'individual', tipo: 1
+      },
       { title: 'Evaluacion por pares', description: 'Permite a los integrantes de un equipo evaluar el desempeño de sus compañeros de equipo.' 
         , destinatario: 'individual', tipo: 3
       },
-      { title: 'Autoevaluacion', description: 'Evaluación que permite a los equipos de trabajo y a sus integrantes realizar una retroalimentación sobre su trabajo.' 
-        , destinatario: 'individual', tipo: 1
-      }
     ],
     Grupal: [
-      { title: 'Evaluacion por pares', description: 'Permite a los integrantes de un equipo evaluar el desempeño de sus compañeros de equipo.' 
-        , destinatario: 'grupal', tipo: 3
-      },
       { title: 'Autoevaluacion', description: 'Evaluación que permite a los equipos de trabajo y a sus integrantes realizar una retroalimentación sobre su trabajo.' 
         , destinatario: 'grupal', tipo: 1
       },
