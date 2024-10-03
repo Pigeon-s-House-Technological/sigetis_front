@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Button } from 'react-bootstrap';
+import { FaArrowLeft } from 'react-icons/fa';
 
 import { API_BASE_URL } from '../config';  // Importamos la URL de la API
 import './Asignar.css';  // Importamos los estilos CSS
@@ -11,16 +13,24 @@ const Asignar = () => {
 
   const destinatarioVar = destinatario === 'grupal' ? 'Grupal' : 'Individual';
   const tipoVar = tipo === '1' ? 'Autoevaluación' : tipo === '2' ? 'Evaluación Cruzada' : 'Evaluación de Pares';
+  const tipoDestinatarioOp = destinatario === 'grupal' ? true : false;
   
   const [ expandedGroup, setExpandedGroup ] = useState(null);  // Estado para manejar qué grupo está expandido
   const [ grupos, setGrupos ] = useState([]);  // Estado para manejar los grupos
-  const [ evaluaciones, setCriterios ] = useState([]); // Estado para manejar las evaluaciones
-
+  const [ evaluaciones, setEvaluaciones ] = useState([]); // Estado para manejar las evaluaciones
+  const [evaluacionSeleccionada, setEvaluacionSeleccionada] = useState('');
+  const navigate = useNavigate();
+  
   const obtenerEvaluaciones = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/evaluaciones`); // Reemplaza con la URL de tu API
-      const evaluacionesFiltradas = response.data.filter(evaluacion => evaluacion.id_tipo_evaluacion === parseInt(tipo));
-      setCriterios(evaluacionesFiltradas.data);
+      const evaluacionesFiltradas = response.data.filter(evaluacion => evaluacion.tipo_evaluacion === parseInt(tipo) && 
+                                                          evaluacion.tipo_destinatario === tipoDestinatarioOp);
+      
+      if(evaluacionesFiltradas.length === 0) {
+        setEvaluaciones([]);
+      }else{setEvaluaciones(evaluacionesFiltradas);}
+
     } catch (error) {
       console.error('Error al obtener los datos de la API', error);
     }
@@ -65,9 +75,33 @@ const Asignar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleEvaluacionChange = (event) => {//para la lista deslizable de evaluaciones
+    setEvaluacionSeleccionada(event.target.value);
+    console.log(event.target.value);
+  };
+
+  const handleBack = () => {
+    navigate(-1); // Navegar a la página anterior
+  };
+
   return (
     <div className="evaluation-grupos">
-      <h2>{tipoVar} ({destinatarioVar})</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2>{tipoVar} ({destinatarioVar})</h2>
+        <Button className="boton_atras" onClick={handleBack} style={{ marginLeft: '10px', backgroundColor:'#09DDCC', color:'black'}}>
+          <FaArrowLeft />
+        </Button>
+      </div>
+      <h4>Seleccione Evaluación que desea asignar:</h4>
+      <select value={evaluacionSeleccionada} onChange={handleEvaluacionChange} className="selector-evaluaciones">
+        <option value="">Seleccione una evaluación</option>
+        {evaluaciones.map((evaluacion) => (
+          <option key={evaluacion.id} value={evaluacion.id}>
+            {evaluacion.nombre_evaluacion}
+          </option>
+        ))}
+      </select>
+
       {grupos.map((group, index) => (
         <div key={index} className="group">
           <div className="group-header" onClick={() => toggleGroup(index)}>
