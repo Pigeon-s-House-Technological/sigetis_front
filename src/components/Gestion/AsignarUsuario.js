@@ -1,9 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { API_BASE_URL } from '../config';
+
+const endPoint = `${API_BASE_URL}/usuarios`;
 
 const AsignarUsuario = ({ show, onHide, handleAsignarUsuario, currentTask }) => {
   const [selectedUser, setSelectedUser] = useState(currentTask?.assigned || 'No asignado');
+  const [usuarios, setUsuarios] = useState([]);
 
-  if (!show) return null;
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        const response = await axios.get(endPoint);
+        setUsuarios(response.data);
+      } catch (error) {
+        console.error("Error al obtener los usuarios:", error.response ? error.response.data : error.message);
+      }
+    };
+
+    fetchUsuarios();
+  }, []);
 
   const handleChange = (e) => {
     setSelectedUser(e.target.value);
@@ -11,8 +27,10 @@ const AsignarUsuario = ({ show, onHide, handleAsignarUsuario, currentTask }) => 
 
   const handleAssign = () => {
     handleAsignarUsuario(selectedUser);
-    onHide(); // Cierra el modal después de asignar
+    onHide(); 
   };
+
+  if (!show) return null;
 
   return (
     <div className="modal" style={{ display: 'block' }}>
@@ -20,9 +38,11 @@ const AsignarUsuario = ({ show, onHide, handleAsignarUsuario, currentTask }) => 
         <h2>Asignar usuario</h2>
         <select value={selectedUser} onChange={handleChange}>
           <option value="No asignado">No asignado</option>
-          <option value="usuario1">Usuario 1</option>
-          <option value="usuario2">Usuario 2</option>
-          <option value="usuario3">Usuario 3</option>
+          {usuarios.map((usuario) => (
+            <option key={usuario.id} value={usuario.nombre_user}>
+              {usuario.nombre_user} {usuario.apellido_user}
+            </option>
+          ))}
         </select>
         <div className="mt-3">
           <button className="btn btn-primary" onClick={handleAssign}>
@@ -37,4 +57,4 @@ const AsignarUsuario = ({ show, onHide, handleAsignarUsuario, currentTask }) => 
   );
 };
 
-export default AsignarUsuario
+export default AsignarUsuario;

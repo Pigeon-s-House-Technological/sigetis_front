@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { API_BASE_URL } from '../config';
 
-const endPoint = `${API_BASE_URL}/historiaUsuarios`;
 function AgregarHU() {
   const [newTask, setNewTask] = useState({ title: '', description: '' });
 

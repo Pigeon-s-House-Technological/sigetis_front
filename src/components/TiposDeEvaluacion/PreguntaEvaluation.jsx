@@ -28,18 +28,29 @@ const PreguntaEvaluation = () => {
 // Función para obtener los datos de la API
 const fetchPreguntas = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/preguntasOpcionMultiple`); // Reemplaza con la URL de tu API
-    const preguntasOpMul = response.data.filter(pregunta => pregunta.id_criterio_evaluacion === parseInt(id));
-    setPreguntasOpMul(preguntasOpMul);
-    // URLs de las diferentes APIs
+    const response = await axios.get(`${API_BASE_URL}/preguntasOpcionMultiple`); 
+    if(Array.isArray(response.data)) {
+      const preguntasOpMul = response.data.filter(pregunta => pregunta.id_criterio_evaluacion === parseInt(id));
+      setPreguntasOpMul(preguntasOpMul);
+    }else{
+      setPreguntasOpMul([]);
+    }
     
-    const response1 = await axios.get(`${API_BASE_URL}/preguntasPuntuacion`); // Reemplaza con la URL de tu API
-    const preguntasPunt = response1.data.filter(pregunta => pregunta.id_criterio_evaluacion === parseInt(id));
-    setPreguntasPunt(preguntasPunt);
+    const response1 = await axios.get(`${API_BASE_URL}/preguntasPuntuacion`); 
+    if(Array.isArray(response1.data)) {
+      const preguntasPunt = response1.data.filter(pregunta => pregunta.id_criterio_evaluacion === parseInt(id));
+      setPreguntasPunt(preguntasPunt);
+    }else{
+      setPreguntasPunt([]);
+    }
 
-    const response2 = await axios.get(`${API_BASE_URL}/preguntasComplemento`); // Reemplaza con la URL de tu API
-    const preguntasComp = response2.data.filter(pregunta => pregunta.id_criterio_evaluacion === parseInt(id));
-    setPreguntasComp(preguntasComp);
+    const response2 = await axios.get(`${API_BASE_URL}/preguntasComplemento`); 
+    if(Array.isArray(response2.data)) {
+      const preguntasComp = response2.data.filter(pregunta => pregunta.id_criterio_evaluacion === parseInt(id));
+      setPreguntasComp(preguntasComp);
+    }else{
+      setPreguntasComp([]);
+    }
   } catch (error) {
     console.error('Error al obtener los datos de la API', error);
   }

@@ -18,9 +18,15 @@ function HistoriaHU() {
   const fetchHistorias = async () => {
     try {
       const response = await axios.get(endPoint);
-      setHistoriasUsuario(response.data);
+      if (Array.isArray(response.data)) {
+        setHistoriasUsuario(response.data);
+      } else {
+        console.error("La respuesta de la API no es un array:", response.data);
+        setHistoriasUsuario([]);
+      }
     } catch (error) {
       console.error("Error al obtener las historias:", error.response ? error.response.data : error.message);
+      setHistoriasUsuario([]);
     }
   };
 
