@@ -36,7 +36,7 @@
   }
   
   .evaluation-toggle-btn.active {
-    background-color: #215f88; /* Botón activo */
+    background-color: #007BFF; /* Botón activo */
     color: white;
   }
   

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Modal, Form} from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import '../../../assets/css/Autoevaluacion.css';
 import '../Evaluaciones.css';
@@ -15,7 +15,6 @@ const HomeEvaluacionEnPares = () => {
     const [newEvaluationName, setNewEvaluationName] = useState('');
     const [selectedEvaluation, setSelectedEvaluation] = useState(null);
     const [selectedEvaluationId, setSelectedEvaluationId] = useState(null);
-    const navigate = useNavigate();
 
   // Función para obtener los datos de la API
   const fetchAutoevaluaciones = async () => {

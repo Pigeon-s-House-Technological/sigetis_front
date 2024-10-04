@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Button } from 'react-bootstrap';
-import { FaArrowLeft } from 'react-icons/fa';
+import BotonAtras from '../General/BotonAtras';
 
 import { API_BASE_URL } from '../config';  // Importamos la URL de la API
 import './Asignar.css';  // Importamos los estilos CSS
@@ -19,7 +18,6 @@ const Asignar = () => {
   const [ grupos, setGrupos ] = useState([]);  // Estado para manejar los grupos
   const [ evaluaciones, setEvaluaciones ] = useState([]); // Estado para manejar las evaluaciones
   const [evaluacionSeleccionada, setEvaluacionSeleccionada] = useState('');
-  const navigate = useNavigate();
   
   const obtenerEvaluaciones = async () => {
     try {
@@ -80,17 +78,11 @@ const Asignar = () => {
     console.log(event.target.value);
   };
 
-  const handleBack = () => {
-    navigate(-1); // Navegar a la página anterior
-  };
-
   return (
     <div className="evaluation-grupos">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>{tipoVar} ({destinatarioVar})</h2>
-        <Button onClick={handleBack} style={{ marginLeft: '10px', backgroundColor:'#09DDCC', color:'black', border:'none'}}>
-          <FaArrowLeft />
-        </Button>
+        <BotonAtras />
       </div>
       <h4>Seleccione Evaluación que desea asignar:</h4>
       <select value={evaluacionSeleccionada} onChange={handleEvaluacionChange} className="selector-evaluaciones">
