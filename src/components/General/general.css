@@ -1,0 +1,43 @@
+button.boton-atras{
+    background-color: #09DDCC;
+    margin-left: 10px;
+    color: black;
+    border: none;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    cursor: pointer;
+}
+
+button.boton-atras:hover {
+    background-color: #007B7F;
+    color: white;
+  }
+/* Estilo para mensaje de advertencia */
+  .mensaje-advertencia {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .add-member-btn {
+    background-color: #09DDCC;
+    color: black;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centrar contenido horizontalmente */
+    width: 40px;
+    height: 40px;
+  }
+  
+  .add-member-btn:hover {
+    background-color: #007B7F;
+    color: white;
+  }

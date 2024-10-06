@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // Importamos el hook useNavigate
+import { useNavigate, Link } from 'react-router-dom';  // Importamos el hook useNavigate
 
 import './EvaluationType.css';  // Importamos los estilos
 
@@ -10,13 +10,20 @@ const EvaluationType = () => {
   // Definimos las evaluaciones que estarán disponibles para cada tipo
   const evaluations = {
     Individual: [
-      { title: 'Evaluacion por pares', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' },
-      { title: 'Autoevaluacion', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' }
+      { title: 'Autoevaluacion', description: 'Evaluación que permite a los equipos de trabajo y a sus integrantes realizar una retroalimentación sobre su trabajo.' 
+        , destinatario: 'individual', tipo: 1
+      },
+      { title: 'Evaluacion por pares', description: 'Permite a los integrantes de un equipo evaluar el desempeño de sus compañeros de equipo.' 
+        , destinatario: 'individual', tipo: 3
+      },
     ],
     Grupal: [
-      { title: 'Evaluacion por pares', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' },
-      { title: 'Autoevaluacion', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' },
-      { title: 'Evaluacion Cruzada', description: 'Description duis aute irure dolor in reprehenderit in voluptate velit.' }
+      { title: 'Autoevaluacion', description: 'Evaluación que permite a los equipos de trabajo y a sus integrantes realizar una retroalimentación sobre su trabajo.' 
+        , destinatario: 'grupal', tipo: 1
+      },
+      { title: 'Evaluacion Cruzada', description: 'Evaluación que permite a los equipos de trabajo evaluar el trabajo de otros equipos.' 
+        , destinatario: 'grupal', tipo: 2
+      }
     ]
   };
 
@@ -30,9 +37,7 @@ const EvaluationType = () => {
     <div className="evaluation-type">
       <div className="evaluation-header">
         {/* Botón para agregar evaluación */}
-        <button className="add-evaluation-btn">
-          <span className="add-evaluation-icon">+</span> AGREGAR EVALUACIÓN
-        </button>
+        <h2 >Asignar Evaluación</h2>
       </div>
 
       {/* Botones para elegir el tipo de evaluación */}
@@ -51,18 +56,19 @@ const EvaluationType = () => {
         </button>
       </div>
 
-      <h3>Lista de evaluaciones</h3>
-
+      <h3 style={{marginBottom:'2%'}}>Lista de evaluaciones</h3>
       {/* Listado de evaluaciones dinámico según el tipo seleccionado */}
       <div className="evaluation-list">
-        {evaluations[activeType].map((evaluation, index) => (
-          <div key={index} className="evaluation-item" onClick={() => handleEvaluationClick(evaluation.title)}>
-            <div>
-              <h4>{evaluation.title}</h4>
-              <p>{evaluation.description}</p>
+      {evaluations[activeType].map((evaluation, index) => (
+          <Link to={`/asignarEvaluacion/${evaluation.destinatario}/${evaluation.tipo}`} key={index} className="evaluation-item-link">
+            <div className="evaluation-item" onClick={() => handleEvaluationClick(evaluation.title)}>
+              <div>
+                <h5>{evaluation.title}</h5>
+                <p>{evaluation.description}</p>
+              </div>
+              <div className="arrow">▶</div>
             </div>
-            <div className="arrow">▶</div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
