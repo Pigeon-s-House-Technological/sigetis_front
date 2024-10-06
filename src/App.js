@@ -11,6 +11,7 @@ import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
 import { HistoriaHU, DetalleHistoria } from './components/Gestion';
+import { PlanillaEvaluacion } from './components/PlanillaEvaluacion';
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {

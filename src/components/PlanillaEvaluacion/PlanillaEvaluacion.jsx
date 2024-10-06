@@ -6,8 +6,9 @@ import { API_BASE_URL } from '../config';
 
 import RatingCircles from '../RatingCircles';
 
-const PlanillaEvaluacion = ({ show, handleClose, fetchPreguntas }) => {
-
+const PlanillaEvaluacion = () => {
+    const { id } = useParams();
+    return(id);
 }
 
 export default PlanillaEvaluacion;
