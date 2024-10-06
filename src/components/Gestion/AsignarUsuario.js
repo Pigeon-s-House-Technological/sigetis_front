@@ -5,7 +5,7 @@ import { API_BASE_URL } from '../config';
 const endPoint = `${API_BASE_URL}/usuarios`;
 
 const AsignarUsuario = ({ show, onHide, handleAsignarUsuario, currentTask }) => {
-  const [selectedUser, setSelectedUser] = useState(currentTask?.assigned || 'No asignado');
+  const [selectedUser, setSelectedUser] = useState(currentTask?.assigned || '');
   const [usuarios, setUsuarios] = useState([]);
 
   useEffect(() => {
@@ -22,11 +22,12 @@ const AsignarUsuario = ({ show, onHide, handleAsignarUsuario, currentTask }) => 
   }, []);
 
   const handleChange = (e) => {
-    setSelectedUser(e.target.value);
+    const usuario = JSON.parse(e.target.value);
+    setSelectedUser(usuario); // Almacena el objeto completo del usuario
   };
 
   const handleAssign = () => {
-    handleAsignarUsuario(selectedUser);
+    handleAsignarUsuario(selectedUser); // Envía el objeto del usuario completo
     onHide(); 
   };
 
@@ -36,10 +37,10 @@ const AsignarUsuario = ({ show, onHide, handleAsignarUsuario, currentTask }) => 
     <div className="modal" style={{ display: 'block' }}>
       <div className="modal-content">
         <h2>Asignar usuario</h2>
-        <select value={selectedUser} onChange={handleChange}>
-          <option value="No asignado">No asignado</option>
+        <select value={JSON.stringify(selectedUser)} onChange={handleChange}>
+          <option value="">No asignado</option>
           {usuarios.map((usuario) => (
-            <option key={usuario.id} value={usuario.nombre_user}>
+            <option key={usuario.id} value={JSON.stringify(usuario)}>
               {usuario.nombre_user} {usuario.apellido_user}
             </option>
           ))}

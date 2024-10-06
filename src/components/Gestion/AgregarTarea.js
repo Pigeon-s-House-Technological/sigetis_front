@@ -1,14 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { API_BASE_URL } from '../config';
+import axios from 'axios';
+
+const endPoint = `${API_BASE_URL}/actividades`;
 
 function AgregarTarea({ show, onHide, addTask, currentTask }) {
-  const [nombreActividad, setNombreActividad] = useState(currentTask ? currentTask.nombre_actividad : '');
-  const [estadoActividad, setEstadoActividad] = useState(currentTask ? currentTask.estado_actividad : 'pendiente');
-  const [fechaInicio, setFechaInicio] = useState(currentTask ? currentTask.fecha_inicio : '');
-  const [fechaFin, setFechaFin] = useState(currentTask ? currentTask.fecha_fin : '');
+  const [nombreActividad, setNombreActividad] = useState('');
+  const [estadoActividad, setEstadoActividad] = useState('pendiente');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  // Efecto para cargar los datos actuales de la tarea al editar
+  useEffect(() => {
+    if (currentTask) {
+      setNombreActividad(currentTask.nombre_actividad);
+      setEstadoActividad(currentTask.estado_actividad);
+      setFechaInicio(currentTask.fecha_inicio);
+      setFechaFin(currentTask.fecha_fin);
+    } else {
+      setNombreActividad('');
+      setEstadoActividad('pendiente');
+      setFechaInicio('');
+      setFechaFin('');
+    }
+  }, [currentTask]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validación de fechas
+    const fechaInicioDate = new Date(fechaInicio);
+    const fechaFinDate = new Date(fechaFin);
+    if (fechaInicioDate > fechaFinDate) {
+      setErrorMessage('La fecha de inicio no puede ser posterior a la fecha de fin.');
+      return;
+    }
+
     const task = {
       id_hu: 1, // Cambia esto al ID correcto
       nombre_actividad: nombreActividad,
@@ -17,8 +46,21 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
       fecha_fin: fechaFin,
     };
 
-    addTask(task);
-    onHide();
+    try {
+      let response;
+      if (currentTask) {
+        // Actualiza la tarea existente
+        response = await axios.put(`${endPoint}/${currentTask.id}`, task);
+      } else {
+        // Crea una nueva tarea
+        response = await axios.post(endPoint, task);
+      }
+      addTask(response.data);
+      onHide();
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Error al guardar la tarea. Intenta nuevamente.');
+    }
   };
 
   return (
@@ -27,6 +69,7 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
         <Modal.Title>{currentTask ? 'Editar Tarea' : 'Agregar Tarea'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Nombre de la Actividad</label>

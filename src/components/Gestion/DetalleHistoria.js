@@ -56,23 +56,23 @@ function DetalleHistoria() {
       throw new Error('Error en la operación de tarea');
     }
   };
-
+  
   const addTask = async (task) => {
     const method = currentTask ? 'PUT' : 'POST';
     const taskId = currentTask ? currentTask.id : null;
-
+  
     try {
       const updatedTask = await handleTaskResponse(method, task, taskId);
       setTasks((prevTasks) => {
         if (currentTask) {
-          return prevTasks.map(t => (t.id === updatedTask.id ? updatedTask : t));
+          return prevTasks.map((t) => (t.id === updatedTask.id ? updatedTask : t));
         }
         return [...prevTasks, updatedTask];
       });
     } catch (error) {
       console.error(error.message);
     }
-
+  
     setCurrentTask(null);
     setShowTaskModal(false);
   };
@@ -95,12 +95,33 @@ function DetalleHistoria() {
     setShowAsignarModal(false);
   };
 
-  const handleAsignarUsuario = (usuario) => {
+  const handleAsignarUsuario = async (usuario) => {
     if (currentTask) {
-      const updatedTasks = tasks.map((task) =>
-        task.id === currentTask.id ? { ...task, assigned: usuario } : task
-      );
-      setTasks(updatedTasks);
+        // Actualiza el estado local para mostrar el nombre del usuario asignado
+        const updatedTasks = tasks.map((task) =>
+            task.id === currentTask.id ? { ...task, assigned: `${usuario.nombre_user} ${usuario.apellido_user}` } : task
+        );
+        setTasks(updatedTasks);
+
+        // Actualiza la actividad en la base de datos usando el ID del usuario a través del método PATCH
+        try {
+            await axios.patch(`${API_BASE_URL}/actividadesP/${currentTask.id}`, {
+                id_hu: currentTask.id_hu, // Suponiendo que `id_hu` es un campo requerido
+                nombre_actividad: currentTask.nombre_actividad, // Suponiendo que `nombre_actividad` es requerido
+                estado_actividad: currentTask.estado_actividad, // Suponiendo que `estado_actividad` es requerido
+                fecha_inicio: currentTask.fecha_inicio, // Suponiendo que `fecha_inicio` es requerido
+                fecha_fin: currentTask.fecha_fin, // Suponiendo que `fecha_fin` es requerido
+                encargado: currentTask.encargado, // Suponiendo que `encargado` es requerido
+                id_usuario: usuario.id, // Aquí se guarda el ID del usuario
+            });
+        } catch (error) {
+            console.error('Error al asignar el usuario:', error.response ? error.response.data : error.message);
+            // Opcional: revertir el cambio en el estado local si la API falla
+            const revertedTasks = tasks.map((task) =>
+                task.id === currentTask.id ? { ...task, assigned: null } : task
+            );
+            setTasks(revertedTasks);
+        }
     }
     setShowAsignarModal(false);
   };
