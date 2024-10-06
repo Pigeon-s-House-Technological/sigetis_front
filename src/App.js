@@ -11,6 +11,7 @@ import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
 import { HistoriaHU, DetalleHistoria } from './components/Gestion';
+import { LoginForm, LoginModal } from './components/Login';
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {
@@ -21,6 +22,8 @@ function App() {
         <div className='content'>        
         <Routes>
           <Route path="/" element={<Homepage />} />
+          <Route path="/login" element={<LoginModal />} />
+          <Route path="/loginForm" element={<LoginForm />} />
 
           {/* Ruta para "/evaluacion" que muestra EvaluationCard */}
           <Route path="/evaluacion" element={<EvaluationCard />} />
