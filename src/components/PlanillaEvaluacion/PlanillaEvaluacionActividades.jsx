@@ -6,7 +6,12 @@ import { API_BASE_URL } from "../config";
 
 const PlanillaEvaluacionActividades = () => {
 
-    return(1);
+    return(
+        <div>
+            <h2>Planilla de Evaluación-Actividades</h2>
+            <h3>Grupo: nombreGrupo</h3>
+        </div>
+    );
 }
 
 export default PlanillaEvaluacionActividades;
