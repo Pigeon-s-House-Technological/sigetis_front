@@ -1,8 +1,13 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import './Principal.css';
 //estilos en app.css
 const Navbar = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/login');
+  };
   return (
     <nav className="navbar">
       <ul>
@@ -38,7 +43,7 @@ const Navbar = () => {
           </NavLink>
         </li>*/}
         <li>
-          <button className="login-button" disabled>Iniciar sesión</button>
+          <button onClick={handleClick} className="login-button" >Iniciar sesión</button>
           <button className="register-button" disabled>Registrarse</button>
         </li>
       </ul>
