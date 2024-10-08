@@ -11,6 +11,7 @@ import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
 import { HistoriaHU, DetalleHistoria } from './components/Gestion';
+import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { LoginForm, LoginModal } from './components/Login';
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
@@ -42,6 +43,10 @@ function App() {
           <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
           <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
           <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
+
+          <Route path="/planilla" element={<PlanillaEvaluacion />} />
+          <Route path="/planilla/actividades/:id" element={<PlanillaEvaluacionActividades />} />
+          <Route path="/planilla/evaluaciones/:id" element={<PlanillaEvaluacionEvaluaciones />} />
         </Routes>
         </div>
         <Footer />
