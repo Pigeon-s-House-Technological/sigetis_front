@@ -7,12 +7,11 @@ import Homepage from './components/Principal/Homepage.js';
 import './App.css';
 //importaciones de componentes de sus respectivos indices (para optimizar espacio)
 import { EvaluationCard, EvaluationForm } from './components/RealizarEvaluacion';
-import { ParesGrupal, AutoevaluacionGrupal, CruzGrupal, ParesIndividual, 
-          AutoevaluacionIndividual, EvaluacionesPares, EvaluationType } from './components/AsignarEvaluacion';
+import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
 import { HistoriaHU, DetalleHistoria } from './components/Gestion';
-import { Registro } from './components/RegistroTutor';
+import { LoginForm, LoginModal } from './components/Login';
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {
@@ -23,24 +22,15 @@ function App() {
         <div className='content'>        
         <Routes>
           <Route path="/" element={<Homepage />} />
+          <Route path="/login" element={<LoginModal />} />
+          <Route path="/loginForm" element={<LoginForm />} />
 
           {/* Ruta para "/evaluacion" que muestra EvaluationCard */}
           <Route path="/evaluacion" element={<EvaluationCard />} />
           {/* Ruta anidada "/evaluacion/formulario" para el formulario */}
           <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
-           {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/tipoevaluacion" element={<EvaluationType />} />
-           {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/pares-grupal" element={<ParesGrupal />} />
-          {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/autoevaluacion-grupal" element={<AutoevaluacionGrupal />} />
-          {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/cruzada-grupal" element={<CruzGrupal />} />
-          {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/pares-individual" element={<ParesIndividual />} />
-          {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/autoevaluacion-individual" element={<AutoevaluacionIndividual />} />
-          <Route path="/evaluacionespares" element={<EvaluacionesPares />} />
+          <Route path="/asignarEvaluacion" element={<EvaluationType />} />
+          <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
           
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
