@@ -12,6 +12,7 @@ import { ParesGrupal, AutoevaluacionGrupal, CruzGrupal, ParesIndividual,
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
 import { HistoriaHU, DetalleHistoria } from './components/Gestion';
+import { Registro } from './components/RegistroTutor';
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
+          <Route path="/registroDocente" element={<Registro />} />
 
           <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
