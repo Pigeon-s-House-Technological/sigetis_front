@@ -13,6 +13,7 @@ import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada,
 import { HistoriaHU, DetalleHistoria } from './components/Gestion';
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { LoginForm, LoginModal } from './components/Login';
+import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {
@@ -32,10 +33,13 @@ function App() {
           <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
           <Route path="/asignarEvaluacion" element={<EvaluationType />} />
           <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
+
+          {/*Ruta de prueba para registro de grupo http://localhost:3000/registrarGrupo*/}
+          <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
           
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
-          <Route path="/registroDocente" element={<Registro />} />
+          {/*<Route path="/registroDocente" element={<Registro />} />*/}
 
           <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
