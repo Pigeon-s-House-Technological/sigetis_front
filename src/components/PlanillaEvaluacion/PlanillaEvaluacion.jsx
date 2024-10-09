@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { API_BASE_URL } from "../config";
 
-import "./PlanillaEvaluacion.css";
+import "./estilos/PlanillaEvaluacion.css";
 
 const PlanillaEvaluacion = () => {
   const [activeType, setActiveType] = useState("evaluaciones");
@@ -29,12 +29,6 @@ const PlanillaEvaluacion = () => {
     obtenerGrupos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleEvaluationClick = (evaluation) => {
-    if (evaluation.route) {
-      navigate(evaluation.route);  // Navegamos a la ruta si está definida
-    }
-  };
 
   return (
     <div className="planilla-type">
