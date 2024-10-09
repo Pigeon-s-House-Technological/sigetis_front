@@ -11,6 +11,7 @@ import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
 import { HistoriaHU, DetalleHistoria } from './components/Gestion';
+import { RegistroDocente } from './components/RegistroTutor';
 import { LoginForm, LoginModal } from './components/Login';
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
@@ -34,7 +35,7 @@ function App() {
           
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
-          <Route path="/registroDocente" element={<Registro />} />
+          <Route path="/registroDocente" element={<RegistroDocente />} />
 
           <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />

@@ -1,1 +1,1 @@
-export {default as Registro} from './Registro'
+export {default as RegistroDocente} from './RegistroDocente'
