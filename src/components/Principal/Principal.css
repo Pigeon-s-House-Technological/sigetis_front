@@ -1,0 +1,102 @@
+/* Navbar */
+.register-button {
+    background-color: #185075;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 5px;
+}
+.login-button {
+    background-color: #E3E3E3;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 5px;
+    color: #185075;
+}
+.navbar {
+    background-color: #215F88;
+    padding: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+.navbar ul {
+    list-style: none;
+    margin: 1%;
+    padding: 0;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.navbar ul li {
+    color: white;
+}
+
+.navbar li {
+    color: white;
+    cursor: pointer;
+    margin: 0 10px; /* Espaciado entre los elementos de la lista */
+}
+
+.navbar li:hover a,
+.navbar a.active-link {
+    background-color: #185075;
+    border-radius: 4px;
+    padding: 0.2rem 1rem; /* Asegúrate de que el padding sea consistente */
+    color: white; /* Asegúrate de que el color del texto sea consistente */
+    text-decoration: none; /* Asegúrate de que la decoración del texto sea consistente */
+}
+
+.navbar a.active-link {
+    background-color: #09DDCC;
+}
+.navbar a{
+    color: white;
+    text-decoration: none;
+    padding: 0.2rem 1rem;
+}
+
+/* Footer */
+.footer {
+    background-color: #215F88;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    margin-top: auto;
+}
+
+.footer a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+/* Homepage.css */
+
+.homepage-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 64vh; /* Ocupa toda la altura de la ventana */
+    background-color: #f0f0f0; /* Color de fondo opcional */
+}
+
+.seal {
+    text-align: center;
+    background-color: #215F88; /* Color de fondo del sello */
+    color: white; /* Color del texto */
+    padding: 20px;
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para el sello */
+}
+
+.seal h1 {
+    margin: 0;
+    font-size: 2.5rem; /* Tamaño de fuente para SIGETIS */
+}
+
+.seal p {
+    margin: 0;
+    font-size: 1.2rem; /* Tamaño de fuente para la descripción */
+}

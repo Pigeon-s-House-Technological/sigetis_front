@@ -1,5 +1,6 @@
 import React from 'react';
-
+//estilos en App.css
+import './Principal.css';
 const Footer = () => {
   return (
     <footer className="footer">

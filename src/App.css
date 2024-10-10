@@ -1,73 +1,16 @@
-/* Navbar */
-.navbar {
-  background-color: #215F88;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* App.css */
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
-.navbar ul {
-  list-style: none;
-  display: flex;
-  gap: 15px;
-}
+h1 {
+  font-size: 45px;
+  color: #222;
+}h2 {  font-size: 36px;}h3 {  font-size: 28px;}h4 {  font-size: 22px;}h5 {  font-size: 18px;}
+h6 {  font-size: 16px;}p {  font-size: 16px;}a{font-size: 16px;}
 
-.navbar ul li {
-  color: white;
-}
 
- .register-button {
-  background-color: #185075;
-  border: none;
-  padding: 5px 10px;
-  margin-left: 5px;
-}
-.login-button {
-  background-color: #E3E3E3;
-  border: none;
-  padding: 5px 10px;
-  margin-left: 5px;
-}
-/* EvaluationCard */
-.evaluation-card {
-  background-color: #f4f4f4;
-  border-radius: 5px;
-  padding: 20px;
-  margin: 20px;
-  text-align: left;
-}
-
-.evaluation-card h2 {
-  color: #007BFF;
-}
-
-.evaluation-status {
-  color: gray;
-  margin-bottom: 10px;
-}
-
-.start-button {
-  background-color: #007BFF;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Footer */
-.footer {
-  background-color: #215F88;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-.footer a {
-  color: white;
-  margin: 0 10px;
-  text-decoration: none;
 
 @keyframes App-logo-spin {
   from {

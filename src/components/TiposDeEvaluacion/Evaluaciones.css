@@ -1,0 +1,134 @@
+.titulo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.nombre {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.evaluacion-card {
+    width: 23rem;
+    height: 23rem;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.evaluacion-card:hover {
+    transform: scale(1.05);
+}
+
+.evaluacion-card img {
+    object-fit: cover;
+    height: 180px;
+}
+
+.evaluacion-card .card-title {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.evaluacion-card .card-text{
+    margin-top: 10px;
+    text-align: justify;
+}
+
+.tipos-de-evaluacion {
+    margin-top: 30px;
+    padding: 20px;
+}
+
+.evaluaciones-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+        /* 3 columnas iguales */
+    gap: 20px; /* Espacio entre las tarjetas */
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+
+    padding: 20px
+}
+
+/* Para pantallas pequeñas, el diseño cambia a una columna */
+@media (max-width: 768px) {
+    .evaluaciones-grid {
+        grid-template-columns: 1fr; /* Se adapta a una sola columna */
+        justify-content: center; /* Seguir centrado en pantallas pequeñas */
+        padding: 10px;
+    }
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Sobrescribir las clases de Bootstrap */
+.btn-custom-primary {
+    background-color: #4CAF50; /* Color verde personalizado */
+    color: white;
+    border: none;
+  }
+  
+  .btn-custom-secondary {
+    background-color: #f44336; /* Color rojo personalizado */
+    color: white;
+    border: none;
+  }
+  
+  .btn-custom-warning {
+    background-color: #ff9800; /* Color naranja personalizado */
+    color: white;
+    border: none;
+  }
+  
+  .btn-custom-danger {
+    background-color: #e91e63; /* Color rosa personalizado */
+    color: white;
+    border: none;
+  }
+  
+  /* Asegúrate de que los botones cambien de color al pasar el mouse */
+  .btn-custom-primary:hover,
+  .btn-custom-secondary:hover,
+  .btn-custom-warning:hover,
+  .btn-custom-danger:hover {
+    opacity: 0.8;
+  }
+
+.td_nombres{
+    font-size: 18px;
+    background-color: '#f0f0f0'; display: 'flex'; align-items: 'center';
+}
+

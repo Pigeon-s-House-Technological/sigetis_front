@@ -1,0 +1,97 @@
+.planilla-type {
+  padding: 20px;
+  background-color: #f5f9ff; /* Fondo claro */
+}
+
+.planilla-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  cursor: default;
+  background-color: #f5f9ff;
+}
+
+.planilla-header h2 {
+  color: #222; /* Color del texto del encabezado */
+  font-weight: bold;
+}
+
+.planilla-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.planilla-toggle-btn {
+  padding: 10px 30px;
+  border-radius: 8px;
+  border: none;
+  background-color: #e0e0e0; /* Color por defecto del botón */
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.planilla-toggle-btn.active {
+    background-color: #007BFF; /* Botón activo */
+    color: white;
+  }
+  
+
+.planilla-list {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.planilla-item-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.planilla-item {
+  background-color: #f1f1f1;
+  padding: 2%;
+  border-radius: 8px;
+  width: 350px;
+  height: 180px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  flex: 1 1 calc(33.333% - 16px); /* Ocupa un tercio del contenedor menos el espacio del gap */
+  box-sizing: border-box; /* Incluye el padding y el border en el tamaño total */
+  margin-bottom: 16px; /* Espacio inferior entre las filas */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.planilla-item h4 {
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.planilla-item p {
+  color: #666;
+  font-size: 12px;
+}
+
+.planilla-item:hover {
+  background-color: #e0e0e0; /* Hover en las tarjetas */
+}
+
+.planilla-item .arrow {
+  font-size: 16px;
+  color: #333;
+  transition: transform 0.3s ease;
+}
+
+.planilla-item:hover .arrow {
+  transform: translateX(5px); /* Animación al pasar el mouse */
+}
