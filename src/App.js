@@ -14,7 +14,6 @@ import { HistoriaHU, DetalleHistoria } from './components/Gestion';
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { RegistroDocente } from './components/RegistroTutor';
 import { LoginForm, LoginModal } from './components/Login';
-
 import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
 
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
