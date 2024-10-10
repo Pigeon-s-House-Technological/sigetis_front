@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import { API_BASE_URL } from '../config'; // Asegúrate de que la ruta sea correcta
 import RatingCircles from '../RatingCircles';

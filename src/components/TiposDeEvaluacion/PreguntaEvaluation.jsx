@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Table, Modal} from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button, Table } from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
-import { useNavigate, useParams } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
+import {  useParams } from 'react-router-dom';
 import axios from 'axios';
 
 import BotonAtras from '../General/BotonAtras';
@@ -29,7 +28,7 @@ const PreguntaEvaluation = () => {
   const [nombreCriterio, setNombreCriterio] = useState('');
 
 // Función para obtener los datos de la API
-const fetchPreguntas = async () => {
+const fetchPreguntas = useCallback(async () => {
   try {
     const obtenerCriterio = await axios.get(`${API_BASE_URL}/criterios/${id}`);
     setNombreCriterio(obtenerCriterio.data.criterio_evaluacion.titulo_criterio);
@@ -59,12 +58,12 @@ const fetchPreguntas = async () => {
   } catch (error) {
     console.error('Error al obtener los datos de la API', error);
   }
-};
+}, [id]);
 
 // useEffect para obtener los datos de la API al cargar el componente
 useEffect(() => {
   fetchPreguntas();
-}, []);
+}, [fetchPreguntas]);
 
 const handleClick = () => {
   setShowModal(true);
