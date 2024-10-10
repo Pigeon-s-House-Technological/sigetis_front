@@ -1,83 +1,64 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import EvaluationCard from './components/EvaluationCard'; // Componente para la página inicial
-import EvaluationForm from './components/EvaluationForm'; // Formulario de la evaluación
-import ParesGrupal from './components/ParesGrupal';
-import AutoevaluacionGrupal from './components/AutoevaluacionGrupal';
-import CruzGrupal from './components/CruzGrupal';
-import ParesIndividual from './components/ParesIndividual';
-import AutoevaluacionIndividual from './components/AutoevaluacionIndividual';
-import EvaluacionesGrupalPares from './components/EvaluacionesGrupalPares';
-import EvaluationType from './components/EvaluationType';
-import EvaluacionIndividualPares from './components/EvaluacionIndividualPares';
-import EvaluacionIndividualAuto from './components/EvaluacionIndividualAuto';
-import EvaluacionGrupalAuto from './components/EvaluacionGrupalAuto';
-
-import EvaluacionGrupalCruzada from './components/EvaluacionGrupalCruzada';
-import RegistroEstudiante from './components/RegistroEstudiante';
-
-
-
-
-
-import Footer from './components/Footer';
+import Navbar from './components/Principal/Navbar.js';
+import Footer from './components/Principal/Footer.js';
+import Homepage from './components/Principal/Homepage.js';
 import './App.css';
+//importaciones de componentes de sus respectivos indices (para optimizar espacio)
+import { EvaluationCard, EvaluationForm } from './components/RealizarEvaluacion';
+import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
+import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
+          HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
+import { HistoriaHU, DetalleHistoria } from './components/Gestion';
+import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
+import { RegistroDocente } from './components/RegistroTutor';
+import { LoginForm, LoginModal } from './components/Login';
+import RegistrarGrupo from './components/Grupo'
 
+import { Registro } from './components/RegistroTutor';
+
+//Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div className="app-container">
         <Navbar />
+        <div className='content'>        
         <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/login" element={<LoginModal />} />
+          <Route path="/loginForm" element={<LoginForm />} />
+
           {/* Ruta para "/evaluacion" que muestra EvaluationCard */}
           <Route path="/evaluacion" element={<EvaluationCard />} />
-
           {/* Ruta anidada "/evaluacion/formulario" para el formulario */}
           <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
+          <Route path="/asignarEvaluacion" element={<EvaluationType />} />
+          <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
 
-           {/* Ruta para Asignar tipo de evaluación */}
-        <Route path="/tipoevaluacion" element={<EvaluationType />} />
+          {/*Ruta de prueba para registro de grupo http://localhost:3000/registrarGrupo*/}
+          <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
+          
+          <Route path="/historiaHU" element={<HistoriaHU />} />
+          <Route path="/detalle/:id" element={<DetalleHistoria />} />
 
-           {/* Ruta para Asignar tipo de evaluación */}
-        <Route path="/pares-grupal" element={<ParesGrupal />} />
-         
-         {/* Ruta para Asignar tipo de evaluación */}
-        <Route path="/autoevaluacion-grupal" element={<AutoevaluacionGrupal />} />
+          <Route path="/registroTutor" element={<Registro />} />
+          <Route path="/registroDocente" element={<RegistroDocente />} />
 
-          {/* Ruta para Asignar tipo de evaluación */}
-        <Route path="/cruzada-grupal" element={<CruzGrupal />} />
+          <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
+          <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
+          <Route path="/gestionEvaluacion/:id" element={<CriteriosEvaluacion />} />
+          <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
+          <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
+          <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
 
-
-          {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/pares-individual" element={<ParesIndividual />} />
-
-             {/* Ruta para Asignar tipo de evaluación */}
-        <Route path="/autoevaluacion-individual" element={<AutoevaluacionIndividual />} />
-        
-        <Route path="/" element={<EvaluationType />} />
-        <Route path="/tipoevaluacion/grupal/pares" element={<EvaluacionesGrupalPares />} />  {/* Ruta para Evaluación por pares */}
-
-        <Route path="/" element={<EvaluationType />} />
-        <Route path="/tipoevaluacion/individual/pares" element={<EvaluacionIndividualPares />} />  {/* Ruta para Evaluación por pares */}
-
-
-        <Route path="/" element={<EvaluationType />} />
-        <Route path="/tipoevaluacion/individual/autoevaluacion" element={<EvaluacionIndividualAuto />} />  {/* Ruta para Evaluación por pares */}
-
-        <Route path="/" element={<EvaluationType />} />
-        <Route path="/tipoevaluacion/grupal/autoevaluacion" element={<EvaluacionGrupalAuto />} />  {/* Ruta para Evaluación por pares */}
-
-        <Route path="/" element={<EvaluationType />} />
-        <Route path="/tipoevaluacion/grupal/cruzada" element={<EvaluacionGrupalCruzada />} />  {/* Ruta para Evaluación por pares */}
-
-
-        <Route path="/" element={<EvaluationType />} />
-        <Route path="/registroestudiante" element={<RegistroEstudiante />} />  {/* Ruta para Evaluación por pares */}
-
-
+          <Route path="/planilla" element={<PlanillaEvaluacion />} />
+          <Route path="/planilla/actividades/:idGrupo" element={<PlanillaEvaluacionActividades />} />
+          <Route path="/planilla/evaluaciones/:idGrupo" element={<PlanillaEvaluacionEvaluaciones />} />
         </Routes>
+        </div>
         <Footer />
       </div>
     </Router>

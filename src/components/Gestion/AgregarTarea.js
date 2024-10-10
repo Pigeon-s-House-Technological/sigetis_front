@@ -1,166 +1,125 @@
 import React, { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import AsignarUsuario from './AsignarUsuario';
+import { Modal, Button } from 'react-bootstrap';
+import { API_BASE_URL } from '../config';
+import axios from 'axios';
 
-const AgregarTarea = ({ show, onHide, addTask, currentTask }) => {
-  const [task, setTask] = useState({
-    name: '',
-    assigned: 'No asignado',
-    status: 'Nuevo',
-    startDate: '',
-    endDate: '',
-  });
+const endPoint = `${API_BASE_URL}/actividades`;
 
-  const [showAsignarModal, setShowAsignarModal] = useState(false);
-  const [dateError, setDateError] = useState('');
+function AgregarTarea({ show, onHide, addTask, currentTask }) {
+  const [nombreActividad, setNombreActividad] = useState('');
+  const [estadoActividad, setEstadoActividad] = useState('pendiente');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
+  // Efecto para cargar los datos actuales de la tarea al editar
   useEffect(() => {
     if (currentTask) {
-      setTask(currentTask);
+      setNombreActividad(currentTask.nombre_actividad);
+      setEstadoActividad(currentTask.estado_actividad);
+      setFechaInicio(currentTask.fecha_inicio);
+      setFechaFin(currentTask.fecha_fin);
     } else {
-      setTask({
-        name: '',
-        assigned: 'No asignado',
-        status: 'Nuevo',
-        startDate: '',
-        endDate: '',
-      });
+      setNombreActividad('');
+      setEstadoActividad('pendiente');
+      setFechaInicio('');
+      setFechaFin('');
     }
   }, [currentTask]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setTask({ ...task, [name]: value });
-
-    // Validar fechas si se cambian
-    if (name === 'startDate' || name === 'endDate') {
-      validateDates(task.startDate, name === 'startDate' ? value : task.endDate);
-    }
-  };
-
-  const validateDates = (startDate, endDate) => {
-    if (startDate && endDate) {
-      if (startDate === endDate) {
-        setDateError('La fecha de inicio y la fecha de fin no pueden ser iguales.');
-      } else {
-        setDateError('');
-      }
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validar fechas antes de agregar la tarea
-    if (dateError) {
-      alert(dateError);
+    // Validación de fechas
+    const fechaInicioDate = new Date(fechaInicio);
+    const fechaFinDate = new Date(fechaFin);
+    if (fechaInicioDate > fechaFinDate) {
+      setErrorMessage('La fecha de inicio no puede ser posterior a la fecha de fin.');
       return;
     }
 
-    console.log("Tarea a agregar:", task);
-    addTask(task);
-    setTask({
-      name: '',
-      assigned: 'No asignado',
-      status: 'Nuevo',
-      startDate: '',
-      endDate: '',
-    });
-    onHide();
-  };
+    const task = {
+      id_hu: 1, // Cambia esto al ID correcto
+      nombre_actividad: nombreActividad,
+      estado_actividad: estadoActividad,
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
+    };
 
-  const handleAsignarUsuario = (usuario) => {
-    console.log("Usuario asignado:", usuario);
-    setTask({ ...task, assigned: usuario });
-    setShowAsignarModal(false); 
+    try {
+      let response;
+      if (currentTask) {
+        // Actualiza la tarea existente
+        response = await axios.put(`${endPoint}/${currentTask.id}`, task);
+      } else {
+        // Crea una nueva tarea
+        response = await axios.post(endPoint, task);
+      }
+      addTask(response.data);
+      onHide();
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Error al guardar la tarea. Intenta nuevamente.');
+    }
   };
-
-  if (!show) return null; 
 
   return (
-    <div className="modal" style={{ display: 'block' }}>
-      <div className="modal-content">
-        <h2>{currentTask ? 'Actualizar Tarea' : 'Agregar Tarea'}</h2>
+    <Modal show={show} onHide={onHide}>
+      <Modal.Header closeButton>
+        <Modal.Title>{currentTask ? 'Editar Tarea' : 'Agregar Tarea'}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="name" className="form-label">Nombre</label>
+            <label className="form-label">Nombre de la Actividad</label>
             <input
               type="text"
               className="form-control"
-              id="name"
-              name="name"
-              value={task.name}
-              onChange={handleChange}
+              value={nombreActividad}
+              onChange={(e) => setNombreActividad(e.target.value)}
               required
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="assigned" className="form-label">Asignado</label>
-            <button
-              type="button"
-              className="form-control btn btn-secondary"
-              onClick={() => setShowAsignarModal(true)}
-            >
-              {task.assigned}
-            </button>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="status" className="form-label">Estado</label>
+            <label className="form-label">Estado de la Actividad</label>
             <select
-              className="form-control"
-              id="status"
-              name="status"
-              value={task.status}
-              onChange={handleChange}
+              className="form-select"
+              value={estadoActividad}
+              onChange={(e) => setEstadoActividad(e.target.value)}
             >
-              <option value="Nuevo">Nuevo</option>
-              <option value="Pendiente">Pendiente</option>
-              <option value="En proceso">En proceso</option>
-              <option value="Completado">Completado</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="en_progreso">En Progreso</option>
+              <option value="completada">Completada</option>
             </select>
           </div>
           <div className="mb-3">
-            <label htmlFor="startDate" className="form-label">Fecha inicio</label>
+            <label className="form-label">Fecha de Inicio</label>
             <input
               type="date"
               className="form-control"
-              id="startDate"
-              name="startDate"
-              value={task.startDate}
-              onChange={handleChange}
+              value={fechaInicio}
+              onChange={(e) => setFechaInicio(e.target.value)}
+              required
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="endDate" className="form-label">Fecha fin</label>
+            <label className="form-label">Fecha de Fin</label>
             <input
               type="date"
               className="form-control"
-              id="endDate"
-              name="endDate"
-              value={task.endDate}
-              onChange={handleChange}
-              min={task.startDate}
+              value={fechaFin}
+              onChange={(e) => setFechaFin(e.target.value)}
+              required
             />
           </div>
-          {dateError && <div className="text-danger">{dateError}</div>}
-          <button type="submit" className="btn btn-primary">
-            {currentTask ? 'Actualizar Tarea' : 'Agregar Tarea'}
-          </button>
-          <button type="button" className="btn btn-secondary" onClick={onHide}>
-            Cancelar
-          </button>
+          <Button variant="primary" type="submit">
+            Guardar
+          </Button>
         </form>
-      </div>
-      {showAsignarModal && (
-        <AsignarUsuario
-          show={showAsignarModal}
-          onHide={() => setShowAsignarModal(false)}
-          handleAsignarUsuario={handleAsignarUsuario}
-          currentTask={task}
-        />
-      )}
-    </div>
+      </Modal.Body>
+    </Modal>
   );
-};
+}
 
 export default AgregarTarea;

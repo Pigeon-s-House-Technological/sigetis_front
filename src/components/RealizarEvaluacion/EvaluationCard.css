@@ -1,0 +1,40 @@
+/* EvaluationCard */
+.evaluation-card {
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 2%;
+    text-align: left;
+    margin-bottom: 20px; /* Asegura la separación entre tarjetas */
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .evaluation-card h2 {
+    color: #007BFF;
+  }
+  
+  .evaluation-status {
+    color: gray;
+    margin-bottom: 10px;
+  }
+  
+  .start-button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .evaluation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Ajusta el valor según tus necesidades */
+  }
+
+  .evaluation-status {
+    color: gray;
+    margin-bottom: 10px;
+    font-size: 14px; /* Asegúrate de que el tamaño de fuente sea visible */
+  }
