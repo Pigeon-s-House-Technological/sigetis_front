@@ -3,6 +3,8 @@ import { Button, Table, Modal, Form} from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+
+import ModalAgregar from '../Modal/ModalAgregar';
 import '../../../assets/css/Autoevaluacion.css';
 import '../Evaluaciones.css';
 import { API_BASE_URL } from '../../config';
@@ -112,7 +114,7 @@ const HomeAutoevaluacion = () => {
           <h4>{autoevaluaciones.length} Autoevaluaciones</h4>
         </div>
         <div className='col col-button'>
-          <Button style={{backgroundColor: '#215f88'}} className="btn-custom-primary" onClick={handleClick}>Agregar Autoevaluación</Button>
+          <Button style={{backgroundColor: '#007BFF'}} className="btn-custom-primary" onClick={handleClick}>Agregar Autoevaluación</Button>
         </div>
       </div>
       <Table striped bordered hover>
@@ -146,32 +148,13 @@ const HomeAutoevaluacion = () => {
         </tbody>
       </Table>
 
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Agregar Autoevaluación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEvaluationName">
-              <Form.Label>Nombre de la Evaluación</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el nombre de la evaluación"
-                value={newEvaluationName}
-                onChange={(e) => setNewEvaluationName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button  style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleSave}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalAgregar
+                show={showModal}
+                onClose={handleClose}
+                newName={newEvaluationName}
+                setNewName={setNewEvaluationName}
+                handleSave={handleSave}
+      />
 
       <Modal show={showConfirmModal} onHide={handleCloseConfirmModal}>
         <Modal.Header closeButton>
