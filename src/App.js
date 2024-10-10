@@ -12,6 +12,7 @@ import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada,
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
 import { HistoriaHU, DetalleHistoria } from './components/Gestion';
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
+import { RegistroDocente } from './components/RegistroTutor';
 import { LoginForm, LoginModal } from './components/Login';
 <<<<<<< HEAD
 import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
@@ -43,11 +44,9 @@ function App() {
           
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
-<<<<<<< HEAD
-          {/*<Route path="/registroDocente" element={<Registro />} />*/}
-=======
+
           <Route path="/registroTutor" element={<Registro />} />
->>>>>>> 2da9deee51622e4cb5a7d22dc001befc7e7adbbd
+          <Route path="/registroDocente" element={<RegistroDocente />} />
 
           <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
