@@ -1,75 +1,57 @@
-/* Estilos generales para la estructura del formulario */
 .evaluation-form {
+  background-color: #ffffff;
   padding: 20px;
-  background-color: white;
-  border-radius: 10px;  
-  margin: 20px;         
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  
+  border-radius: 8px;
 }
 
-
 .evaluation-title {
-  font-size: 24px;
-  color: #006ba1;  
-  margin-bottom: 20px;  
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .criteria-section {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
-
 
 .criteria-title {
-  background-color: #006ba1;  
-  color: white;               
-  padding: 10px;             
-  border-radius: 5px;         
-  margin-bottom: 20px;        
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 18px;
+  margin-bottom: 10px;
 }
-
 
 .question {
-  margin-bottom: 20px; /* Separación entre preguntas */
+  margin: 10px 0;
 }
 
-/* Estilos para las opciones de respuesta */
 .options, .scale-options {
-  display: flex;        
-  gap: 10px;           
-  margin-top: 10px;     
+  margin-top: 10px;
 }
 
-/* Estilos para las cajas de texto */
 .text-input {
-  width: 100%;          
-  padding: 10px;        
-  border-radius: 5px;   
-  border: 1px solid #ccc; /* Borde gris claro */
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 10px;
 }
 
-/* Estilos para los botones al final del formulario */
 .buttons {
-  display: flex;              
-  justify-content: space-between;  
-  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
 }
 
-/* Botón de cancelar */
-.cancel-button {
-  background-color: #007bff;  
-  color: white;
-  padding: 10px 20px;        
-  border-radius: 5px;
-  border: none;             
-  cursor: pointer;            
-}
-
-/* Botón de finalizar */
-.submit-button {
-  background-color: #007bff;  
+.cancel-button, .submit-button {
+  background-color: #007bff;
   color: white;
   padding: 10px 20px;
-  border-radius: 5px;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
+}
+
+.cancel-button:hover, .submit-button:hover {
+  background-color: #0056b3;
 }
