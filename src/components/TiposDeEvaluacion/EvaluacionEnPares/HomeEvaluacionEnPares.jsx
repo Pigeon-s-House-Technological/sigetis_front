@@ -4,6 +4,7 @@ import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+import ModalEliminar from '../Modal/ModalEliminar';
 import ModalAgregar from '../Modal/ModalAgregar';
 import '../../../assets/css/Autoevaluacion.css';
 import '../Evaluaciones.css';
@@ -75,6 +76,7 @@ const HomeEvaluacionEnPares = () => {
   };
 
   const handleCloseConfirmModal = () => {
+    setNewEvaluationName('');
     setShowConfirmModal(false);
   };
 
@@ -102,6 +104,7 @@ const HomeEvaluacionEnPares = () => {
     } 
   };
   const handleCloseEditModal = () => {
+    setNewEvaluationName('');
     setShowEditModal(false);
   };
 
@@ -153,51 +156,23 @@ const HomeEvaluacionEnPares = () => {
                 newName={newEvaluationName}
                 setNewName={setNewEvaluationName}
                 handleSave={handleSave}
+                titulo={"Agregar Evaluación"}
       />
 
-      <Modal show={showConfirmModal} onHide={handleCloseConfirmModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Eliminación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          ¿Estás seguro de que deseas eliminar esta evaluación en pares?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}}  className="btn-custom-secondary" onClick={handleCloseConfirmModal}>
-            Cancelar
-          </Button>
-          <Button style={{backgroundColor: 'red'}} className="btn-custom-danger" onClick={handleConfirmDelete}>
-            Eliminar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalEliminar
+                show={showConfirmModal}
+                onClose={handleCloseConfirmModal}
+                handleConfirmDelete={handleConfirmDelete}
+      />
 
-      <Modal show={showEditModal} onHide={handleCloseEditModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Evaluación en Pares</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEditEvaluationName">
-              <Form.Label>Nombre de la Evaluación</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el nuevo nombre de la evaluación"
-                value={newEvaluationName}
-                onChange={(e) => setNewEvaluationName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={handleCloseEditModal}>
-            Cancelar
-          </Button>
-          <Button style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleEditSave}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalAgregar
+                show={showEditModal}
+                onClose={handleCloseEditModal}
+                newName={newEvaluationName}
+                setNewName={setNewEvaluationName}
+                handleSave={handleEditSave}
+                titulo="Editar Evaluación"
+      />
     </div>
   );
 };
