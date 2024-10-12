@@ -14,9 +14,8 @@ import { HistoriaHU, DetalleHistoria } from './components/Gestion';
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { RegistroDocente } from './components/RegistroTutor';
 import { LoginForm, LoginModal } from './components/Login';
-import RegistrarGrupo from './components/Grupo'
-
-import { Registro } from './components/RegistroTutor';
+import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
+import RegistroEstudiante from './components/RegistroEstudiante/RegistroEstudiante.js';
 
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
@@ -44,8 +43,8 @@ function App() {
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
 
-          <Route path="/registroTutor" element={<Registro />} />
           <Route path="/registroDocente" element={<RegistroDocente />} />
+          <Route path="/registroEstudiante" element={<RegistroEstudiante />} />
 
           <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />

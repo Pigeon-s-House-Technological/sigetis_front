@@ -1,89 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button } from 'react-bootstrap';
+import axios from 'axios';
+import { API_BASE_URL } from '../config'; 
+
+const endPoint = `${API_BASE_URL}/usuarios`; 
 
 function RegistroEstudiante() {
-  // Definición de variables de estado
-  const [nombres, setNombres] = useState('');
-  const [apellidos, setApellidos] = useState('');
-  const [correoElectronico, setCorreoElectronico] = useState('');
-  const [usuario, setUsuario] = useState('');
-  const [contrasena, setContrasena] = useState('');
+  // Definir los estados que manejarán los datos del formulario
+  const [nombre_user, setNombre] = useState('');
+  const [apellido_user, setApellido] = useState('');
+  const [correo, setCorreo] = useState('');
+  const [error, setError] = useState('');  
+  const [exito, setExito] = useState(false);  
 
-  // Función para manejar el envío del formulario (solo maneja los datos localmente)
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Función para guardar un nuevo estudiante
+  const handleSave = async (e) => {
+    e.preventDefault(); // 
 
-    // Simulamos una acción de registro mostrando los datos en consola
-    const datosEstudiante = {
-      nombres,
-      apellidos,
-      correoElectronico,
-      usuario,
-      contrasena,
-    };
+    try {
+      // Verificar que todos los campos estén llenos
+      if (!nombre_user || !apellido_user || !correo) {
+        setError('Todos los campos son requeridos'); // Mostrar mensaje de error si algún campo está vacío
+        return;
+      }
 
-    console.log('Datos del estudiante registrados:', datosEstudiante);
+      // Datos que se enviarán al backend
+      const data = {
+        nombre_user: nombre_user,
+        apellido_user: apellido_user,
+        correo: correo,
+        tipo_usuario: 2, 
+      };
 
-    // Después de simular el registro, limpiamos los campos
-    setNombres('');
-    setApellidos('');
-    setCorreoElectronico('');
-    setUsuario('');
-    setContrasena('');
+      console.log('Datos enviados:', data);
+      
+      
+      const response = await axios.post(endPoint, data);
+
+      // Si la solicitud es exitosa, mostrar mensaje de éxito y limpiar los campos
+      setExito(true);
+      setError('');  
+      setNombre('');  
+      setApellido('');  
+      setCorreo('');  
+    } catch (error) {
+      console.error('Error al guardar el estudiante:', error.response ? error.response.data : error.message);
+      
+      // Mostrar mensaje de error detallado basado en la respuesta del servidor
+      if (error.response) {
+        setError(`Error al registrar el estudiante: ${error.response.data.message || error.response.data}`);
+      } else {
+        setError('Error al registrar el estudiante: No se pudo conectar con el servidor.');
+      }
+      setExito(false);
+    }
   };
 
   return (
     <div className="container mt-5" style={{ maxWidth: '500px', backgroundColor: '#F8F9FA', padding: '20px', borderRadius: '10px' }}>
       <h2 className="text-center" style={{ color: '#007BFF' }}>Registro de Estudiante</h2>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formNombres">
-          <Form.Label>Nombres</Form.Label>
+
+      {/* Mostrar mensaje de error si existe */}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      
+      {/* Mostrar mensaje de éxito si el registro fue exitoso */}
+      {exito && <p style={{ color: 'green' }}>Registro exitoso</p>}
+
+      {/* Formulario para registrar el estudiante */}
+      <Form onSubmit={handleSave}>
+        <Form.Group className="mb-3" controlId="formNombre">
+          <Form.Label>Nombre</Form.Label>
           <Form.Control
             type="text"
             placeholder="Ingresa tu nombre"
-            value={nombres}
-            onChange={(e) => setNombres(e.target.value)}
+            value={nombre_user}
+            onChange={(e) => setNombre(e.target.value)}
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formApellidos">
-          <Form.Label>Apellidos</Form.Label>
+        <Form.Group className="mb-3" controlId="formApellido">
+          <Form.Label>Apellido</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Ingresa tus apellidos"
-            value={apellidos}
-            onChange={(e) => setApellidos(e.target.value)}
+            placeholder="Ingresa tu apellido"
+            value={apellido_user}
+            onChange={(e) => setApellido(e.target.value)}
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formCorreoElectronico">
-          <Form.Label>Correo electrónico</Form.Label>
+        <Form.Group className="mb-3" controlId="formCorreo">
+          <Form.Label>Correo Electrónico</Form.Label>
           <Form.Control
             type="email"
             placeholder="Ingresa tu correo electrónico"
-            value={correoElectronico}
-            onChange={(e) => setCorreoElectronico(e.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formUsuario">
-          <Form.Label>Usuario</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Ingresa tu usuario"
-            value={usuario}
-            onChange={(e) => setUsuario(e.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formContrasena">
-          <Form.Label>Contraseña</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Ingresa tu contraseña"
-            value={contrasena}
-            onChange={(e) => setContrasena(e.target.value)}
+            value={correo}
+            onChange={(e) => setCorreo(e.target.value)}
           />
         </Form.Group>
 
