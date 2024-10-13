@@ -10,7 +10,7 @@ import { EvaluationCard, EvaluationForm } from './components/RealizarEvaluacion'
 import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
-import { HistoriaHU, DetalleHistoria } from './components/Gestion';
+import { HistoriaHU, DetalleHistoria } from './components/GestionTareas/index.js';
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { RegistroDocente } from './components/RegistroTutor';
 import { LoginForm, LoginModal } from './components/Login';
