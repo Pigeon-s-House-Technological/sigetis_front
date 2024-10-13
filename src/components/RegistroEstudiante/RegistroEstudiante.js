@@ -6,7 +6,7 @@ import { API_BASE_URL } from '../config';
 
 const endPoint = `${API_BASE_URL}/usuarios`; 
 
-function RegistroDocente() {
+function RegistroEstudiante() {
   // Definir los estados que manejarán los datos del formulario
   const [nombre_user, setNombre] = useState('');
   const [apellido_user, setApellido] = useState('');
@@ -30,7 +30,7 @@ function RegistroDocente() {
         nombre_user: nombre_user,
         apellido_user: apellido_user,
         correo: correo,
-        tipo_usuario: 3, 
+        tipo_usuario: 2, 
       };
 
       console.log('Datos enviados:', data);
@@ -59,7 +59,7 @@ function RegistroDocente() {
 
   return (
     <div className="container mt-5" style={{ maxWidth: '500px', backgroundColor: '#F8F9FA', padding: '20px', borderRadius: '10px' }}>
-      <h2 className="text-center" style={{ color: '#007BFF' }}>Registro de Docente/Tutor</h2>
+      <h2 className="text-center" style={{ color: '#007BFF' }}>Registro de Estudiante</h2>
 
       {/* Mostrar mensaje de error si existe */}
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -107,4 +107,4 @@ function RegistroDocente() {
   );
 }
 
-export default RegistroDocente;
+export default RegistroEstudiante;
