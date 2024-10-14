@@ -27,12 +27,6 @@ const EvaluationType = () => {
     ]
   };
 
-  const handleEvaluationClick = (evaluation) => {
-    if (evaluation.route) {
-      navigate(evaluation.route);  // Navegamos a la ruta si está definida
-    }
-  };
-
   return (
     <div className="evaluation-type">
       <div className="evaluation-header">
@@ -61,7 +55,7 @@ const EvaluationType = () => {
       <div className="evaluation-list">
       {evaluations[activeType].map((evaluation, index) => (
           <Link to={`/asignarEvaluacion/${evaluation.destinatario}/${evaluation.tipo}`} key={index} className="evaluation-item-link">
-            <div className="evaluation-item" onClick={() => handleEvaluationClick(evaluation.title)}>
+            <div className="evaluation-item">
               <div>
                 <h5>{evaluation.title}</h5>
                 <p>{evaluation.description}</p>

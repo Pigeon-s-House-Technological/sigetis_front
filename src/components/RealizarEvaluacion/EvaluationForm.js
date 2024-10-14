@@ -1,70 +1,109 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';  // Importar el hook useNavigate
-import './EvaluationForm.css';  // Archivo de estilos
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './EvaluationForm.css';
 
 const EvaluationForm = () => {
-  const navigate = useNavigate();  // Instanciar el hook
+  const navigate = useNavigate();
+
+  const opcionMultipleQuestion = {
+    id: 1,
+    pregunta_opcion_multiple: "Pregunta 1: Opción múltiple (Selecciona uno)"
+  };
+  const puntuacionQuestion = {
+    id: 1,
+    pregunta_puntuacion: "Pregunta 2: Escala de satisfacción "
+  };
+  const complementoQuestion = {
+    id: 1,
+    pregunta_complemento: "Pregunta de complemento"
+  };
+  const [opcionMultipleOptions] = useState([
+    "Opcion 1", 
+    "Opcion 2", 
+    "Opcion 3", 
+    "Opcion 4",
+    "Opcion 5"
+  ]);
+
+  const [responses, setResponses] = useState({
+    opcionMultiple: '',
+    puntuacion: '',
+    complemento: ''
+  });
 
   const handleCancel = () => {
-    navigate(-1);  // Esta función regresa a la página anterior
+    navigate(-1);
   };
 
-  //EEEEEEEEEEE
   const handleFinish = () => {
-    // Guardar en localStorage que la evaluación ha sido entregada
     localStorage.setItem('isDelivered', 'true');
-
-    // Redirigir a la página de evaluación (/evaluacion)
+    console.log('Responses:', responses);
     navigate('/evaluacion');
   };
-//eeeeeeee
+
+  const handleResponseChange = (type, value) => {
+    setResponses(prevResponses => ({
+      ...prevResponses,
+      [type]: value
+    }));
+  };
+
   return (
     <div className="evaluation-form">
-      <h2 className="evaluation-title">Título de la Evaluación</h2>
-
-      {/* Sección de Criterio */}
+      <h2 className="evaluation-title">Evaluacion Primer Sprint</h2>
+      {/* Pregunta: Opción Múltiple */}
       <div className="criteria-section">
         <h3 className="criteria-title">Criterio: Habilidades</h3>
-        {/* Pregunta 1: Opción múltiple */}
         <div className="question">
-          <p>1.- Pregunta 1</p>
-          <p>Seleccione una o más opciones:</p>
-          <div className="options">
-            <label><input type="radio" name="question1" value="option1" /> Opción 1</label>
-            <label><input type="radio" name="question1" value="option2" /> Opción 2</label>
-            <label><input type="radio" name="question1" value="option3" /> Opción 3</label>
-            <label><input type="radio" name="question1" value="option4" /> Opción 4</label>
+          <p>{opcionMultipleQuestion.pregunta_opcion_multiple}</p>
+          <div className="vertical-options"> {/* Aplicamos clase aquí */}
+            {opcionMultipleOptions.map((opcion, idx) => (
+              <label key={idx} style={{ display: 'block' }}> {/* Mostrar opciones en vertical */}
+                <input
+                  type="radio"
+                  name="opcionMultiple"
+                  value={opcion}
+                  onChange={() => handleResponseChange('opcionMultiple', opcion)}
+                /> {opcion}
+              </label>
+            ))}
           </div>
-        </div>
-
-        {/* Pregunta 2: Escala de satisfacción */}
-        <div className="question">
-          <p>2.- Pregunta 2</p>
-          <div className="scale-options">
-            <label>nada <input type="radio" name="question2" value="1" /></label>
-            <label>1 <input type="radio" name="question2" value="2" /></label>
-            <label>2 <input type="radio" name="question2" value="3" /></label>
-            <label>3 <input type="radio" name="question2" value="4" /></label>
-            <label>4 <input type="radio" name="question2" value="5" /></label>
-            <label>muchísimo <input type="radio" name="question2" value="6" /></label>
-          </div>
-        </div>
-
-        {/* Pregunta 3 y 4: Respuesta de texto */}
-        <div className="question">
-          <p>3.- Pregunta 3</p>
-          <input type="text" className="text-input" placeholder="Respuesta..." />
-        </div>
-        <div className="question">
-          <p>4.- Pregunta 4</p>
-          <input type="text" className="text-input" placeholder="Respuesta..." />
         </div>
       </div>
-
+      {/* Pregunta: Puntuación */}
+      <div className="criteria-section">
+        <div className="question">
+          <p>{puntuacionQuestion.pregunta_puntuacion}</p>
+          <div className="scale-options">
+            {[1, 2, 3, 4, 5].map((value) => (
+              <label key={value}>
+                {value} <input
+                  type="radio"
+                  name="puntuacion"
+                  value={value}
+                  onChange={() => handleResponseChange('puntuacion', value)}
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+      {/* Pregunta: Complemento */}
+      <div className="criteria-section">
+        <div className="question">
+          <p>{complementoQuestion.pregunta_complemento}</p>
+          <input
+            type="text"
+            className="text-input"
+            placeholder="Respuesta..."
+            onChange={(e) => handleResponseChange('complemento', e.target.value)}
+          />
+        </div>
+      </div>
       {/* Botones de Cancelar y Finalizar */}
       <div className="buttons">
         <button className="cancel-button" onClick={handleCancel}>Cancelar</button>
-        <button className="submit-button"onClick={handleFinish}>Finalizar</button>
+        <button className="submit-button" onClick={handleFinish}>Finalizar</button>
       </div>
     </div>
   );

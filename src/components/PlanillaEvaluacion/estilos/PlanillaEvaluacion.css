@@ -1,9 +1,9 @@
-.evaluation-type {
+.planilla-type {
   padding: 20px;
   background-color: #f5f9ff; /* Fondo claro */
 }
 
-.evaluation-header {
+.planilla-header {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,19 +12,19 @@
   background-color: #f5f9ff;
 }
 
-.evaluation-header h2 {
+.planilla-header h2 {
   color: #222; /* Color del texto del encabezado */
   font-weight: bold;
 }
 
-.evaluation-toggle {
+.planilla-toggle {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.evaluation-toggle-btn {
+.planilla-toggle-btn {
   padding: 10px 30px;
   border-radius: 8px;
   border: none;
@@ -35,25 +35,25 @@
   transition: background-color 0.3s ease;
 }
 
-.evaluation-toggle-btn.active {
-  background-color: #007bff; /* Botón activo */
-  color: white;
-}
+.planilla-toggle-btn.active {
+    background-color: #007BFF; /* Botón activo */
+    color: white;
+  }
+  
 
-.evaluation-list {
-  justify-content: center;
+.planilla-list {
   display: flex;
-  flex-direction: row;
   gap: 16px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
-.evaluation-item-link {
+.planilla-item-link {
   text-decoration: none;
   color: inherit;
 }
 
-.evaluation-item {
+.planilla-item {
   background-color: #f1f1f1;
   padding: 2%;
   border-radius: 8px;
@@ -72,26 +72,26 @@
   flex-shrink: 0;
 }
 
-.evaluation-item h4 {
+.planilla-item h4 {
   margin-bottom: 5px;
   color: #333;
 }
 
-.evaluation-item p {
+.planilla-item p {
   color: #666;
   font-size: 12px;
 }
 
-.evaluation-item:hover {
+.planilla-item:hover {
   background-color: #e0e0e0; /* Hover en las tarjetas */
 }
 
-.evaluation-item .arrow {
+.planilla-item .arrow {
   font-size: 16px;
   color: #333;
   transition: transform 0.3s ease;
 }
 
-.evaluation-item:hover .arrow {
+.planilla-item:hover .arrow {
   transform: translateX(5px); /* Animación al pasar el mouse */
 }
