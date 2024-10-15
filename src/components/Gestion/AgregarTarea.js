@@ -10,6 +10,7 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
   const [estadoActividad, setEstadoActividad] = useState('pendiente');
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
+  const [encargado, setEncargado] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   // Efecto para cargar los datos actuales de la tarea al editar
@@ -19,17 +20,19 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
       setEstadoActividad(currentTask.estado_actividad);
       setFechaInicio(currentTask.fecha_inicio);
       setFechaFin(currentTask.fecha_fin);
+      setEncargado(currentTask.encargado);
     } else {
       setNombreActividad('');
       setEstadoActividad('pendiente');
       setFechaInicio('');
       setFechaFin('');
+      setEncargado('');
     }
   }, [currentTask]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     // Validación de fechas
     const fechaInicioDate = new Date(fechaInicio);
     const fechaFinDate = new Date(fechaFin);
@@ -39,20 +42,21 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
     }
 
     const task = {
-      id_hu: 1, // Cambia esto al ID correcto
+      id_hu: 1, 
       nombre_actividad: nombreActividad,
       estado_actividad: estadoActividad,
       fecha_inicio: fechaInicio,
       fecha_fin: fechaFin,
+      encargado: 1,
     };
-
+  
+    console.log('Datos enviados:', task);
+  
     try {
       let response;
       if (currentTask) {
-        // Actualiza la tarea existente
         response = await axios.put(`${endPoint}/${currentTask.id}`, task);
       } else {
-        // Crea una nueva tarea
         response = await axios.post(endPoint, task);
       }
       addTask(response.data);
@@ -62,6 +66,7 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
       setErrorMessage('Error al guardar la tarea. Intenta nuevamente.');
     }
   };
+  
 
   return (
     <Modal show={show} onHide={onHide}>

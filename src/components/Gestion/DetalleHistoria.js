@@ -7,7 +7,7 @@ import AgregarTarea from './AgregarTarea';
 import AsignarUsuario from './AsignarUsuario';
 import { API_BASE_URL } from '../config';
 
-const endPoint = `${API_BASE_URL}/actividades`; // Cambia aquí para que apunte a la ruta correcta
+const endPoint = `${API_BASE_URL}/actividades`; 
 
 function DetalleHistoria() {
   const { id } = useParams();
@@ -69,6 +69,7 @@ function DetalleHistoria() {
         }
         return [...prevTasks, updatedTask];
       });
+      fetchTasks(); // Actualiza las tareas desde el servidor después de agregar/editar
     } catch (error) {
       console.error(error.message);
     }
@@ -76,6 +77,7 @@ function DetalleHistoria() {
     setCurrentTask(null);
     setShowTaskModal(false);
   };
+  
 
   const deleteTask = async (taskId) => {
     try {
