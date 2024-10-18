@@ -8,7 +8,7 @@ const GroupForm = ({ onClose }) => {
     const [inputs, setInputs] = useState({
         nombreGrupo: '',
         descripcion: '',
-        cantidadInteg: '2',
+        cantidadInteg: '3',
     });
 
     const [errors, setErrors] = useState({});
@@ -26,6 +26,7 @@ const GroupForm = ({ onClose }) => {
         let tempErrors = {};
         if (!inputs.nombreGrupo) tempErrors.nombreGrupo = 'El nombre del grupo es requerido';
         if (!inputs.descripcion) tempErrors.descripcion = 'La descripción del grupo es requerida';
+        if (!inputs.cantidadInteg) tempErrors.cantidadInteg = 'La cantidad de integrantes es requerida';
         return tempErrors;
     };
 
@@ -43,7 +44,7 @@ const GroupForm = ({ onClose }) => {
                 });
                 if (response.status === 201) {
                     setSuccessMessage('Grupo registrado exitosamente');
-                    setInputs({ nombreGrupo: '', descripcion: '', cantidadInteg: '2' }); // Limpiar el formulario
+                    setInputs({ nombreGrupo: '', descripcion: '', cantidadInteg: '' });
                 }
             } catch (error) {
                 console.error('Error al registrar el grupo:', error);

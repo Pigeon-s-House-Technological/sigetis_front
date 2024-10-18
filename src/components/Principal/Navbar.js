@@ -9,6 +9,7 @@ const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const navigate = useNavigate();
+  const [selectedOption, setSelectedOption] = useState('');
 
   useEffect(() => {
     const token = Cookies.get('authToken');
@@ -26,7 +27,17 @@ const Navbar = () => {
     setIsAuthenticated(false); // Actualizar el estado de autenticación
   };
 
-  
+  const handleSelectChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedOption(selectedValue);
+
+    if (selectedValue === 'registrarGrupo') {
+      navigate('/registrarGrupo');
+    } else if (selectedValue === 'verGrupos') {
+      navigate('/verGrupos');
+    }
+  };
+
   return (
     <nav className="navbar">
       <ul>
@@ -43,6 +54,11 @@ const Navbar = () => {
         <li>
           <NavLink to="/gestionarEvaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
             Evaluaciones
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/registrarGrupo" className={({ isActive}) => (isActive ? 'active-link' : '')}>
+            Registrar Grupo
           </NavLink>
         </li>
         <li>
