@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { Button, Form, Container } from "react-bootstrap";
+import { Button, Form, Container, Alert } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import { Navigate } from 'react-router-dom';
+
 import { API_BASE_URL } from '../config';
+
 
 function RegistroDocente() {
   const [nombres, setNombres] = useState('');
@@ -11,30 +14,54 @@ function RegistroDocente() {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [confirmarContrasena, setConfirmarContrasena] = useState('');
+  const [redirect, setRedirect] = useState(false);
+  const [error, setError] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false); // Variable para mostrar mensaje de confirmación
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    window.scrollTo(0, 0);
     
     // Validación de las contraseñas
     if (contrasena !== confirmarContrasena) {
-      alert("Las contraseñas no coinciden");
+      setError('Las contraseñas no coinciden');
+      window.scrollTo(0, 0);
       return;
     }
 
-    const data = { nombres, apellidos, correo, usuario, contrasena };
+    const data = {
+      nombre: nombres,
+      apellido: apellidos,
+      correo: correo,
+      usuario: usuario,
+      tipo_usuario: 1,
+      password: contrasena,
+      password_confirmation: confirmarContrasena
+    }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/docentes`, data);
+      const response = await axios.post(`${API_BASE_URL}/register`, data);
       console.log('Registro exitoso:', response.data);
+      setShowConfirmation(true); // Mostrar la alerta de confirmación
+      setError(null);
+      setTimeout(() => setRedirect(true), 2000);
       // Puedes redirigir al usuario o mostrar un mensaje de éxito aquí
     } catch (error) {
       console.error('Error al registrar el docente:', error.response ? error.response.data : error.message);
+      setError('Correo o Usuario ya registrados');
     }
+    
   };
+
+  if (redirect) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <Container className="mt-5" style={{ maxWidth: '600px', backgroundColor: '#fafefe' }}>
       <h2 className="text-center" style={{ color: '#215f88' }}>Registro de Docentes/Tutores</h2>
+      {error && <Alert variant="danger">{error}</Alert>}
+      {showConfirmation && <Alert variant="success">Registro exitoso. Redirigiendo...</Alert>}
       <Form onSubmit={handleSubmit} style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '5px' }}>
         <Form.Group controlId="formNombres" className="mb-3">
           <Form.Label>Nombres</Form.Label>

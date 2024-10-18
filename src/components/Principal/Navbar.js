@@ -1,27 +1,45 @@
-import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import './Principal.css';
+import Cookies from 'js-cookie';
+
 //estilos en app.css
 const Navbar = () => {
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = Cookies.get('authToken');
+    setIsAuthenticated(!!token); // Si el token existe, el usuario está autenticado
+  }, []);
 
   const handleClick = () => {
     navigate('/login');
   };
+
+  const logout =async () => {
+    const token = Cookies.get('authToken');
+    Cookies.remove('authToken'); // Eliminar el token de las cookies
+    window.location.reload();
+    setIsAuthenticated(false); // Actualizar el estado de autenticación
+  };
+
+  
   return (
     <nav className="navbar">
       <ul>
+      <li className="navbar-brand">
+        <Link to="/" className="navbar-brand">
+          <span>SIGETIS</span>
+        </Link>
+        </li>
       <li>
           <NavLink to="/" end className={({ isActive }) => (isActive ? 'active-link' : '')}>
             Inicio
           </NavLink>
         </li>
-        {/*<li>
-          <NavLink to="/equipos" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-            Equipos
-          </NavLink>
-        </li>
-        */}
         <li>
           <NavLink to="/gestionarEvaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
             Evaluaciones
@@ -37,14 +55,17 @@ const Navbar = () => {
             Realizar Evaluacion
           </NavLink>
         </li>
-        {/*<li>
-          <NavLink to="/usuarios" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-            Usuarios
-          </NavLink>
-        </li>*/}
         <li>
-          <button onClick={handleClick} className="login-button" >Iniciar sesión</button>
-          <button className="register-button" disabled>Registrarse</button>
+          <NavLink to="/planilla" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+            Planilla de Evaluacion
+          </NavLink>
+        </li>
+        <li>
+          {isAuthenticated ? (
+            <button onClick={logout} className="logout-button">Cerrar sesión</button>
+          ) : (
+            <button onClick={handleClick} className="login-button">Iniciar sesión</button>
+          )}
         </li>
       </ul>
     </nav>
