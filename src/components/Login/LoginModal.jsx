@@ -3,7 +3,8 @@ import LoginForm from './LoginForm';
 import './Style/Login.css';
 
 const LoginModal = () => {
-    const [userType, setUserType] = useState('teacher'); // Mostrar Docente por defecto
+    const [userType, setUserType] = useState('student'); // Mostrar Docente por defecto
+    
 
     const toggleUserType = (type) => {
         setUserType(type);
@@ -15,14 +16,14 @@ const LoginModal = () => {
 
             <div className="toggle-buttons">
                 <button
-                    className={`toggle-button ${userType === 'teacher' ? 'active' : ''}`}
-                    onClick={() => toggleUserType('teacher')}>
-                    Docente/Tutor
-                </button>
-                <button
                     className={`toggle-button ${userType === 'student' ? 'active' : ''}`}
                     onClick={() => toggleUserType('student')}>
                     Estudiante
+                </button>
+                <button
+                    className={`toggle-button ${userType === 'teacher' ? 'active' : ''}`}
+                    onClick={() => toggleUserType('teacher')}>
+                    Docente/Tutor
                 </button>
             </div>
 

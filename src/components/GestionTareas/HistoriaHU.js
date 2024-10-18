@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Modal, Button, Dropdown, Form } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import axios from 'axios';
 import {API_BASE_URL} from '../config';
+
+import './Modales/Modal.css';
+import ModalAgregar from "../TiposDeEvaluacion/Modal/ModalAgregar";
+import ModalEliminar from "../TiposDeEvaluacion/Modal/ModalEliminar";
 
 
 const endPoint = `${API_BASE_URL}/historiaUsuarios`;
@@ -13,6 +17,8 @@ function HistoriaHU() {
   const [showEditModal, setShowEditModal] = useState(false); // Definir showEditModal y setShowEditModal
   const [newHistoriaName, setNewHistoriaName] = useState('');
   const [selectedHistoria, setSelectedHistoria] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedHistoriaId, setSelectedHistoriaId] = useState(null);
   const navigate = useNavigate();
 
   const fetchHistorias = async () => {
@@ -95,15 +101,23 @@ function HistoriaHU() {
     }
   };
 
-  const deleteStory = async (index) => {
-    const historia = historiasUsuario[index];
+  const eliminarClick = (id) => {
+    setSelectedHistoriaId(id);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`${endPoint}/${historia.id}`);
-      const updatedStories = historiasUsuario.filter((_, i) => i !== index);
-      setHistoriasUsuario(updatedStories);
+      await axios.delete(`${API_BASE_URL}/historiaUsuarios/${selectedHistoriaId}`);
+      setHistoriasUsuario(historiasUsuario.filter((historiaHU) => historiaHU.id !== selectedHistoriaId));
+      setShowConfirmModal(false);
     } catch (error) {
-      console.error("Error al eliminar la historia:", error.response.data);
+      console.error('Error al eliminar la autoevaluación', error);
     }
+  };
+
+  const handleCloseConfirmModal = () => {
+    setShowConfirmModal(false);
   };
 
   const viewStoryDetails = (index) => {
@@ -137,67 +151,37 @@ function HistoriaHU() {
             <Dropdown>
               <Dropdown.Toggle variant="link" id="dropdown-basic">•••</Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => openModalForEditStory(index)}>Editar</Dropdown.Item>
-                <Dropdown.Item onClick={() => deleteStory(index)}>Eliminar</Dropdown.Item>
+                <Dropdown.Item onClick={() => openModalForEditStory(historia.id)}>Editar</Dropdown.Item>
+                <Dropdown.Item onClick={() => eliminarClick(historia.id)}>Eliminar</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </li>
         ))}
       </ul>
 
-      <Modal show={showModal} onHide={closeModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Agregar Historia de Usuario</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEvaluationName">
-              <Form.Label>Título de la Historia de Usuario</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el título de la historia de usuario"
-                value={newHistoriaName}
-                onChange={(e) => setNewHistoriaName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={closeModal}>
-            Cancelar
-          </Button>
-          <Button  style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleSave}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalAgregar
+                show={showModal}
+                onClose={closeModal}
+                newName={newHistoriaName}
+                setNewName={setNewHistoriaName}
+                handleSave={handleSave}
+                titulo={"Agregar Historia de Usuario"}
+      />
 
-      <Modal show={showEditModal} onHide={closeModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Historia de Usuario</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEditEvaluationName">
-              <Form.Label>Título de la Historia de Usuario</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el título de la historia de usuario"
-                value={newHistoriaName}
-                onChange={(e) => setNewHistoriaName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={closeModal}>
-            Cancelar
-          </Button>
-          <Button style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleUpdate}>
-            Actualizar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalEliminar
+                show={showConfirmModal}
+                onClose={handleCloseConfirmModal}
+                handleConfirmDelete={handleConfirmDelete}
+      />
+
+      <ModalAgregar
+                show={showEditModal}
+                onClose={closeModal}
+                newName={newHistoriaName}
+                setNewName={setNewHistoriaName}
+                handleSave={handleUpdate}
+                titulo={"Editar Historia de Usuario"}
+      />
     </div>
   );
 }

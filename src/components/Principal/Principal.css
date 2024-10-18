@@ -1,23 +1,10 @@
 /* Navbar */
-.register-button {
-    background-color: #185075;
-    border: none;
-    padding: 5px 10px;
-    margin-left: 5px;
-}
-.login-button {
-    background-color: #E3E3E3;
-    border: none;
-    padding: 5px 10px;
-    margin-left: 5px;
-    color: #185075;
-}
 .navbar {
     background-color: #215F88;
     padding: 1rem;
     justify-content: space-between;
     align-items: center;
-    text-align: center;
+    display: flex;
 }
 
 .navbar ul {
@@ -27,6 +14,15 @@
     display: flex;
     gap: 15px;
     justify-content: center;
+    align-items: center;
+}
+
+.navbar-brand {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 1rem; /* Espacio entre el nombre de la empresa y los enlaces */
+    text-align: center;
 }
 
 .navbar ul li {
@@ -37,14 +33,16 @@
     color: white;
     cursor: pointer;
     margin: 0 10px; /* Espaciado entre los elementos de la lista */
+    
 }
+
 
 .navbar li:hover a,
 .navbar a.active-link {
     background-color: #185075;
     border-radius: 4px;
     padding: 0.2rem 1rem; /* Asegúrate de que el padding sea consistente */
-    color: white; /* Asegúrate de que el color del texto sea consistente */
+    color: black; /* Asegúrate de que el color del texto sea consistente */
     text-decoration: none; /* Asegúrate de que la decoración del texto sea consistente */
 }
 
@@ -99,4 +97,22 @@
 .seal p {
     margin: 0;
     font-size: 1.2rem; /* Tamaño de fuente para la descripción */
+}
+
+.login-button {
+    background-color: #09DDCC;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 5px;
+    color: black;
+    border-radius: 4px;
+}
+
+.logout-button {
+    background-color: #FF0000;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 5px;
+    color: white;
+    border-radius: 4px;
 }

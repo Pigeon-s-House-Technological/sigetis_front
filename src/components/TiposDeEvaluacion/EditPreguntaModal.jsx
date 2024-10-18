@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import { API_BASE_URL } from '../config'; // Asegúrate de que la ruta sea correcta
 import RatingCircles from '../RatingCircles';
@@ -94,65 +93,76 @@ const EditPreguntaModal = ({ show, handleClose, preguntaId, tipo, fetchPreguntas
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Editar Pregunta</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
-          <Form.Group controlId="formPregunta">
-            <Form.Label>Pregunta</Form.Label>
-            <Form.Control
-              type="text"
-              value={pregunta}
-              onChange={(e) => setPregunta(e.target.value)}
-            />
-          </Form.Group>
-          {tipo === 'puntuacion' && (
-            <Form.Group controlId="formPuntuacion">
-              <Form.Label>Puntuación</Form.Label>
-              <Form.Control
-                type="number"
-                value={puntuacion}
-                onChange={(e) => setPuntuacion(e.target.value)}
-              />
-              <br />
-
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <RatingCircles puntuacion={puntuacion} />
-              </div>
-            </Form.Group>
-          )}
-          {tipo === 'opcionMultiple' && (
-            <Form.Group controlId="formOpciones">
-              <Form.Label>Opciones</Form.Label>
-              {opciones.map((opcion, index) => (
-                <Form.Control
-                key={index}
-                type="text"
-                value={opcion}
-                readOnly
-              />
-              ))}
-            </Form.Group>
-          )}
-          {tipo === 'complemento' && (
-            <Form.Group controlId="formCriterioEvaluacion">
-              
-            </Form.Group>
-          )}
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button style={{backgroundColor: '#09DDCC', color:'black'}} variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-        <Button style={{backgroundColor: '#215f88'}} variant="primary" onClick={handleSave}>
-          Guardar
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
+    <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+        <div className="modal-dialog" role="document">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h5 className="modal-title">Editar Pregunta</h5>
+                    <button type="button" className="close" onClick={handleClose} aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div className="modal-body">
+                    <form>
+                        <div className="form-group">
+                            <label htmlFor="formPregunta">Pregunta</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="formPregunta"
+                                value={pregunta}
+                                onChange={(e) => setPregunta(e.target.value)}
+                            />
+                        </div>
+                        {tipo === 'puntuacion' && (
+                            <div className="form-group">
+                                <label htmlFor="formPuntuacion">Puntuación</label>
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    id="formPuntuacion"
+                                    value={puntuacion}
+                                    onChange={(e) => setPuntuacion(e.target.value)}
+                                />
+                                <br />
+                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <RatingCircles puntuacion={puntuacion} />
+                                </div>
+                            </div>
+                        )}
+                        {tipo === 'opcionMultiple' && (
+                            <div className="form-group">
+                                <label htmlFor="formOpciones">Opciones</label>
+                                {opciones.map((opcion, index) => (
+                                    <input
+                                        key={index}
+                                        type="text"
+                                        className="form-control"
+                                        value={opcion}
+                                        readOnly
+                                    />
+                                ))}
+                            </div>
+                        )}
+                        {tipo === 'complemento' && (
+                            <div className="form-group" id="formCriterioEvaluacion">
+                                {/* Aquí puedes agregar cualquier contenido adicional para el tipo complemento */}
+                            </div>
+                        )}
+                    </form>
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" style={{ backgroundColor: '#09DDCC', color: 'black' }} onClick={handleClose}>
+                        Cancelar
+                    </button>
+                    <button type="button" className="btn btn-primary" style={{ backgroundColor: '#215f88' }} onClick={handleSave}>
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+);
 };
 
 export default EditPreguntaModal;

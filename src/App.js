@@ -10,11 +10,12 @@ import { EvaluationCard, EvaluationForm } from './components/RealizarEvaluacion'
 import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
-import { HistoriaHU, DetalleHistoria } from './components/Gestion';
+import { HistoriaHU, DetalleHistoria } from './components/GestionTareas/index.js';
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { RegistroDocente } from './components/RegistroTutor';
-import { LoginForm, LoginModal } from './components/Login';
+import {  LoginModal } from './components/Login';
 import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
+import RegistroEstudiante from './components/RegistroEstudiante/RegistroEstudiante.js';
 
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
@@ -27,7 +28,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<LoginModal />} />
-          <Route path="/loginForm" element={<LoginForm />} />
 
           {/* Ruta para "/evaluacion" que muestra EvaluationCard */}
           <Route path="/evaluacion" element={<EvaluationCard />} />
@@ -43,6 +43,7 @@ function App() {
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
 
           <Route path="/registroDocente" element={<RegistroDocente />} />
+          <Route path="/registroEstudiante" element={<RegistroEstudiante />} />
 
           <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
           <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
