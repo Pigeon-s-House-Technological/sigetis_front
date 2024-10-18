@@ -99,6 +99,42 @@ function RegistroDocente() {
           />
         </Form.Group>
 
+{/*
+        <Form.Group controlId="formUsuario" className="mb-3">
+          <Form.Label>Usuario</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Ingresa tu usuario"
+            value={usuario}
+            onChange={(e) => setUsuario(e.target.value)}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group controlId="formContrasena" className="mb-3">
+          <Form.Label>Contraseña</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Ingresa tu contraseña"
+            value={contrasena_usuario}
+            onChange={(e) => setContrasena(e.target.value)}
+            required
+          />
+        </Form.Group>*/}
+
+        {/*
+        <Form.Group controlId="formConfirmarContrasena" className="mb-3">
+          <Form.Label>Confirmar Contraseña</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Confirma tu contraseña"
+            value={confirmarContrasena}
+            onChange={(e) => setConfirmarContrasena(e.target.value)}
+            required
+          />
+        </Form.Group>
+        */}
+
         <Button variant="primary" type="submit" className="w-100">
           Registrar
         </Button>
