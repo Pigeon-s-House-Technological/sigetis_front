@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
@@ -122,68 +121,79 @@ const AddPregunta = ({ show, handleClose, fetchPreguntas }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Agregar Pregunta</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formTipoPregunta">
-            <Form.Label>Tipo de Pregunta</Form.Label>
-            <Form.Control as="select" value={tipo} onChange={(e) => setTipo(e.target.value)} required>
-                <option value="complemento">Complemento</option>
-                <option value="opcionMultiple">Opción Múltiple</option>
-                <option value="puntuacion">Puntuación</option>
-            </Form.Control>
-          </Form.Group>
-
-          <Form.Group controlId="formPregunta">
-            <Form.Label>Pregunta</Form.Label>
-            <Form.Control type="text" value={pregunta} onChange={(e) => setPregunta(e.target.value)} required />
-          </Form.Group>
-
-          {tipo === 'opcionMultiple' && (
-            <Form.Group controlId="formOpciones">
-              <Form.Label>Opciones</Form.Label>
-              {opciones.map((opcion, index) => (
-                <Form.Control
-                  key={index}
-                  type="text"
-                  value={opcion}
-                  onChange={(e) => handleOptionChange(index, e.target.value)}
-                  required
-                />
-              ))}
-              <Button style={{backgroundColor: '#215f88'}} variant="secondary" onClick={handleAddOption}>
-                Agregar Opción
-              </Button>
-            </Form.Group>
-          )}
-
-          {tipo === 'puntuacion' && (
-            <Form.Group controlId="formPuntuacion">
-              <Form.Label>Puntuación</Form.Label>
-              <Form.Control
-                type="number"
-                value={puntuacion}
-                onChange={(e) => setPuntuacion(e.target.value)}
-                required
-              />
-              <br />
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <RatingCircles puntuacion={puntuacion} />
-              </div>
-            </Form.Group>
-          )}
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Button style={{backgroundColor: '#215f88'}} variant="primary" type="submit">
-                Agregar Pregunta
-                </Button>
+    <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+    <div className="modal-dialog" role="document">
+        <div className="modal-content">
+            <div className="modal-header">
+                <h5 className="modal-title">Agregar Pregunta</h5>
+                <button type="button" className="close" onClick={handleClose} aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </Form>
-      </Modal.Body>
-    </Modal>
+            <div className="modal-body">
+                {error && <div className="alert alert-danger">{error}</div>}
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="formTipoPregunta">Tipo de Pregunta</label>
+                        <select className="form-control" id="formTipoPregunta" value={tipo} onChange={(e) => setTipo(e.target.value)} required>
+                            <option value="complemento">Complemento</option>
+                            <option value="opcionMultiple">Opción Múltiple</option>
+                            <option value="puntuacion">Puntuación</option>
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="formPregunta">Pregunta</label>
+                        <input type="text" className="form-control" id="formPregunta" value={pregunta} onChange={(e) => setPregunta(e.target.value)} required />
+                    </div>
+
+                    {tipo === 'opcionMultiple' && (
+                        <div className="form-group">
+                            <label htmlFor="formOpciones">Opciones</label>
+                            {opciones.map((opcion, index) => (
+                                <input
+                                    key={index}
+                                    type="text"
+                                    className="form-control"
+                                    value={opcion}
+                                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                                    required
+                                />
+                            ))}
+                            <button type="button" className="btn btn-secondary" style={{ backgroundColor: '#09DDCC', color:'black', borderStyle: 'none'}} 
+                             onClick={handleAddOption}>
+                                Agregar Opción
+                            </button>
+                        </div>
+                    )}
+
+                    {tipo === 'puntuacion' && (
+                        <div className="form-group">
+                            <label htmlFor="formPuntuacion">Puntuación</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="formPuntuacion"
+                                value={puntuacion}
+                                onChange={(e) => setPuntuacion(e.target.value)}
+                                required
+                            />
+                            <br />
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                <RatingCircles puntuacion={puntuacion} />
+                            </div>
+                        </div>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#007BFF' }}>
+                            Agregar Pregunta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
   );
 };
 

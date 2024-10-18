@@ -21,7 +21,7 @@ const PlanillaEvaluacionEvaluaciones = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [evaluacionSeleccionada, setEvaluacionSeleccionada] = useState(null);
     
-    const { idGrupo, tipoEvaluacion } = useParams();
+    const { idGrupo } = useParams();
     
     const obtenerNombreGrupo = async () => {
         try {
@@ -148,8 +148,6 @@ const PlanillaEvaluacionEvaluaciones = () => {
                         <th>Grupal/Individual</th>
                         <th>Tipo de Evaluación</th>
                         <th>Estudiante</th>
-
-                        {/* Añade más columnas según tus necesidades */}
                     </tr>
                 </thead>
                 <tbody>

@@ -132,3 +132,13 @@
     background-color: '#f0f0f0'; display: 'flex'; align-items: 'center';
 }
 
+.col-button {
+    display: flex;
+    justify-content: space-between; /* Alinea los botones con espacio entre ellos */
+    align-items: center; /* Alinea los botones verticalmente en el centro */
+}
+
+.button-group {
+    display: flex;
+    gap: 10px; /* Espacio entre los botones */
+}
