@@ -16,6 +16,7 @@ import { RegistroDocente } from './components/RegistroTutor';
 import {  LoginModal } from './components/Login';
 import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
 import RegistroEstudiante from './components/RegistroEstudiante/RegistroEstudiante.js';
+import { ProtectecRoute } from './components/ProtectedRoute.jsx';
 
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
@@ -23,6 +24,7 @@ function App() {
 
 // Crear el estado 'userType'
 const [userType, setUserType] = useState('student'); // 'student' por defecto
+  const [user,setUser] = useState(null)
 
 // Crear la función 'toggleUserType' para cambiar el tipo de usuario
 const toggleUserType = (type) => {
@@ -50,6 +52,43 @@ const toggleUserType = (type) => {
           {/*Ruta de prueba para registro de grupo http://localhost:3000/registrarGrupo*/}
           <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
           
+
+          {/* Rutas protegidas para Docente */}
+          <Route element={<ProtectecRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["3"]} redirectTo="/" />} >
+          
+          </Route>
+
+          {/* Rutas protegidas para estudiante */}
+          <Route element={<ProtectecRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["1"]} redirectTo="/" />} >
+          <Route path="/planilla" element={<PlanillaEvaluacion />} />
+          <Route path="/planilla/actividades/:idGrupo" element={<PlanillaEvaluacionActividades />} />
+          <Route path="/planilla/evaluaciones/:idGrupo" element={<PlanillaEvaluacionEvaluaciones />} />
+          <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
+          <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
+          <Route path="/gestionEvaluacion/:id" element={<CriteriosEvaluacion />} />
+          <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
+          <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
+          <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
+          <Route path="/evaluacion" element={<EvaluationCard />} />
+          <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
+          <Route path="/asignarEvaluacion" element={<EvaluationType />} />
+          <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
+          </Route>
+
+          {/* Rutas protegidas para Jefe grupo */}
+          <Route element={<ProtectecRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["2"]} redirectTo="/" />} >
+          <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
+          <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
+          <Route path="/gestionEvaluacion/:id" element={<CriteriosEvaluacion />} />
+          <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
+          <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
+          <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
+          <Route path="/evaluacion" element={<EvaluationCard />} />
+          <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
+          <Route path="/asignarEvaluacion" element={<EvaluationType />} />
+          <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
+          </Route>
+
           <Route path="/historiaHU" element={<HistoriaHU />} />
           <Route path="/detalle/:id" element={<DetalleHistoria />} />
 
@@ -66,6 +105,7 @@ const toggleUserType = (type) => {
           <Route path="/planilla" element={<PlanillaEvaluacion />} />
           <Route path="/planilla/actividades/:idGrupo" element={<PlanillaEvaluacionActividades />} />
           <Route path="/planilla/evaluaciones/:idGrupo" element={<PlanillaEvaluacionEvaluaciones />} />
+          
         </Routes>
         </div>
         <Footer userType={userType} /> {/* Pasamos userType como prop */}

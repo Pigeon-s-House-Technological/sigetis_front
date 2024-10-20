@@ -41,9 +41,9 @@
 .navbar a.active-link {
     background-color: #185075;
     border-radius: 4px;
-    padding: 0.2rem 1rem; /* Asegúrate de que el padding sea consistente */
-    color: black; /* Asegúrate de que el color del texto sea consistente */
-    text-decoration: none; /* Asegúrate de que la decoración del texto sea consistente */
+    padding: 0.2rem 1rem;
+    color: black;
+    text-decoration: none;
 }
 
 .navbar a.active-link {
