@@ -1,28 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import LoginForm from './LoginForm';
 import './Style/Login.css';
 
-const LoginModal = () => {
-    const [userType, setUserType] = useState('teacher'); // Mostrar Docente por defecto
-
-    const toggleUserType = (type) => {
-        setUserType(type);
-    };
-
+const LoginModal = ({ userType, toggleUserType }) => {
     return (
-        <div className="login-container">
+        <div className={`login-container ${userType}`}>
             <h2 className="title">Iniciar Sesión</h2>
 
             <div className="toggle-buttons">
                 <button
-                    className={`toggle-button ${userType === 'teacher' ? 'active' : ''}`}
-                    onClick={() => toggleUserType('teacher')}>
-                    Docente/Tutor
+                    className={`toggle-button ${userType === 'student' ? 'active' : ''}`}
+                    onClick={() => toggleUserType('student')}
+                >
+                    Estudiante
                 </button>
                 <button
-                    className={`toggle-button ${userType === 'student' ? 'active' : ''}`}
-                    onClick={() => toggleUserType('student')}>
-                    Estudiante
+                    className={`toggle-button ${userType === 'teacher' ? 'active' : ''}`}
+                    onClick={() => toggleUserType('teacher')}
+                >
+                    Docente/Tutor
                 </button>
             </div>
 
@@ -34,5 +30,3 @@ const LoginModal = () => {
 };
 
 export default LoginModal;
-
-

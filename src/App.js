@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, {useState} from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Principal/Navbar.js';
 import Footer from './components/Principal/Footer.js';
@@ -10,25 +10,35 @@ import { EvaluationCard, EvaluationForm } from './components/RealizarEvaluacion'
 import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
-import { HistoriaHU, DetalleHistoria } from './components/Gestion';
+import { HistoriaHU, DetalleHistoria } from './components/GestionTareas/index.js';
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { RegistroDocente } from './components/RegistroTutor';
-import { LoginForm, LoginModal } from './components/Login';
+import {  LoginModal } from './components/Login';
 import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
 import RegistroEstudiante from './components/RegistroEstudiante/RegistroEstudiante.js';
 
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {
+
+// Crear el estado 'userType'
+const [userType, setUserType] = useState('student'); // 'student' por defecto
+
+// Crear la función 'toggleUserType' para cambiar el tipo de usuario
+const toggleUserType = (type) => {
+  setUserType(type); // Actualiza el estado con 'student' o 'teacher'
+};
+
   return (
     <Router>
       <div className="app-container">
-        <Navbar />
+         {/* Pasamos userType como prop a Navbar y Footer */}
+         <Navbar userType={userType} />
+        
         <div className='content'>        
         <Routes>
           <Route path="/" element={<Homepage />} />
-          <Route path="/login" element={<LoginModal />} />
-          <Route path="/loginForm" element={<LoginForm />} />
+          <Route path="/login" element={<LoginModal userType={userType} toggleUserType={toggleUserType} />} />
 
           {/* Ruta para "/evaluacion" que muestra EvaluationCard */}
           <Route path="/evaluacion" element={<EvaluationCard />} />
@@ -58,7 +68,7 @@ function App() {
           <Route path="/planilla/evaluaciones/:idGrupo" element={<PlanillaEvaluacionEvaluaciones />} />
         </Routes>
         </div>
-        <Footer />
+        <Footer userType={userType} /> {/* Pasamos userType como prop */}
       </div>
     </Router>
   );

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Alert } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { API_BASE_URL } from "../config";
@@ -13,7 +12,7 @@ const PlanillaEvaluacion = () => {
   const [grupos, setGrupos] = useState([]);
   const navigate = useNavigate();
 
-  const idTutor = 2;
+  const idTutor = 1;
   
   const obtenerGrupos = async () => {
     try {
