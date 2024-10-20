@@ -68,7 +68,7 @@ const LoginForm = ({ userType }) => {
                 onChange={e => setContrasena(e.target.value)}
                 required
             />
-            <button type="submit" className="submit-button">
+                <button type="submit" className={`submit-button ${userType}`}>
                 Iniciar Sesión
             </button>
         </form>

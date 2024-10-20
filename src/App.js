@@ -21,15 +21,26 @@ import { ProtectecRoute } from './components/ProtectedRoute.jsx';
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {
+
+// Crear el estado 'userType'
+const [userType, setUserType] = useState('student'); // 'student' por defecto
   const [user,setUser] = useState(null)
+
+// Crear la función 'toggleUserType' para cambiar el tipo de usuario
+const toggleUserType = (type) => {
+  setUserType(type); // Actualiza el estado con 'student' o 'teacher'
+};
+
   return (
     <Router>
       <div className="app-container">
-        <Navbar />
+         {/* Pasamos userType como prop a Navbar y Footer */}
+         <Navbar userType={userType} />
+        
         <div className='content'>        
         <Routes>
           <Route path="/" element={<Homepage />} />
-          <Route path="/login" element={<LoginModal />} />
+          <Route path="/login" element={<LoginModal userType={userType} toggleUserType={toggleUserType} />} />
 
           {/* Ruta para "/evaluacion" que muestra EvaluationCard */}
           <Route path="/evaluacion" element={<EvaluationCard />} />
@@ -97,7 +108,7 @@ function App() {
           
         </Routes>
         </div>
-        <Footer />
+        <Footer userType={userType} /> {/* Pasamos userType como prop */}
       </div>
     </Router>
   );

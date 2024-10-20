@@ -70,6 +70,19 @@
     text-decoration: none;
 }
 
+
+
+.navbar.student,
+.footer.student {
+    background-color: #215F88; /* Azul oscuro para estudiante */
+}
+
+.navbar.teacher,
+.footer.teacher {
+    background-color: #175D51; /* Azul claro para docente */
+}
+
+
 /* Homepage.css */
 
 .homepage-container {

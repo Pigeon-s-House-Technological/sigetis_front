@@ -3,20 +3,16 @@ import { NavLink, useNavigate, Link } from 'react-router-dom';
 import './Principal.css';
 import Cookies from 'js-cookie';
 
-//estilos en app.css
-const Navbar = () => {
-
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const navigate = useNavigate();
+const Navbar = ({ userType }) => {  // Recibe 'userType' como prop
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState('');
+    useEffect(() => {
+        const token = Cookies.get('authToken');
+        setIsAuthenticated(!!token); // Si el token existe, el usuario está autenticado
+    }, []);
 
-  useEffect(() => {
-    const token = Cookies.get('authToken');
-    setIsAuthenticated(!!token); // Si el token existe, el usuario está autenticado
-  }, []);
-
-  const handleClick = () => {
+const handleClick = () => {
     navigate('/login');
   };
 
@@ -37,10 +33,9 @@ const Navbar = () => {
       navigate('/verGrupos');
     }
   };
-
-  return (
-    <nav className="navbar">
-      <ul>
+    return (
+        <nav className={`navbar ${userType}`}> {/* Aplicamos clase dinámica */}
+            <ul>
       <li className="navbar-brand">
         <Link to="/" className="navbar-brand">
           <span>SIGETIS</span>
@@ -84,8 +79,8 @@ const Navbar = () => {
           )}
         </li>
       </ul>
-    </nav>
-  );
+        </nav>
+    );
 };
 
 export default Navbar;

@@ -3,7 +3,7 @@
     margin-bottom: 40px;
 }
 
-.title{
+.title {
     text-align: center;
     color: rgb(24, 24, 154);
 }
@@ -22,7 +22,7 @@
 
 .toggle-buttons {
     display: flex;
-    justify-content: center;
+    justify-content: space-between; /* Ajuste para mejor distribución */
     margin: 20px 0;
     width: 100%;
 }
@@ -31,16 +31,16 @@
     flex: 1;
     border: none;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: #215F88; /* Color para estudiante */
     color: white;
     cursor: pointer;
     padding: 10px;
-    margin: 0 0;
+    margin: 0 5px; /* Ajuste de margen entre los botones */
     transition: background-color 0.3s;
 }
 
 .toggle-button.active {
-    background-color: #0056b3;
+    background-color: #175D51; /* Color para docente */
 }
 
 .login-form {
@@ -64,7 +64,7 @@
 
 .submit-button {
     padding: 10px 20px;
-    background-color: #0056b3;
+    background-color: #626766; /* Color azul para botón de enviar */
     color: white;
     border: none;
     border-radius: 5px;
@@ -72,11 +72,27 @@
     width: 100%;
     text-align: center;
     transition: background-color 0.3s;
+    margin-top: 20px; /* Ajuste para mayor espacio entre campos y botón */
 }
 
 .submit-button:hover {
     background-color: #004494;
 }
+
+
+/* Estilos dinámicos para los botones de Estudiante y Docente/Tutor */
+.submit-button.student {
+    background-color: #215F88; /* Azul oscuro para estudiante */
+    color: white;
+}
+
+.submit-button.teacher {
+    background-color: #175D51; /* Azul claro para docente */
+    color: white;
+}
+
+
+
 
 @media (max-width: 600px) {
     .login-container {
