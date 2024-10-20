@@ -21,6 +21,7 @@ const Asignar = () => {
   const [ evaluaciones, setEvaluaciones ] = useState([]); // Estado para manejar las evaluaciones
   const [evaluacionSeleccionada, setEvaluacionSeleccionada] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const [asignaciones, setAsignaciones] = useState([]);
   
   const obtenerEvaluaciones = async () => {
     try {
@@ -39,11 +40,31 @@ const Asignar = () => {
 
   const obtnerGrupos = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/grupos`); // Reemplaza con la URL de tu API
-      const gruposFiltrados = response.data.filter(grupo => grupo.id_tutor === id_tutor);
-      setGrupos(response.data);
+      const response = await axios.get(`${API_BASE_URL}/gruposUsuarios`);
+      const usuariosData = response.data;
+
+      const responseAsignaciones = await axios.get(`${API_BASE_URL}/asignaciones`);
+        const asignacionesData = responseAsignaciones.data;
+
+        // Procesar los datos para agrupar los usuarios por sus grupos
+        const gruposMap = new Map();
+
+        usuariosData.forEach(usuario => {
+          usuario.grupos.forEach(grupo => {
+            if (!gruposMap.has(grupo.id)) {
+              gruposMap.set(grupo.id, {
+                ...grupo,
+                integrantes: []
+              });
+            }
+            gruposMap.get(grupo.id).integrantes.push(usuario);
+          });
+        });
+
+        setGrupos(Array.from(gruposMap.values()));
+        setAsignaciones(asignacionesData);
     } catch (error) {
-      console.error('Error al obtener los datos de la API', error);
+      console.error('Error al obtener los datos:', error);
     }
   }
 
@@ -66,12 +87,37 @@ const Asignar = () => {
     setMensaje('');
   };
 
-  const handleAddMemberClick = () => {
+  const handleAddMemberClick = async (group) => {
+    
     if (!evaluacionSeleccionada) {
       setMensaje('Debe seleccionar una evaluación.');
     } else {
-      // Lógica para agregar miembro
-      console.log('Agregar miembro');
+      const grupoAsignado = asignaciones.some(asignacion =>
+        asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
+        group.integrantes.some(integrante => asignacion.id_usuario === integrante.id)
+      );
+
+      if (grupoAsignado) {
+        alert('Este grupo ya está asignado a esta evaluación.');
+        return;
+      }
+      try {
+        const evaluacionId = evaluacionSeleccionada; 
+        const requests = group.integrantes.map(integrante => {
+          return axios.post(`${API_BASE_URL}/asignaciones`, {
+            id_evaluacion: evaluacionId,
+            id_usuario: integrante.id,
+            estado_evaluacion: 0
+          });
+          
+        });
+        console.log('requests:', requests);
+        await Promise.all(requests);
+        alert('Autoevaluaciones asignadas correctamente');
+      } catch (error) {
+        console.error('Error al asignar autoevaluaciones:', error);
+        alert('Error al asignar autoevaluaciones');
+      }
     }
   };
 
@@ -93,28 +139,30 @@ const Asignar = () => {
       {mensaje && <p className="mensaje-advertencia">{mensaje}</p>}
       {grupos.map((group, index) => (
         <div key={index} className="group">
-          
           <div className="group-header" onClick={() => toggleGroup(index)}>
             <span>{group.nombre_grupo}</span>
             <span>{expandedGroup === index ? '▲' : '▼'}</span>
           </div>
           {expandedGroup === index && (
             <div className="group-details">
-              <button className="add-member-btn" onClick={handleAddMemberClick}>
+              <button className="add-member-btn" onClick={() => handleAddMemberClick(group)}>
                 <FaPlus /> {/* Icono de + */}
               </button>
               <p>{group.descripcion_grupo}</p>
-              {(group.members && group.members.length > 0) ? (
+              {(group.integrantes && group.integrantes.length > 0) ? (
                 <div className="members">
                   <h4>Integrantes</h4>
                   <ul>
-                    {group.members.map((member, idx) => (
+                    {group.integrantes.map((integrante, idx) => (
                       <li key={idx}>
-                        {member.name} {member.leader && <span>- Líder</span>}
+                        {integrante.nombre} {integrante.apellido} ({integrante.correo})
+                        {integrante.tipo_usuario === 2 && (
+                          <span style={{ color: 'red', marginLeft: '10px' }}>Scrum Master</span>
+                        )}
                       </li>
                     ))}
                   </ul>
-                  <button className="view-group-btn">Ver Grupo</button>
+                  <button className="view-group-btn" disabled>Ver Grupo</button>
                 </div>
               ) : (
                 <p>No hay miembros asignados.</p>
