@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
-
 import './EvaluationCard.css';
 
 const EvaluationCard = () => {
@@ -14,32 +13,30 @@ const EvaluationCard = () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/asignaciones`);
         const filtered = response.data.filter(asignacion => asignacion.id_usuario === 1);
-        
+
         const evaluaciones = await axios.get(`${API_BASE_URL}/evaluaciones`);
-  
         const evaluacionesFiltradas = [];
         for (const filtro of filtered) {
           const filtradas = evaluaciones.data.filter(eva => eva.id === filtro.id_evaluacion);
           evaluacionesFiltradas.push(...filtradas);
         }
-        
+
         const datosImprimir = [];
-        for(let i=0; i<evaluacionesFiltradas.length; i++){
+        for (let i = 0; i < evaluacionesFiltradas.length; i++) {
           const nombre = evaluacionesFiltradas[i].nombre_evaluacion;
           const estado = filtered[i].estado_evaluacion ? "Entregado" : "No entregado";
           let tipoTexto;
           const tipo = evaluacionesFiltradas[i].tipo_evaluacion;
-          if(tipo === 1){
+          if (tipo === 1) {
             tipoTexto = "Autoevaluacion";
-          }else if(tipo === 2){
+          } else if (tipo === 2) {
             tipoTexto = "Evaluacion en pares";
-          }else if(tipo === 3){
+          } else if (tipo === 3) {
             tipoTexto = "Evaluacion cruzada";
           }
-          datosImprimir.push({nombre, estado, tipo: tipoTexto});
+          datosImprimir.push({ id: evaluacionesFiltradas[i].id, nombre, estado, tipo: tipoTexto });
         }
-        
-        console.log('Evaluaciones:', datosImprimir);
+
         setEvaluaciones(datosImprimir);
       } catch (error) {
         console.error('Error al obtener las evaluaciones:', error);
@@ -49,13 +46,24 @@ const EvaluationCard = () => {
     fetchEvaluaciones();
   }, []);
 
-  const handleStartClick = () => {
-    navigate('/evaluacion/formulario'); // Redirige a la ruta anidada
+  const handleStartClick = (evaluacionId) => {
+    navigate('/evaluacion/formulario', {
+      state: { evaluacionId, updateEvaluacionEstado }
+    });
+  };
+
+  const updateEvaluacionEstado = (evaluacionId) => {
+    setEvaluaciones(prevEvaluaciones =>
+      prevEvaluaciones.map(evaluacion =>
+        evaluacion.id === evaluacionId
+          ? { ...evaluacion, estado: "Entregado" }
+          : evaluacion
+      )
+    );
   };
 
   return (
     <div className="evaluation-card">
-      
       {evaluaciones.map((evaluacion) => (
         <div key={evaluacion.id} className="evaluation-card">
           <h2>{evaluacion.nombre}</h2>
@@ -65,10 +73,8 @@ const EvaluationCard = () => {
             Iniciar
           </button>
         </div>
-        
       ))}
     </div>
-    
   );
 };
 
