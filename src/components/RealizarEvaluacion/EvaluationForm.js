@@ -53,6 +53,14 @@ const EvaluationForm = () => {
   };
 
   const handleFinish = () => {
+    // Validar que no haya campos de complemento vacíos
+    const complementoVacio = complemento.some(pregunta => !responses[pregunta.id]);
+  
+    if (complementoVacio) {
+      alert('Por favor, complete todos los campos de complemento.');
+      return;
+    }
+  
     console.log('Responses:', responses);
     navigate('/evaluacion'); // Aquí puedes conectar con la API más adelante
   };
