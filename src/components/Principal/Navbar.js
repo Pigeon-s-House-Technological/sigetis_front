@@ -19,6 +19,7 @@ const handleClick = () => {
   const logout =async () => {
     const token = Cookies.get('authToken');
     Cookies.remove('authToken'); // Eliminar el token de las cookies
+    localStorage.removeItem('user'); // Eliminar el usuario del almacenamiento local
     window.location.reload();
     setIsAuthenticated(false); // Actualizar el estado de autenticación
   };
@@ -40,11 +41,6 @@ const handleClick = () => {
         <Link to="/" className="navbar-brand">
           <span>SIGETIS</span>
         </Link>
-        </li>
-      <li>
-          <NavLink to="/" end className={({ isActive }) => (isActive ? 'active-link' : '')}>
-            Inicio
-          </NavLink>
         </li>
         <li>
           <NavLink to="/gestionarEvaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
@@ -69,6 +65,11 @@ const handleClick = () => {
         <li>
           <NavLink to="/planilla" className={({ isActive }) => (isActive ? 'active-link' : '')}>
             Planilla de Evaluacion
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/asignarEvaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+            Asignar
           </NavLink>
         </li>
         <li>
