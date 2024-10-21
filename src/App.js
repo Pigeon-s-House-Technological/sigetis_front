@@ -80,13 +80,17 @@ useEffect(() => {
             <Route path="/asignarEvaluacion" element={<EvaluationType />} />
             <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
             <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
-            <Route path="/registroDocente" element={<RegistroDocente />} />
-            <Route path="/registroEstudiante" element={<RegistroEstudiante />} />
           </Route>
 
           {/* Rutas protegidas para Jefe grupo */}
           <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["2", "0"]} redirectTo="/" />} >
             
+          </Route>
+
+          <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["0"]} redirectTo="/" />} >
+          <Route path="/planilla" element={<PlanillaEvaluacion />} />
+            <Route path="/registroDocente" element={<RegistroDocente />} />
+            <Route path="/registroEstudiante" element={<RegistroEstudiante />} />
           </Route>
           
         </Routes>
