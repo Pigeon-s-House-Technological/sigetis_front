@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Modal, Form} from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -19,6 +19,7 @@ const HomeAutoevaluacion = () => {
     const [newEvaluationName, setNewEvaluationName] = useState('');
     const [selectedEvaluation, setSelectedEvaluation] = useState(null);
     const [selectedEvaluationId, setSelectedEvaluationId] = useState(null);
+    const [tipoEvaluacion, setTipoEvaluacion] = useState(false);
 
   // Función para obtener los datos de la API
   const fetchAutoevaluaciones = async () => {
@@ -45,13 +46,14 @@ const HomeAutoevaluacion = () => {
   };
 
   const handleSave = async () => {
+    
     try {
       const response = await axios.post(`${API_BASE_URL}/evaluaciones`, {
         nombre_evaluacion: newEvaluationName,
         tipo_evaluacion: 1, // Asegúrate de que el tipo de evaluación es 1
-        tipo_destinatario: false // Ajusta este valor según sea necesario
+        tipo_destinatario: parseInt(tipoEvaluacion) // Ajusta este valor según sea necesario
       });
-      // Actualizar el estado con la nueva autoevaluación
+      
       setAutoevaluaciones([...autoevaluaciones, response.data]);
       fetchAutoevaluaciones();
       setNewEvaluationName('');
@@ -84,6 +86,7 @@ const HomeAutoevaluacion = () => {
   const editarClick = (id) => {
     const autoevaluacionEditar = autoevaluaciones.find((autoevaluacion) => autoevaluacion.id === id);
     setSelectedEvaluation(autoevaluacionEditar);
+    setTipoEvaluacion(autoevaluacionEditar.tipo_destinatario);
     setNewEvaluationName(autoevaluacionEditar.nombre_evaluacion);
     setShowEditModal(true);
   };
@@ -92,6 +95,7 @@ const HomeAutoevaluacion = () => {
     try {
       const response = await axios.patch(`${API_BASE_URL}/evaluacionesP/${selectedEvaluation.id}`, {
         nombre_evaluacion: newEvaluationName,
+        tipo_destinatario: parseInt(tipoEvaluacion)
       });
       // Actualizar el estado con la autoevaluación editada
       setAutoevaluaciones(autoevaluaciones.map((autoevaluacion) =>
@@ -125,6 +129,7 @@ const HomeAutoevaluacion = () => {
           <tr>
             <th>#</th>
             <th>Nombre</th>
+            <th>Tipo</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -136,6 +141,9 @@ const HomeAutoevaluacion = () => {
                 <Link to={`/gestionEvaluacion/${autoevaluacion.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
                   {autoevaluacion.nombre_evaluacion}
                 </Link>
+              </td>
+              <td>
+                {autoevaluacion.tipo_destinatario === true ? 'Grupal' : 'Individual'}
               </td>
               <td>
                 <Button style={{ backgroundColor: '#09DDCC', color: 'black' }} className="btn-custom-warning" onClick={() => editarClick(autoevaluacion.id)}>
@@ -158,6 +166,9 @@ const HomeAutoevaluacion = () => {
                 setNewName={setNewEvaluationName}
                 handleSave={handleSave}
                 titulo={"Agregar Evaluación"}
+                autoevaluacion={true}
+                setTipoEvaluacion={setTipoEvaluacion}
+                tipoEvaluacion={tipoEvaluacion}
       />
 
       <ModalEliminar
@@ -173,6 +184,9 @@ const HomeAutoevaluacion = () => {
                 setNewName={setNewEvaluationName}
                 handleSave={handleEditSave}
                 titulo="Editar Evaluación"
+                autoevaluacion={true}
+                setTipoEvaluacion={setTipoEvaluacion}
+                tipoEvaluacion={tipoEvaluacion}
       />
     </div>
   );

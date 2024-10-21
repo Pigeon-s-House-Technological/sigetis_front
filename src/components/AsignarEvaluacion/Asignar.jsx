@@ -28,6 +28,7 @@ const Asignar = () => {
       const response = await axios.get(`${API_BASE_URL}/evaluaciones`); // Reemplaza con la URL de tu API
       const evaluacionesFiltradas = response.data.filter(evaluacion => evaluacion.tipo_evaluacion === parseInt(tipo) && 
                                                           evaluacion.tipo_destinatario === tipoDestinatarioOp);
+      console.log('evaluacionesFiltradas:', tipo, destinatario, evaluacionesFiltradas);
       
       if(evaluacionesFiltradas.length === 0) {
         setEvaluaciones([]);
@@ -71,7 +72,7 @@ const Asignar = () => {
   const toggleGroup = (groupIndex) => {
     if (expandedGroup === groupIndex) {
       setExpandedGroup(null);  // Colapsa el grupo si ya está expandido
-    } else {
+    } else  {
       setExpandedGroup(groupIndex);  // Expande el grupo seleccionado
     }
   };
@@ -87,38 +88,86 @@ const Asignar = () => {
     setMensaje('');
   };
 
-  const handleAddMemberClick = async (group) => {
+  const handleAddMemberClick = (group) => {
     
     if (!evaluacionSeleccionada) {
       setMensaje('Debe seleccionar una evaluación.');
-    } else {
-      const grupoAsignado = asignaciones.some(asignacion =>
-        asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
-        group.integrantes.some(integrante => asignacion.id_usuario === integrante.id)
-      );
-
-      if (grupoAsignado) {
-        alert('Este grupo ya está asignado a esta evaluación.');
-        return;
-      }
-      try {
-        const evaluacionId = evaluacionSeleccionada; 
-        const requests = group.integrantes.map(integrante => {
-          return axios.post(`${API_BASE_URL}/asignaciones`, {
-            id_evaluacion: evaluacionId,
-            id_usuario: integrante.id,
-            estado_evaluacion: 0
-          });
-          
-        });
-        console.log('requests:', requests);
-        await Promise.all(requests);
-        alert('Autoevaluaciones asignadas correctamente');
-      } catch (error) {
-        console.error('Error al asignar autoevaluaciones:', error);
-        alert('Error al asignar autoevaluaciones');
-      }
+    } else if(parseInt(tipo) === 1 && destinatario === 'individual') {
+      individualAutoevaluacion(group);
+    }else if(parseInt(tipo) === 1 && destinatario === 'grupal'){
+      grupalAutoevaluacion(group);
+    }else if(parseInt(tipo) === 2){
+      evaluacionCruzada(group);
+    }else if(parseInt(tipo) === 3){
+      evaluacionPares(group);
+    }else{
+      console.log('error al cargar evaluaciones');
     }
+  };
+
+  const individualAutoevaluacion = async(group) => {
+    const grupoAsignado = asignaciones.some(asignacion =>
+      asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
+      group.integrantes.some(integrante => asignacion.id_usuario === integrante.id)
+    );
+
+    if (grupoAsignado) {
+      alert('Este grupo ya está asignado a esta evaluación.');
+      return;
+    }
+    try {
+      const evaluacionId = evaluacionSeleccionada; 
+      const requests = group.integrantes.map(integrante => {
+        return axios.post(`${API_BASE_URL}/asignaciones`, {
+          id_evaluacion: evaluacionId,
+          id_usuario: integrante.id,
+          estado_evaluacion: 0
+        });
+        
+      });
+      console.log('requests:', requests);
+      await Promise.all(requests);
+      alert('Autoevaluaciones asignadas correctamente');
+    } catch (error) {
+      console.error('Error al asignar autoevaluaciones:', error);
+      alert('Error al asignar autoevaluaciones');
+    }
+  };
+
+  const evaluacionPares = () => {
+      console.log('evaluacionPares');
+  };
+
+  const grupalAutoevaluacion = async(group) => {
+    const grupoAsignado = asignaciones.some(asignacion =>
+      asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
+      asignacion.id_grupo === group.id
+    );
+
+    if (grupoAsignado) {
+      alert('Este grupo ya está asignado a esta evaluación.');
+      return;
+    }
+    try {
+      const evaluacionId = evaluacionSeleccionada; 
+      
+      const response = await axios.post(`${API_BASE_URL}/asignaciones`, {
+          id_evaluacion: evaluacionId,
+          id_grupo: group.id,
+          estado_evaluacion: 0
+        });
+        
+      
+      console.log('requests:', response);
+      alert('Autoevaluaciones asignadas correctamente');
+    } catch (error) {
+      console.error('Error al asignar autoevaluaciones:', error);
+      alert('Error al asignar autoevaluaciones');
+    }
+  };
+
+  const evaluacionCruzada = () => {
+    console.log('evaluacionCruzada');
   };
 
   return (
@@ -173,6 +222,7 @@ const Asignar = () => {
       ))}
     </div>
   );
+  
 };
 
 export default Asignar;

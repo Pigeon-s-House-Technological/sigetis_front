@@ -32,7 +32,12 @@ function DetalleHistoria() {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(`${endPoint}?id_hu=${id}`); // Asegúrate de que la API acepte este parámetro
-      setTasks(response.data);
+      if (Array.isArray(response.data)) {
+        setTasks(response.data);
+      } else {
+        console.error("La respuesta de la API no es un array:", response.data);
+        setTasks([]);
+      }
     } catch (error) {
       console.error("Error al obtener las tareas:", error.response ? error.response.data : error.message);
     }

@@ -22,6 +22,7 @@ const Homepage = () => {
           withCredentials: true
         });
         setData(response.data);
+        localStorage.setItem('user', JSON.stringify(response.data));
         console.log(response.data);
       } catch (error) {
         console.error('Error al obtener Usuario:', error.response ? error.response.data : error.message);
