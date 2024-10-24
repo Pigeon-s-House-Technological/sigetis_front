@@ -74,8 +74,8 @@ const handleClick = () => {
         {(tipo === 0 || tipo === 2 || tipo === 3) && (
           <>
             <li>
-              <NavLink to="/historiaHU" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Historias de Usuario
+              <NavLink to="/sprints" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                Sprints
               </NavLink>
             </li>
             <li>
