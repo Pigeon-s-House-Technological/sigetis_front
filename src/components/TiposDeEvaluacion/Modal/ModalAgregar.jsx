@@ -1,7 +1,7 @@
 import React from 'react';
 import './Modal.css'; // Importa el archivo CSS para el modal
 
-const ModalAgregar = ({ show, onClose, newName, setNewName, handleSave, titulo  }) => {
+const ModalAgregar = ({ show, onClose, newName, setNewName, handleSave, titulo, autoevaluacion=false, setTipoEvaluacion=null, tipoEvaluacion=null  }) => {
     return (
         <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }} tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
@@ -15,16 +15,30 @@ const ModalAgregar = ({ show, onClose, newName, setNewName, handleSave, titulo  
                     <div className="modal-body">
                         <form>
                             <div className="form-group">
-                                <label htmlFor="formEvaluationName">Nombre de la Evaluación</label>
+                                <label htmlFor="formEvaluationName">Ingrese el nombre</label>
                                 <input
                                     type="text"
                                     className="form-control"
                                     id="formEvaluationName"
-                                    placeholder="Ingresa el nombre de la evaluación"
+                                    placeholder="Ingresa el nombre"
                                     value={newName}
                                     onChange={(e) => setNewName(e.target.value)}
                                 />
                             </div>
+                            {autoevaluacion && (
+                                <div className="form-group">
+                                    <label htmlFor="formEvaluationType">Tipo de Evaluación</label>
+                                    <select
+                                        className="form-control"
+                                        id="formEvaluationType"
+                                        value={tipoEvaluacion}
+                                        onChange={(e) => setTipoEvaluacion(e.target.value)}
+                                    >
+                                        <option value="1">Grupal</option>
+                                        <option value="0">Individual</option>
+                                    </select>
+                                </div>
+                            )}
                         </form>
                     </div>
                     <div className="modal-footer">

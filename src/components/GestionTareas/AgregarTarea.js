@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { API_BASE_URL } from '../config';
 import axios from 'axios';
+import './Modales/Modal.css'; // Importa el archivo CSS para el modal
 
 const endPoint = `${API_BASE_URL}/actividades`;
 
@@ -51,7 +52,7 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
     };
   
     console.log('Datos enviados:', task);
-  
+   
     try {
       let response;
       if (currentTask) {
@@ -69,36 +70,47 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
   
 
   return (
-    <Modal show={show} onHide={onHide}>
-      <Modal.Header closeButton>
-        <Modal.Title>{currentTask ? 'Editar Tarea' : 'Agregar Tarea'}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Nombre de la Actividad</label>
-            <input
-              type="text"
-              className="form-control"
-              value={nombreActividad}
-              onChange={(e) => setNombreActividad(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Estado de la Actividad</label>
-            <select
-              className="form-select"
-              value={estadoActividad}
-              onChange={(e) => setEstadoActividad(e.target.value)}
-            >
-              <option value="pendiente">Pendiente</option>
-              <option value="en_progreso">En Progreso</option>
-              <option value="completada">Completada</option>
-            </select>
-          </div>
-          <div className="mb-3">
+    
+    <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+    <div className="modal-dialog" role="document">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h4 className="modal-title">{currentTask ? 'Editar Tarea' : 'Agregar Tarea'}</h4>
+          <button type="button" className="close" onClick={onHide} aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div className="modal-body">
+          {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="nombreActividad">Nombre de la Actividad</label>
+              <input
+                type="text"
+                className="form-control"
+                id="nombreActividad"
+                placeholder="Ingresa el nombre de la actividad"
+                value={nombreActividad}
+                onChange={(e) => setNombreActividad(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="estadoActividad">Estado de la Actividad</label>
+              <select
+                className="form-control"
+                id="estadoActividad"
+                value={estadoActividad}
+                onChange={(e) => setEstadoActividad(e.target.value)}
+                required
+              >
+                <option value="">Selecciona el estado</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="en_progreso">En Progreso</option>
+                <option value="completada">Completada</option>
+              </select>
+            </div>
+            <div className="mb-3">
             <label className="form-label">Fecha de Inicio</label>
             <input
               type="date"
@@ -108,22 +120,31 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
               required
             />
           </div>
-          <div className="mb-3">
-            <label className="form-label">Fecha de Fin</label>
-            <input
-              type="date"
-              className="form-control"
-              value={fechaFin}
-              onChange={(e) => setFechaFin(e.target.value)}
-              required
-            />
+          <div className='form-group'>
+            <div className="mb-3">
+              <label className="form-label">Fecha de Fin</label>
+              <input
+                type="date"
+                className="form-control"
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+                required
+              />
+            </div>
           </div>
-          <Button variant="primary" type="submit">
-            Guardar
-          </Button>
-        </form>
-      </Modal.Body>
-    </Modal>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" style={{ backgroundColor: '#09DDCC', color: 'black' }} onClick={onHide}>
+                Cancelar
+              </button>
+              <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#007BFF' }}>
+                Guardar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
   );
 }
 

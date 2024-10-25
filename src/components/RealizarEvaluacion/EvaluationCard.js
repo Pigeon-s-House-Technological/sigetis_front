@@ -6,6 +6,8 @@ import './EvaluationCard.css';
 
 const EvaluationCard = () => {
   const [evaluaciones, setEvaluaciones] = useState([]);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedEvaluacion, setSelectedEvaluacion] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,53 +15,48 @@ const EvaluationCard = () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/asignaciones`);
         const filtered = response.data.filter(asignacion => asignacion.id_usuario === 1);
-
         const evaluaciones = await axios.get(`${API_BASE_URL}/evaluaciones`);
         const evaluacionesFiltradas = [];
         for (const filtro of filtered) {
           const filtradas = evaluaciones.data.filter(eva => eva.id === filtro.id_evaluacion);
           evaluacionesFiltradas.push(...filtradas);
         }
-
         const datosImprimir = [];
-        for (let i = 0; i < evaluacionesFiltradas.length; i++) {
+        for(let i=0; i<evaluacionesFiltradas.length; i++){
           const nombre = evaluacionesFiltradas[i].nombre_evaluacion;
           const estado = filtered[i].estado_evaluacion ? "Entregado" : "No entregado";
           let tipoTexto;
           const tipo = evaluacionesFiltradas[i].tipo_evaluacion;
-          if (tipo === 1) {
+          if(tipo === 1){
             tipoTexto = "Autoevaluacion";
-          } else if (tipo === 2) {
+          }else if(tipo === 2){
             tipoTexto = "Evaluacion en pares";
-          } else if (tipo === 3) {
+          }else if(tipo === 3){
             tipoTexto = "Evaluacion cruzada";
           }
-          datosImprimir.push({ id: evaluacionesFiltradas[i].id, nombre, estado, tipo: tipoTexto });
+          datosImprimir.push({id: evaluacionesFiltradas[i].id, nombre, estado, tipo: tipoTexto}); // Asegúrate de incluir el id aquí
         }
-
+        console.log('Evaluaciones:', datosImprimir);
         setEvaluaciones(datosImprimir);
       } catch (error) {
         console.error('Error al obtener las evaluaciones:', error);
       }
     };
-
     fetchEvaluaciones();
   }, []);
 
   const handleStartClick = (evaluacionId) => {
-    navigate('/evaluacion/formulario', {
-      state: { evaluacionId, updateEvaluacionEstado }
-    });
+    setSelectedEvaluacion(evaluacionId);
+    setModalIsOpen(true);
   };
 
-  const updateEvaluacionEstado = (evaluacionId) => {
-    setEvaluaciones(prevEvaluaciones =>
-      prevEvaluaciones.map(evaluacion =>
-        evaluacion.id === evaluacionId
-          ? { ...evaluacion, estado: "Entregado" }
-          : evaluacion
-      )
-    );
+  const handleConfirmStart = () => {
+    navigate('/evaluacion/formulario', { state: { evaluacionId: selectedEvaluacion } });
+    setModalIsOpen(false);
+  };
+
+  const handleCancelStart = () => {
+    setModalIsOpen(false);
   };
 
   return (
@@ -74,6 +71,16 @@ const EvaluationCard = () => {
           </button>
         </div>
       ))}
+      {modalIsOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Confirmación</h2>
+            <p>¿Estás seguro de que deseas iniciar esta evaluación?</p>
+            <button onClick={handleConfirmStart}>Sí, iniciar</button>
+            <button onClick={handleCancelStart}>Cancelar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

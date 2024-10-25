@@ -41,9 +41,9 @@
 .navbar a.active-link {
     background-color: #185075;
     border-radius: 4px;
-    padding: 0.2rem 1rem; /* Asegúrate de que el padding sea consistente */
-    color: black; /* Asegúrate de que el color del texto sea consistente */
-    text-decoration: none; /* Asegúrate de que la decoración del texto sea consistente */
+    padding: 0.2rem 1rem;
+    color: black;
+    text-decoration: none;
 }
 
 .navbar a.active-link {
@@ -69,6 +69,19 @@
     margin: 0 10px;
     text-decoration: none;
 }
+
+
+
+.navbar.student,
+.footer.student {
+    background-color: #215F88; /* Azul oscuro para estudiante */
+}
+
+.navbar.teacher,
+.footer.teacher {
+    background-color: #175D51; /* Azul claro para docente */
+}
+
 
 /* Homepage.css */
 

@@ -13,6 +13,9 @@ function RegistroEstudiante() {
   const [correo, setCorreo] = useState('');
   const [error, setError] = useState('');  
   const [exito, setExito] = useState(false);  
+  //const [usuario, setUsuario] = useState();  
+  //const [contrasena_usuario, setContrasena] = useState();  
+
 
   // Función para guardar un nuevo estudiante
   const handleSave = async (e) => {
@@ -30,7 +33,7 @@ function RegistroEstudiante() {
         nombre_user: nombre_user,
         apellido_user: apellido_user,
         correo: correo,
-        tipo_usuario: 2, 
+        tipo_usuario: 1, 
       };
 
       console.log('Datos enviados:', data);
@@ -75,7 +78,13 @@ function RegistroEstudiante() {
             type="text"
             placeholder="Ingresa tu nombre"
             value={nombre_user}
-            onChange={(e) => setNombre(e.target.value)}
+            onChange={(e) => {
+            const regex = /^[a-zA-Z\s]*$/; // Expresión regular que permite solo letras y espacios
+            if (regex.test(e.target.value)) {
+              setNombre(e.target.value); // Actualiza el estado solo si la entrada es válida
+            }
+          }}
+          
           />
         </Form.Group>
 
@@ -85,8 +94,12 @@ function RegistroEstudiante() {
             type="text"
             placeholder="Ingresa tu apellido"
             value={apellido_user}
-            onChange={(e) => setApellido(e.target.value)}
-          />
+            onChange={(e) => {
+              const regex = /^[a-zA-Z\s]*$/; // Expresión regular que permite solo letras y espacios
+              if (regex.test(e.target.value)) {
+                setApellido(e.target.value); // Actualiza el estado solo si la entrada es válida
+              }
+            }}          />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formCorreo">
@@ -98,6 +111,41 @@ function RegistroEstudiante() {
             onChange={(e) => setCorreo(e.target.value)}
           />
         </Form.Group>
+{/*
+        <Form.Group controlId="formUsuario" className="mb-3">
+          <Form.Label>Usuario</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Ingresa tu usuario"
+            value={usuario}
+            onChange={(e) => setUsuario(e.target.value)}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group controlId="formContrasena" className="mb-3">
+          <Form.Label>Contraseña</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Ingresa tu contraseña"
+            value={contrasena_usuario}
+            onChange={(e) => setContrasena(e.target.value)}
+            required
+          />
+        </Form.Group>*/}
+
+        {/*
+        <Form.Group controlId="formConfirmarContrasena" className="mb-3">
+          <Form.Label>Confirmar Contraseña</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Confirma tu contraseña"
+            value={confirmarContrasena}
+            onChange={(e) => setConfirmarContrasena(e.target.value)}
+            required
+          />
+        </Form.Group>
+        */}
 
         <Button variant="primary" type="submit" className="w-100">
           Registrar

@@ -33,8 +33,8 @@ const LoginForm = ({ userType }) => {
             Cookies.set('authToken', token, { expires: 7 });
             setShowConfirmation(true); // Mostrar la alerta de confirmación
             setError(null);    
-            setTimeout(() => window.location.reload(), 1000);
             setTimeout(() => setRedirect(true));
+            setTimeout(() => window.location.reload(), 2000);
           } catch (error) {
             console.error('Error al iniciar sesion:', error.response ? error.response.data : error.message);
             setError('Usuario o contraseña incorrectos');
@@ -68,7 +68,7 @@ const LoginForm = ({ userType }) => {
                 onChange={e => setContrasena(e.target.value)}
                 required
             />
-            <button type="submit" className="submit-button">
+                <button type="submit" className={`submit-button ${userType}`}>
                 Iniciar Sesión
             </button>
         </form>

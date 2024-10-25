@@ -1,5 +1,5 @@
 
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Principal/Navbar.js';
 import Footer from './components/Principal/Footer.js';
@@ -16,64 +16,86 @@ import { RegistroDocente } from './components/RegistroTutor';
 import {  LoginModal } from './components/Login';
 import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
 import RegistroEstudiante from './components/RegistroEstudiante/RegistroEstudiante.js';
-import { ProtectecRoute } from './components/ProtectedRoute.jsx';
+import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {
-  const [user, setUser] = useState(null);
+
+// Crear el estado 'userType'
+const [userType, setUserType] = useState('student'); // 'student' por defecto
+const [user,setUser] = useState(null)
+
+// Crear la función 'toggleUserType' para cambiar el tipo de usuario
+const toggleUserType = (type) => {
+  setUserType(type); // Actualiza el estado con 'student' o 'teacher'
+};
+
+useEffect(() => {
+  const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser.userData);
+    } catch (error) {
+      setUser(null);
+      console.error('Error al parsear los datos del usuario:', error); 
+    }
+  }
+}, []);
 
   return (
     <Router>
       <div className="app-container">
-        <Navbar />
+         {/* Pasamos userType como prop a Navbar y Footer */}
+         <Navbar userType={userType} />
+        
         <div className='content'>        
-          <Routes>
-            {/* Rutas públicas */}
-            <Route path="/" element={<Homepage />} />
-            <Route path="/login" element={<LoginModal />} />
-            <Route path="/registroDocente" element={<RegistroDocente />} />
-            <Route path="/registroEstudiante" element={<RegistroEstudiante />} />
-            
-            {/* Rutas para evaluaciones */}
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/login" element={<LoginModal userType={userType} toggleUserType={toggleUserType} />} />
+
+          {/* Rutas protegidas para Estudiante */}
+          <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["3", "2", "0"]} redirectTo="/" />} >
             <Route path="/evaluacion" element={<EvaluationCard />} />
             <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
+            <Route path="/evaluacion" element={<EvaluationCard />} />
+            <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
+            <Route path="/historiaHU" element={<HistoriaHU />} />
+            <Route path="/detalle/:id" element={<DetalleHistoria />} />
+           
+          </Route>
+
+          {/* Rutas protegidas para Docente */}
+          <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["1", "0"]} redirectTo="/" />} >
+            <Route path="/planilla" element={<PlanillaEvaluacion />} />
+            <Route path="/planilla/actividades/:idGrupo" element={<PlanillaEvaluacionActividades />} />
+            <Route path="/planilla/evaluaciones/:idGrupo" element={<PlanillaEvaluacionEvaluaciones />} />
+            <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
+            <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
+            <Route path="/gestionEvaluacion/:id" element={<CriteriosEvaluacion />} />
+            <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
+            <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
+            <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
             <Route path="/asignarEvaluacion" element={<EvaluationType />} />
             <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
             <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
-            <Route path="/historiaHU" element={<HistoriaHU />} />
-            <Route path="/detalle/:id" element={<DetalleHistoria />} />
+          </Route>
 
-            {/* Rutas protegidas para Docente */}
-            <Route element={<ProtectecRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["3", "2"]} redirectTo="/" />} >
-              {/* Rutas protegidas para docente */}
-            </Route>
+          {/* Rutas protegidas para Jefe grupo */}
+          <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["2", "0"]} redirectTo="/" />} >
+            
+          </Route>
 
-            {/* Rutas protegidas para estudiante */}
-            <Route element={<ProtectecRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["1"]} redirectTo="/" />} >
-              <Route path="/planilla" element={<PlanillaEvaluacion />} />
-              <Route path="/planilla/actividades/:idGrupo" element={<PlanillaEvaluacionActividades />} />
-              <Route path="/planilla/evaluaciones/:idGrupo" element={<PlanillaEvaluacionEvaluaciones />} />
-              <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
-              <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
-              <Route path="/gestionEvaluacion/:id" element={<CriteriosEvaluacion />} />
-              <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
-              <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
-              <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
-            </Route>
-
-            {/* Rutas protegidas para Jefe grupo */}
-            <Route element={<ProtectecRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["2", "3"]} redirectTo="/" />} >
-              <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
-              <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
-              <Route path="/gestionEvaluacion/:id" element={<CriteriosEvaluacion />} />
-              <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
-              <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
-              <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
-            </Route>
-          </Routes>
+          <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["0"]} redirectTo="/" />} >
+          <Route path="/planilla" element={<PlanillaEvaluacion />} />
+            <Route path="/registroDocente" element={<RegistroDocente />} />
+            <Route path="/registroEstudiante" element={<RegistroEstudiante />} />
+          </Route>
+          
+        </Routes>
         </div>
-        <Footer />
+        <Footer userType={userType} /> {/* Pasamos userType como prop */}
       </div>
     </Router>
   );
