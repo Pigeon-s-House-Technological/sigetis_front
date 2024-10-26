@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -23,8 +23,10 @@ function Sprints() {
     obtenerGrupo();
     try{
         const response = await axios.get(`${API_BASE_URL}/sprints`);
+        
         if(Array.isArray(response.data)){
-            setSprints(response.data);
+          const filteredSprints = response.data.filter(sprint => sprint.id_grupo === grupo);
+          setSprints(filteredSprints);
         }else{
             console.error('La respuesta de la API no es un array:', response.data);
             setSprints([]);
@@ -38,28 +40,16 @@ function Sprints() {
   useEffect(() => {
     fetchSprints();
     
-  }, []);
+  }, [grupo]);
 
-  const obtenerGrupo = async () => {
+  const obtenerGrupo = () => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        const response = await axios.get(`${API_BASE_URL}/gruposUsuarios`);
-        const gruposUsuarios = response.data;
-        // Encontrar el grupo al que pertenece el usuario
-        const usuario = gruposUsuarios.find(u => u.id === parsedUser.userData.id);
-        let grupoId = 0;
-        if (usuario && usuario.grupos && usuario.grupos.length > 0) {
-          grupoId = usuario.grupos[0].id;
-          console.log('ID del grupo del usuario:', grupoId);
-          setGrupo(grupoId);
-        } else {
-          console.error('El usuario no pertenece a ningún grupo');
-        }
-      } catch (error) {
-        console.error('Error al obtener el grupo:', error.response ? error.response.data : error.message);
-      }
+      const user = JSON.parse(storedUser);
+      setGrupo(user.grupoId);  
+      console.log('Grupo:', user.grupoId);
+    }else{
+      console.error('Usuario no autenticado');
     }
   };
 

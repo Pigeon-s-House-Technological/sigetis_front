@@ -10,7 +10,7 @@ import { EvaluationCard, EvaluationForm } from './components/RealizarEvaluacion'
 import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
 import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
           HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
-import { HistoriaHU, DetalleHistoria, Sprints } from './components/GestionTareas/index.js';
+import { HistoriaHU, DetalleHistoria, Sprints, Resultados } from './components/GestionTareas/index.js';
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { RegistroDocente } from './components/RegistroTutor';
 import {  LoginModal } from './components/Login';
@@ -64,6 +64,7 @@ useEffect(() => {
             <Route path="/historiaHU/:id" element={<HistoriaHU />} />
             <Route path="/detalle/:id" element={<DetalleHistoria />} />
             <Route path="/sprints" element={<Sprints />} />
+            <Route path="/resultados/:idActividad" element={<Resultados />} />
            
           </Route>
 

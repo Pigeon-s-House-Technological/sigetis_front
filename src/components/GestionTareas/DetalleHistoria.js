@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
@@ -9,7 +8,7 @@ import ModalEliminar from '../General/Modales/ModalEliminar';
 import BotonAtras from '../General/BotonAtras';
 import './estilos.css'
 import AgregarTarea from './AgregarTarea';
-import AsignarUsuario from './AsignarUsuario';
+import AsignarModal from './Modales/AsignarModal';
 
 
 function DetalleHistoria() {
@@ -21,12 +20,25 @@ function DetalleHistoria() {
   const [currentTask, setCurrentTask] = useState(null);
   const [showEditTaskModal, setShowEditTaskModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showAsignarModal, setShowAsignarModal] = useState(false);
+  const [integrantes, setIntegrantes] = useState([]);
+  const [selectedIntegrante, setSelectedIntegrante] = useState(null);
+  const [grupo, setGrupo] = useState(null);
+  const [idAsignar, setIdAsignar] = useState(null);
+  const navigate = useNavigate(); // Inicializar useNavigate
 
   // Fetch historia
   const fetchHistorias = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/historiaUsuarios/${id}`);
-      setHistoria(response.data);
+      if(response.data){
+        setHistoria(response.data);
+        
+      }else{
+        console.error("La respuesta de la API no es un array:", response.data);
+        setHistoria([]);
+      }
+      
     } catch (error) {
       console.error("Error al obtener las historias:", error.response ? error.response.data : error.message);
     }
@@ -34,13 +46,43 @@ function DetalleHistoria() {
 
   // Fetch tasks
   const fetchTasks = async () => {
+    await obtenerGrupo();
     try {
-      const response = await axios.get(`${API_BASE_URL}/actividades`); // Asegúrate de que la API acepte este parámetro
+      const response = await axios.get(`${API_BASE_URL}/actividades`);
+      
       if (Array.isArray(response.data)) {
-        setTasks(response.data.map(task => ({
-          ...task,
-          estado_actividad: task.estado_actividad || '' // Asegurarse de que no sea null
-        })));
+        const filteredTasks = response.data.filter(task => task.id_hu === parseInt(id));
+        
+        // Obtener detalles del encargado para cada tarea
+        const tasksWithEncargado = await Promise.all(filteredTasks.map(async (task) => {
+          if (task.encargado) {
+            try {
+              const encargadoResponse = await axios.get(`${API_BASE_URL}/usuarios/${task.encargado}`);
+              return {
+                ...task,
+                encargado: encargadoResponse.data.usuario.nombre,
+                estado_actividad: task.estado_actividad || '' // Asegurarse de que no sea null
+              };
+            } catch (error) {
+              console.error(`Error al obtener los detalles del encargado para la tarea ${task.id}:`, error);
+              return {
+                ...task,
+                encargado: null,
+                estado_actividad: task.estado_actividad || '' // Asegurarse de que no sea null
+              };
+            }
+          } else {
+            console.log('no existe encargado');
+            return {
+              ...task,
+              encargado: null,
+              estado_actividad: task.estado_actividad || '' // Asegurarse de que no sea null
+            };
+            
+          }
+        }));
+
+        setTasks(tasksWithEncargado);
       } else {
         console.error("La respuesta de la API no es un array:", response.data);
         setTasks([]);
@@ -56,17 +98,57 @@ function DetalleHistoria() {
     fetchTasks();
   }, [id]);
 
-  const handleTaskResponse = async (method, task, taskId) => {
+  const fetchIntegrantes = async () => {
+    
+    const grupoId = grupo;
     try {
-      const response = await axios({
-        method,
-        url: taskId ? `${API_BASE_URL}/actividades/${taskId}` : `${API_BASE_URL}/actividades`,
-        data: task,
-      });
-      return response.data;
+      const response = await axios.get(`${API_BASE_URL}/gruposUsuarios/integrantes/${grupoId}`);
+      const integrantesArray = Object.values(response.data.integrantes); // Convertir el objeto en un array
+      setIntegrantes(integrantesArray);
+      console.log('Integrantes:', integrantesArray);
     } catch (error) {
-      console.error('Error:', error);
-      throw new Error('Error en la operación de tarea');
+      console.error('Error al obtener los integrantes del grupo:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (showAsignarModal) {
+      fetchIntegrantes();
+    }
+  }, [showAsignarModal, grupo]);
+
+  const obtenerGrupo =() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setGrupo(user.grupoId);
+    }else{
+      console.error('Usuario no autenticado');
+    }
+  };
+
+  const handleAsignar = (taskId) => {
+    setShowAsignarModal(true);
+    setIdAsignar(taskId);
+  };
+
+  const handleAsignarIntegrante = async () => {
+    console.log('Asignando tarea a:', selectedIntegrante);
+    console.log('Tarea actual:', currentTask);
+    if (!selectedIntegrante) {
+      console.error('No se ha seleccionado ningún integrante');
+      setShowAsignarModal(false);
+    }
+
+    try {
+      const response = await axios.patch(`${API_BASE_URL}/actividadesP/${idAsignar}`, {
+        encargado: selectedIntegrante.id,
+      });
+      console.log('Tarea asignada correctamente:', response.data.actividad);
+      setTasks(tasks.map(task => (task.id === idAsignar ? response.data.actividad : task)));
+      setShowAsignarModal(false);
+    } catch (error) {
+      console.error('Error al asignar la tarea:', error);
     }
   };
 
@@ -133,9 +215,6 @@ function DetalleHistoria() {
     }
   };
 
-  const handleAsignar = () => {
-  };
-
   const handleConfirmDelete = async () => {
     const id = idEliminar;
     try{
@@ -146,6 +225,10 @@ function DetalleHistoria() {
     }catch(error){
       console.error('Error al eliminar la tarea:', error);
     }
+  };
+
+  const handleVerResultados = (taskId) => {
+    navigate(`/resultados/${taskId}`);
   };
 
   return (
@@ -180,9 +263,9 @@ function DetalleHistoria() {
               <tr key={task.id}>
                 <td>{task.nombre_actividad}</td>
                 <td>
-                  <button className="btn btn-secondary" onClick={() => handleAsignar()}>
-                    {task.encargado ? task.encargado : 'Asignar'}
-                  </button>
+                <button onClick={() => handleAsignar(task.id)} className="btn-encargado">
+                  {task.encargado ? task.encargado : 'Sin encargado'}
+                </button>
                 </td>
                 <td>
                   <select
@@ -211,7 +294,7 @@ function DetalleHistoria() {
                 </td>
                 <td>{task.fecha_inicio}</td>
                 <td>{task.fecha_fin}</td>
-                <td>{task.resultado}</td>
+                <td><button className="btn-resultados" onClick={() => handleVerResultados(task.id)}>Ver resultados</button></td>
                 <td>
                   <Dropdown>
                     <Dropdown.Toggle variant="link" id="dropdown-basic">•••</Dropdown.Toggle>
@@ -251,6 +334,16 @@ function DetalleHistoria() {
         titulo={"Agregar Actividad"}
         isEditMode={true}
       /> 
+      <AsignarModal
+        show={showAsignarModal}
+        integrantes={integrantes}
+        onClose={() => setShowAsignarModal(false)}
+        onAsignar={handleAsignarIntegrante}
+        onSelectIntegrante={(id) => {
+          const integrante = integrantes.find(i => i.id === id);
+          setSelectedIntegrante(integrante);
+        }}
+      />
     </div>
   );
 }
