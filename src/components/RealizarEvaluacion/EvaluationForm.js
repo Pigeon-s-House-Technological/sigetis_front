@@ -15,11 +15,48 @@ const EvaluationForm = () => {
   const cargarCriterios = async () => {
     try {
       const response = await axios.get('http://localhost:8000/api/criterios');
+      console.log('Respuesta de criterios:', response.data); // Verifica la respuesta
       const datos = Array.isArray(response.data) ? response.data : [];
       setCriterios(datos);
+      // Cargar preguntas para cada criterio
+      await Promise.all(datos.map(criterio => cargarPreguntas(criterio.id)));
     } catch (error) {
       console.error('Error al obtener los criterios:', error);
       setCriterios([]);
+    }
+  };
+
+  const cargarPreguntas = async (criterioId) => {
+    try {
+      const [opcionMultipleResponse, puntuacionResponse, complementoResponse] = await Promise.all([
+        axios.get(`http://localhost:8000/api/preguntasOpcionMultiple?criterioId=${criterioId}`),
+        axios.get(`http://localhost:8000/api/preguntasPuntuacion?criterioId=${criterioId}`),
+        axios.get(`http://localhost:8000/api/preguntasComplemento?criterioId=${criterioId}`)
+      ]);
+
+      const opcionMultiple = Array.isArray(opcionMultipleResponse.data) ? opcionMultipleResponse.data : [];
+      const puntuacion = Array.isArray(puntuacionResponse.data) ? puntuacionResponse.data : [];
+      const complemento = Array.isArray(complementoResponse.data) ? complementoResponse.data : [];
+
+      // Cargar opciones para cada pregunta de opción múltiple
+      await Promise.all(opcionMultiple.map(async (pregunta) => {
+        try {
+          const opcionesResponse = await axios.get(`http://localhost:8000/api/opcionesPreguntaMultiple?id_pregunta_multiple=${pregunta.id}`);
+          pregunta.opciones = Array.isArray(opcionesResponse.data) ? opcionesResponse.data : [];
+        } catch (error) {
+          console.error(`Error al obtener opciones para la pregunta ${pregunta.id}:`, error);
+          pregunta.opciones = []; // Asegúrate de manejar errores
+        }
+      }));
+
+      setCriterios(prevCriterios => prevCriterios.map(criterio => {
+        if (criterio.id === criterioId) {
+          return { ...criterio, opcionMultiple, puntuacion, complemento };
+        }
+        return criterio;
+      }));
+    } catch (error) {
+      console.error('Error al obtener las preguntas:', error);
     }
   };
 
@@ -28,39 +65,48 @@ const EvaluationForm = () => {
   };
 
   const handleFinish = async () => {
-    const allAnswered = criterios.every(criterio =>
-      (criterio.preguntasOpcionMultiple || []).every(pregunta => responses[pregunta.id]) &&
-      (criterio.preguntasPuntuacion || []).every(pregunta => responses[pregunta.id]) &&
-      (criterio.preguntasComplemento || []).every(pregunta => responses[pregunta.id])
-    );
+  const allAnswered = criterios.every(criterio =>
+    (criterio.opcionMultiple || []).every(pregunta => responses[pregunta.id]) &&
+    (criterio.puntuacion || []).every(pregunta => responses[pregunta.id]) &&
+    (criterio.complemento || []).every(pregunta => responses[pregunta.id])
+  );
 
-    if (!allAnswered) {
-      alert('Por favor, responda todas las preguntas.');
-      return;
-    }
+  if (!allAnswered) {
+    alert('Por favor, responda todas las preguntas.');
+    return;
+  }
 
-    try {
-      await Promise.all(
-        criterios.flatMap(criterio => [
-          ...(criterio.preguntasOpcionMultiple || []).map(pregunta => 
-            guardarRespuestaOpcionMultiple(pregunta.id, responses[pregunta.id])
-          ),
-          ...(criterio.preguntasPuntuacion || []).map(pregunta => 
-            guardarRespuestaPuntuacion(pregunta.id, responses[pregunta.id])
-          ),
-          ...(criterio.preguntasComplemento || []).map(pregunta => 
-            guardarRespuestaComplemento(pregunta.id, responses[pregunta.id])
-          ),
-        ])
-      );
+  try {
+    const promises = [];
+    criterios.forEach(criterio => {
+      (criterio.opcionMultiple || []).forEach(pregunta => {
+        const respuestaId = responses[pregunta.id];
+        if (respuestaId) {
+          promises.push(guardarRespuestaOpcionMultiple(pregunta.id, respuestaId));
+        }
+      });
+      (criterio.puntuacion || []).forEach(pregunta => {
+        const puntuacion = responses[pregunta.id];
+        if (puntuacion) {
+          promises.push(guardarRespuestaPuntuacion(pregunta.id, puntuacion));
+        }
+      });
+      (criterio.complemento || []).forEach(pregunta => {
+        const respuesta = responses[pregunta.id];
+        if (respuesta) {
+          promises.push(guardarRespuestaComplemento(pregunta.id, respuesta));
+        }
+      });
+    });
 
-      alert('Evaluación terminada y respuestas guardadas');
-      navigate('/evaluacion');
-    } catch (error) {
-      console.error('Error al guardar las respuestas:', error);
-      alert('Hubo un problema al guardar las respuestas. Inténtalo de nuevo.');
-    }
-  };
+    await Promise.all(promises);
+    alert('Evaluación terminada y respuestas guardadas');
+    navigate('/evaluacion');
+  } catch (error) {
+    console.error('Error al guardar las respuestas:', error);
+    alert('Hubo un problema al guardar las respuestas. Inténtalo de nuevo.');
+  }
+};
 
   const guardarRespuestaOpcionMultiple = async (preguntaId, respuestaId) => {
     const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
@@ -105,78 +151,63 @@ const EvaluationForm = () => {
           <h2>{criterio.titulo_criterio}</h2>
 
           {/* Renderiza preguntas de opción múltiple */}
-          {criterio.preguntasOpcionMultiple && criterio.preguntasOpcionMultiple.length > 0 && (
-            <div className="preguntas-section">
-              <h3>Preguntas de Opción Múltiple</h3>
-              {criterio.preguntasOpcionMultiple.map(pregunta => (
-                <div className="criteria-section" key={pregunta.id}>
-                  <h4 className="criteria-title">{pregunta.pregunta_opcion_multiple}</h4>
-                  <div className="question">
-                    <p>Seleccione una opción:</p>
-                    <div className="vertical-options">
-                      {(pregunta.opciones || []).map((opcion, idx) => (
-                        <label key={idx} style={{ display: 'block' }}>
-                          <input
-                            type="radio"
-                            name={`opcion_${pregunta.id}`}
-                            value={opcion.id}
-                            onChange={() => handleResponseChange(pregunta.id, opcion.id)}
-                          /> {opcion.opcion_pregunta}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+          {criterio.opcionMultiple && criterio.opcionMultiple.length > 0 && criterio.opcionMultiple.map(pregunta => (
+            <div className="criteria-section" key={pregunta.id}>
+              <h3 className="criteria-title">{pregunta.pregunta_opcion_multiple}</h3>
+              <div className="question">
+                <p>Seleccione una opción:</p>
+                <div className="vertical-options">
+                  {(pregunta.opciones || []).map((opcion, idx) => (
+                    <label key={idx} style={{ display: 'block' }}>
+                      <input
+                        type="radio"
+                        name={`opcion_${pregunta.id}`}
+                        value={opcion.id}
+                        onChange={() => handleResponseChange(pregunta.id, opcion.id)}
+                      /> {opcion.opcion_pregunta}
+                    </label>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
-          )}
+          ))}
 
           {/* Renderiza preguntas de puntuación */}
-          {criterio.preguntasPuntuacion && criterio.preguntasPuntuacion.length > 0 && (
-            <div className="preguntas-section">
-              <h3>Preguntas de Puntuación</h3>
-              {criterio.preguntasPuntuacion.map(pregunta => (
-                <div className="criteria-section" key={pregunta.id}>
-                  <h4 className="criteria-title">{pregunta.pregunta_puntuacion}</h4>
-                  <div className="question">
-                    <p>Califique del 1 al 5:</p>
-                    <div className="scale-options">
-                      {[1, 2, 3, 4, 5].map(value => (
-                        <label key={value}>
-                          {value} <input
-                            type="radio"
-                            name={`puntuacion_${pregunta.id}`}
-                            value={value}
-                            onChange={() => handleResponseChange(pregunta.id, value)}
-                          />
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+          {criterio.puntuacion && criterio.puntuacion.length > 0 && criterio.puntuacion.map(pregunta => (
+            <div className="criteria-section" key={pregunta.id}>
+              <h3 className="criteria-title">{pregunta.pregunta_puntuacion}</h3>
+              <div className="question">
+                <p>Califique del 1 al 5:</p>
+                <div className="scale-options">
+                  {[1, 2, 3, 4, 5].map(value => (
+                    <label key={value}>
+                      {value} <input
+                        type="radio"
+                        name={`puntuacion_${pregunta.id}`}
+                        value={value}
+                        onChange={() => handleResponseChange(pregunta.id, value)}
+                      />
+                    </label>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
-          )}
+          ))}
 
           {/* Renderiza preguntas de complemento */}
-          {criterio.preguntasComplemento && criterio.preguntasComplemento.length > 0 && (
-            <div className="preguntas-section">
-              <h3>Preguntas de Complemento</h3>
-              {criterio.preguntasComplemento.map(pregunta => (
-                <div className="criteria-section" key={pregunta.id}>
-                  <h4 className="criteria-title">{pregunta.pregunta_complemento}</h4>
-                  <div className="question">
-                    <input
-                      type="text"
-                      className="text-input"
-                      placeholder="Respuesta..."
-                      onChange={(e) => handleResponseChange(pregunta.id, e.target.value)}
-                    />
-                  </div>
-                </div>
-              ))}
+          {criterio.complemento && criterio.complemento.length > 0 && criterio.complemento.map(pregunta => (
+            <div className="criteria-section" key={pregunta.id}>
+              <h3 className="criteria-title">{pregunta.pregunta_complemento}</h3>
+              <div className="question">
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="Respuesta..."
+                  onChange={(e) => handleResponseChange(pregunta.id, e.target.value)}
+                />
+              </div>
             </div>
-          )}
+          ))}
         </div>
       ))}
 
