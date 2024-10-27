@@ -10,6 +10,7 @@ const Navbar = ({ userType }) => {  // Recibe 'userType' como prop
     const [tipo, setTipo] = useState(10);
 
     useEffect(() => {
+      console.log('Ejecutando useEffect de Navbar', userType);
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
         try {

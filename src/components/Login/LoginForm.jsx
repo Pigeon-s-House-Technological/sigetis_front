@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Navigate } from 'react-router-dom';
@@ -14,6 +14,11 @@ const LoginForm = ({ userType }) => {
     const [error, setError] = useState(null);
     const [showConfirmation, setShowConfirmation] = useState(false); // Variable para mostrar mensaje de confirmación
 
+    useEffect(() => {
+        // Limpiar los datos de los inputs cuando userType cambie
+        setUsuario('');
+        setContrasena('');
+      }, [userType]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -56,6 +61,7 @@ const LoginForm = ({ userType }) => {
                 id="user"
                 name="user" // Usar name para manejar el cambio
                 placeholder="Ingrese el usuario"
+                value={usuario || ''}
                 onChange={e => setUsuario(e.target.value)}
                 required
             />
@@ -65,6 +71,7 @@ const LoginForm = ({ userType }) => {
                 id="password"
                 name="password" // Usar name para manejar el cambio
                 placeholder="Ingrese la contraseña"
+                value={contrasena || ''}
                 onChange={e => setContrasena(e.target.value)}
                 required
             />
