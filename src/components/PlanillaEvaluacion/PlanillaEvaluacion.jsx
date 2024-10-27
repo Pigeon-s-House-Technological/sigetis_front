@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 import { API_BASE_URL } from "../config";
 
 import "./estilos/PlanillaEvaluacion.css";
 
 const PlanillaEvaluacion = () => {
   const [activeType, setActiveType] = useState("evaluaciones");
-  const [evaluaciones, setEvaluaciones] = useState([]);
-  const [actividades, setActividades] = useState([]);
   const [grupos, setGrupos] = useState([]);
-  const navigate = useNavigate();
 
-  const idTutor = 1;
+  const [idTutor, setIdTutor] = useState(null); // Reemplaza con el ID del tutor logueado
+
+  const obtenerId = async () => {
+    const id = localStorage.getItem('user');
+    const idParsed = JSON.parse(id);
+    setIdTutor(idParsed.userData.id);
+  }
+
   
   const obtenerGrupos = async () => {
+    await obtenerId();
+    console.log(idTutor);
     try {
       const response = await axios.get(`${API_BASE_URL}/grupos`); // Reemplaza con la URL de tu API
       const gruposFiltrados = response.data.filter((grupo) => grupo.id_tutor === idTutor);
@@ -27,7 +33,7 @@ const PlanillaEvaluacion = () => {
   useEffect(() => {
     obtenerGrupos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [idTutor]);
 
   return (
     <div className="planilla-type">

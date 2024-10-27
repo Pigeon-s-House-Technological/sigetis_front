@@ -5,6 +5,7 @@ import { API_BASE_URL } from "../config";
 
 import "./estilos/PlanillaEvaluacionActividades.css";
 import BotonAtras from "../General/BotonAtras";
+import ResultadosModal from "./modales/ResultadosModal";
 
 const PlanillaEvaluacionActividades = () => {
 
@@ -16,6 +17,9 @@ const PlanillaEvaluacionActividades = () => {
     const [actividades, setActividades] = useState([]);
     const [selectedSprint, setSelectedSprint] = useState(null);
     const [selectedHistoria, setSelectedHistoria] = useState(null);
+    const [resultados, setResultados] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [resultadosActuales, setResultadosActuales] = useState([]);
     
     const { idGrupo } = useParams();
     
@@ -58,20 +62,40 @@ const PlanillaEvaluacionActividades = () => {
     
       // Fetch tasks
     const fetchActividades = async (historiaId) => {
-        try {
-          const response = await axios.get(`${API_BASE_URL}/actividades?id_hu=${historiaId}`);
-          const filtradas = response.data.filter(actividad => actividad.id_hu === parseInt(historiaId));
-          setActividades(filtradas);
-        } catch (error) {
-          console.error("Error al obtener las actividades:", error.response ? error.response.data : error.message);
-        }
+      try {
+        const response = await axios.get(`${API_BASE_URL}/reporte/grupo/${idGrupo}`);
+  
+        // Filtrar las actividades por historiaId
+        const actividadesFiltradas = [];
+        response.data.forEach(sprint => {
+          sprint.historias_usuarios.forEach(historia => {
+            if (historia.id_hu === parseInt(historiaId)) {
+              actividadesFiltradas.push(...historia.actividades);
+            }
+          });
+        });
+  
+        setActividades(actividadesFiltradas);
+        console.log("actividadesFiltradas", actividadesFiltradas);
+      } catch (error) {
+        console.error("Error al obtener las actividades:", error.response ? error.response.data : error.message);
+      }
     };
 
+    const fetchResultados = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/resultados`);
+        setResultados(response.data);
+      } catch (error) {
+        console.error("Error al obtener los resultados:", error.response ? error.response.data : error.message);
+      }
+    };
+      
     useEffect(() => {
         obtenerNombreGrupo();
         fetchSprints();
-        //obtenerEstudiantes();
-    }, []);
+        fetchResultados();
+    }, [idGrupo]);
 
     useEffect(() => {
         generarDatosActividades();
@@ -98,9 +122,9 @@ const PlanillaEvaluacionActividades = () => {
             actividades.forEach((actividad) => {
                 datos.push({
                     id: actividad.id,
-                    nombre_actividad: actividad.nombre_actividad,
+                    nombre_actividad: actividad.actividad,
                     encargado: obtenerEncargado(actividad.encargado),
-                    estado_actividad: actividad.estado_actividad,
+                    estado_actividad: obtenerEstado(actividad.estado_actividad),
                     fecha_inicio: actividad.fecha_inicio,
                     fecha_fin: actividad.fecha_fin
                 });
@@ -109,13 +133,28 @@ const PlanillaEvaluacionActividades = () => {
         setDatosTabla(datos);
     }
 
+    const handleVerResultados = (actividadId) => {
+      const resultadosActividad = resultados.filter(res => res.id_actividad === actividadId);
+      setResultadosActuales(resultadosActividad);
+      setShowModal(true);
+    };
+
     const obtenerEncargado = (id) => {
         if(id === null){
             return "Sin asignar";
         }
-        return `encargado ${id}`;
+        return `${id}`;
     }
 
+    const obtenerEstado = (estado) => {
+        if(estado === 1){
+            return "Pendiente";
+        }else if(estado === 2){
+            return "En progreso";
+        }else{
+            return "Finalizado";
+        }
+    }
 
 
     return(
@@ -168,11 +207,22 @@ const PlanillaEvaluacionActividades = () => {
                 <td>{task.estado_actividad}</td>
                 <td>{task.fecha_inicio}</td>
                 <td>{task.fecha_fin}</td>
-                <td><button className="btn-resultados">Ver resultados</button></td>
+                <td>
+                  <button className="btn-resultados" onClick={() => handleVerResultados(task.id)}>
+                    Ver resultados
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        <ResultadosModal
+          show={showModal}
+          handleClose={() => setShowModal(false)}
+          resultados={resultadosActuales}
+        />
+
         </div>
     );
 }
