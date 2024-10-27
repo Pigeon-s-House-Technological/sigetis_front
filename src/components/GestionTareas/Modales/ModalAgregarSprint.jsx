@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
 import './Modal.css'; // Importa el archivo CSS para el modal
 
-const ModalAgregarHU = ({ show, onClose, newName, setNewName, handleSave, titulo  }) => {
-
+const ModalAgregarSprint = ({ show, onClose, newName, setNewName, handleSave, titulo}) => {
     const [error, setError] = useState('');
 
     const handleSaveClick = () => {
-        if (!newName.trim()) {
-            setError('El nombre de la Historia de Usuario es obligatorio.');
+        if (!newName) {
+          setError('El número de Sprint es obligatorio.');
         } else {
-            setError('');
-            handleSave();
+          setError('');
+          handleSave();
         }
-    };
+      };
 
     return (
         <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }} tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">{titulo}</h5>
+                        <h4 className="modal-title">{titulo} </h4>
                         <button type="button" className="close" onClick={onClose} aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -27,12 +26,12 @@ const ModalAgregarHU = ({ show, onClose, newName, setNewName, handleSave, titulo
                     <div className="modal-body">
                         <form>
                         <div className="form-group">
-                            <label htmlFor="formEvaluationName">Nombre de la Historia de Usuario</label>
+                            <label htmlFor="formNewName">Ingrese el número de Sprint</label>
                             <input
-                            type="text"
+                            type="number"
                             className="form-control"
-                            id="formEvaluationName"
-                            placeholder="Ingresa el nombre de la historia de usuario"
+                            id="formNewName"
+                            placeholder="Ingresa el número de sprint"
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
                             />
@@ -54,4 +53,4 @@ const ModalAgregarHU = ({ show, onClose, newName, setNewName, handleSave, titulo
     );
 };
 
-export default ModalAgregarHU;
+export default ModalAgregarSprint;

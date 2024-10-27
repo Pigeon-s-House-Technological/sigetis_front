@@ -12,14 +12,14 @@ import { API_BASE_URL } from '../../config';
 
 
 const HomeAutoevaluacion = () => {
-    const [autoevaluaciones, setAutoevaluaciones] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [newEvaluationName, setNewEvaluationName] = useState('');
-    const [selectedEvaluation, setSelectedEvaluation] = useState(null);
-    const [selectedEvaluationId, setSelectedEvaluationId] = useState(null);
-    const [tipoEvaluacion, setTipoEvaluacion] = useState(false);
+  const [autoevaluaciones, setAutoevaluaciones] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [newEvaluationName, setNewEvaluationName] = useState('');
+  const [selectedEvaluation, setSelectedEvaluation] = useState(null);
+  const [selectedEvaluationId, setSelectedEvaluationId] = useState(null);
+  const [tipoEvaluacion, setTipoEvaluacion] = useState(false);
 
   // Función para obtener los datos de la API
   const fetchAutoevaluaciones = async () => {

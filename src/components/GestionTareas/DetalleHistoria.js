@@ -1,28 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import axios from 'axios';
-import AgregarTarea from './AgregarTarea';
-import AsignarUsuario from './AsignarUsuario';
 import { API_BASE_URL } from '../config';
 
-const endPoint = `${API_BASE_URL}/actividades`; 
+import ModalEliminar from '../General/Modales/ModalEliminar';
+import BotonAtras from '../General/BotonAtras';
+import './estilos.css'
+import AgregarTarea from './AgregarTarea';
+import AsignarModal from './Modales/AsignarModal';
+
 
 function DetalleHistoria() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [historia, setHistoria] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [idEliminar, setIdEliminar] = useState(null);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
+  const [showEditTaskModal, setShowEditTaskModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showAsignarModal, setShowAsignarModal] = useState(false);
+  const [integrantes, setIntegrantes] = useState([]);
+  const [selectedIntegrante, setSelectedIntegrante] = useState(null);
+  const [grupo, setGrupo] = useState(null);
+  const [idAsignar, setIdAsignar] = useState(null);
+  const navigate = useNavigate(); // Inicializar useNavigate
 
   // Fetch historia
   const fetchHistorias = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/historiaUsuarios/${id}`);
-      setHistoria(response.data);
+      if(response.data){
+        setHistoria(response.data);
+        
+      }else{
+        console.error("La respuesta de la API no es un array:", response.data);
+        setHistoria([]);
+      }
+      
     } catch (error) {
       console.error("Error al obtener las historias:", error.response ? error.response.data : error.message);
     }
@@ -30,16 +46,50 @@ function DetalleHistoria() {
 
   // Fetch tasks
   const fetchTasks = async () => {
+    await obtenerGrupo();
     try {
-      const response = await axios.get(`${endPoint}?id_hu=${id}`); // Asegúrate de que la API acepte este parámetro
+      const response = await axios.get(`${API_BASE_URL}/actividades`);
+      
       if (Array.isArray(response.data)) {
-        setTasks(response.data);
+        const filteredTasks = response.data.filter(task => task.id_hu === parseInt(id));
+        
+        // Obtener detalles del encargado para cada tarea
+        const tasksWithEncargado = await Promise.all(filteredTasks.map(async (task) => {
+          if (task.encargado) {
+            try {
+              const encargadoResponse = await axios.get(`${API_BASE_URL}/usuarios/${task.encargado}`);
+              return {
+                ...task,
+                encargado: encargadoResponse.data.usuario.nombre,
+                estado_actividad: task.estado_actividad || '' // Asegurarse de que no sea null
+              };
+            } catch (error) {
+              console.error(`Error al obtener los detalles del encargado para la tarea ${task.id}:`, error);
+              return {
+                ...task,
+                encargado: null,
+                estado_actividad: task.estado_actividad || '' // Asegurarse de que no sea null
+              };
+            }
+          } else {
+            console.log('no existe encargado');
+            return {
+              ...task,
+              encargado: null,
+              estado_actividad: task.estado_actividad || '' // Asegurarse de que no sea null
+            };
+            
+          }
+        }));
+
+        setTasks(tasksWithEncargado);
       } else {
         console.error("La respuesta de la API no es un array:", response.data);
         setTasks([]);
       }
     } catch (error) {
       console.error("Error al obtener las tareas:", error.response ? error.response.data : error.message);
+      setTasks([]);
     }
   };
 
@@ -48,106 +98,156 @@ function DetalleHistoria() {
     fetchTasks();
   }, [id]);
 
-  const handleTaskResponse = async (method, task, taskId) => {
+  const fetchIntegrantes = async () => {
+    
+    const grupoId = grupo;
     try {
-      const response = await axios({
-        method,
-        url: taskId ? `${endPoint}/${taskId}` : endPoint,
-        data: task,
-      });
-      return response.data;
+      const response = await axios.get(`${API_BASE_URL}/gruposUsuarios/integrantes/${grupoId}`);
+      const integrantesArray = Object.values(response.data.integrantes); // Convertir el objeto en un array
+      setIntegrantes(integrantesArray);
+      console.log('Integrantes:', integrantesArray);
     } catch (error) {
-      console.error('Error:', error);
-      throw new Error('Error en la operación de tarea');
-    }
-  };
-  
-  const addTask = async (task) => {
-    const method = currentTask ? 'PUT' : 'POST';
-    const taskId = currentTask ? currentTask.id : null;
-  
-    try {
-      const updatedTask = await handleTaskResponse(method, task, taskId);
-      setTasks((prevTasks) => {
-        if (currentTask) {
-          return prevTasks.map((t) => (t.id === updatedTask.id ? updatedTask : t));
-        }
-        return [...prevTasks, updatedTask];
-      });
-      fetchTasks(); // Actualiza las tareas desde el servidor después de agregar/editar
-    } catch (error) {
-      console.error(error.message);
-    }
-  
-    setCurrentTask(null);
-    setShowTaskModal(false);
-  };
-  
-
-  const deleteTask = async (taskId) => {
-    try {
-      await handleTaskResponse('DELETE', null, taskId);
-      setTasks(tasks.filter(task => task.id !== taskId));
-    } catch (error) {
-      console.error('Error:', error.message);
+      console.error('Error al obtener los integrantes del grupo:', error);
     }
   };
 
-  const handleAsignarClick = (task) => {
-    setCurrentTask(task);
+  useEffect(() => {
+    if (showAsignarModal) {
+      fetchIntegrantes();
+    }
+  }, [showAsignarModal, grupo]);
+
+  const obtenerGrupo =() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setGrupo(user.grupoId);
+    }else{
+      console.error('Usuario no autenticado');
+    }
+  };
+
+  const handleAsignar = (taskId) => {
     setShowAsignarModal(true);
+    setIdAsignar(taskId);
   };
 
-  const handleAsignarClose = () => {
-    setShowAsignarModal(false);
-  };
-
-  const handleAsignarUsuario = async (usuario) => {
-    if (currentTask) {
-        // Actualiza el estado local para mostrar el nombre del usuario asignado
-        const updatedTasks = tasks.map((task) =>
-            task.id === currentTask.id ? { ...task, assigned: `${usuario.nombre_user} ${usuario.apellido_user}` } : task
-        );
-        setTasks(updatedTasks);
-
-        // Actualiza la actividad en la base de datos usando el ID del usuario a través del método PATCH
-        try {
-            await axios.patch(`${API_BASE_URL}/actividadesP/${currentTask.id}`, {
-                id_hu: currentTask.id_hu, // Suponiendo que `id_hu` es un campo requerido
-                nombre_actividad: currentTask.nombre_actividad, // Suponiendo que `nombre_actividad` es requerido
-                estado_actividad: currentTask.estado_actividad, // Suponiendo que `estado_actividad` es requerido
-                fecha_inicio: currentTask.fecha_inicio, // Suponiendo que `fecha_inicio` es requerido
-                fecha_fin: currentTask.fecha_fin, // Suponiendo que `fecha_fin` es requerido
-                encargado: currentTask.encargado, // Suponiendo que `encargado` es requerido
-                id_usuario: usuario.id, // Aquí se guarda el ID del usuario
-            });
-        } catch (error) {
-            console.error('Error al asignar el usuario:', error.response ? error.response.data : error.message);
-            // Opcional: revertir el cambio en el estado local si la API falla
-            const revertedTasks = tasks.map((task) =>
-                task.id === currentTask.id ? { ...task, assigned: null } : task
-            );
-            setTasks(revertedTasks);
-        }
+  const handleAsignarIntegrante = async () => {
+    console.log('Asignando tarea a:', selectedIntegrante);
+    console.log('Tarea actual:', currentTask);
+    if (!selectedIntegrante) {
+      console.error('No se ha seleccionado ningún integrante');
+      setShowAsignarModal(false);
     }
-    setShowAsignarModal(false);
+
+    try {
+      const response = await axios.patch(`${API_BASE_URL}/actividadesP/${idAsignar}`, {
+        encargado: selectedIntegrante.id,
+      });
+      console.log('Tarea asignada correctamente:', response.data.actividad);
+      setTasks(tasks.map(task => (task.id === idAsignar ? response.data.actividad : task)));
+      fetchTasks();
+      setShowAsignarModal(false);
+      
+    } catch (error) {
+      console.error('Error al asignar la tarea:', error);
+    }
   };
 
   if (!historia || !historia.titulo_hu) {
     return <div>Error: Historia no encontrada o no tiene título</div>;
   }
 
-  return (
-    <div className="container mt-5" style={{ backgroundColor: "#215F88" }}>
-      <button className="btn btn-secondary" onClick={() => navigate(-1)} style={{ backgroundColor: '#09DDCC', color: "black" }}>Volver</button>
-      <h1 className="text-center" style={{ color: 'white' }}>{historia.titulo_hu || 'Historia de Usuario'}</h1>
+  const crearClick = () => {
+    setShowTaskModal(true);
+  };
 
-      <div className="card p-3 mb-3">
-        <h2>Tareas</h2>
-        <button className="btn btn-primary" onClick={() => {
-          setCurrentTask(null);
-          setShowTaskModal(true);
-        }} style={{ backgroundColor: '#245F88' }}>Agregar Tarea</button>
+  const editarClick = (task) => {
+    setCurrentTask(task);
+    setShowEditTaskModal(true);
+  };
+
+  const eliminarClick = (id) => {
+    setIdEliminar(id);
+    setShowConfirmModal(true);
+  };
+
+  const handleSave = async (datos) => {
+    if(datos.estado === 'pendiente'){
+      datos.estado = 1;
+    }else if(datos.estado === 'en_progreso'){
+      datos.estado = 2;
+    }else{
+      datos.estado = 3;
+    }
+    try{
+      const response = await axios.post(`${API_BASE_URL}/actividades`, {
+        nombre_actividad: datos.nombre,
+        estado_actividad: datos.estado,
+        fecha_inicio: datos.fecha_inicio,
+        fecha_fin: datos.fecha_fin,
+        id_hu: id
+      });
+      console.log ('Tarea guardada:', response.data.actividad);
+      setTasks([...tasks, response.data.actividad]);
+    }catch(error){
+      console.error('Error al guardar la tarea:', error);
+    }
+  }
+
+  const handleEditSave = async(datos) => {
+    if(datos.estado === 'pendiente'){
+      datos.estado = 1;
+    }else if(datos.estado === 'en_progreso'){
+      datos.estado = 2;
+    }else{
+      datos.estado = 3;
+    }
+    try{
+      const response = await axios.patch(`${API_BASE_URL}/actividadesP/${currentTask.id}`, {
+        nombre_actividad: datos.nombre,
+        estado_actividad: datos.estado,
+        fecha_inicio: datos.fecha_inicio,
+        fecha_fin: datos.fecha_fin,
+      });
+      console.log ('Tarea editada correctamente:', response.data.actividad);
+      setTasks(tasks.map(task => (task.id === currentTask.id ? response.data.actividad : task)));
+    }catch(error){
+      console.error('Error al guardar la tarea:', error);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    const id = idEliminar;
+    try{
+      await axios.delete(`${API_BASE_URL}/actividades/${id}`);
+      setTasks(tasks.filter(task => task.id !== id));
+      console.log('Tarea eliminada correctamente');
+      setShowConfirmModal(false)
+    }catch(error){
+      console.error('Error al eliminar la tarea:', error);
+    }
+  };
+
+  const handleVerResultados = (taskId) => {
+    navigate(`/resultados/${taskId}`);
+  };
+
+  return (
+    <div className="container" style={{  }}>
+      
+      <h2 className="text-center" style={{ color: 'black' }}>Actividades</h2>
+
+      <div className="">
+        <div className="d-flex align-items-center justify-content-between">
+          <h3>{historia.titulo_hu || 'Historia de Usuario'}</h3>
+          <BotonAtras />
+        </div>
+        <div className="d-flex justify-content-center mt-3">
+          <button className="btn btn-primary" onClick={() => {crearClick();}} 
+          style={{ backgroundColor: '#007BFF' }}>Agregar Tarea
+          </button>
+        </div>
         <table className="table mt-3">
           <thead>
             <tr>
@@ -165,35 +265,46 @@ function DetalleHistoria() {
               <tr key={task.id}>
                 <td>{task.nombre_actividad}</td>
                 <td>
-                  <button className="btn btn-secondary" onClick={() => handleAsignarClick(task)}>
-                    {task.assigned}
-                  </button>
+                <button onClick={() => handleAsignar(task.id)} className="btn-encargado">
+                  {task.encargado ? task.encargado : 'Sin encargado'}
+                </button>
                 </td>
                 <td>
                   <select
                     value={task.estado_actividad}
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const updatedTask = { ...task, estado_actividad: e.target.value };
+      
+                      // Actualizar la tarea en el estado local
                       setTasks(tasks.map((t) => (t.id === task.id ? updatedTask : t)));
+
+                      // Realizar la solicitud PATCH para actualizar la tarea en la base de datos
+                      try {
+                        await axios.patch(`${API_BASE_URL}/actividadesP/${task.id}`, {
+                          estado_actividad: e.target.value,
+                        });
+                        console.log('Estado de la tarea actualizado en la base de datos');
+                      } catch (error) {
+                        console.error('Error al actualizar el estado de la tarea:', error);
+                      }
                     }}
                   >
-                    <option value="pendiente">Pendiente</option>
-                    <option value="en_progreso">En progreso</option>
-                    <option value="completada">Completada</option>
+                    <option value="1">Pendiente</option>
+                    <option value="2">En progreso</option>
+                    <option value="3">Completada</option>
                   </select>
                 </td>
                 <td>{task.fecha_inicio}</td>
                 <td>{task.fecha_fin}</td>
-                <td>{task.resultado}</td>
+                <td><button className="btn-resultados" onClick={() => handleVerResultados(task.id)}>Ver resultados</button></td>
                 <td>
                   <Dropdown>
                     <Dropdown.Toggle variant="link" id="dropdown-basic">•••</Dropdown.Toggle>
                     <Dropdown.Menu>
                       <Dropdown.Item onClick={() => {
-                        setCurrentTask(task);
-                        setShowTaskModal(true);
+                        editarClick(task);
                       }}>Editar</Dropdown.Item>
-                      <Dropdown.Item onClick={() => deleteTask(task.id)}>Eliminar</Dropdown.Item>
+                      <Dropdown.Item onClick={() => eliminarClick(task.id)}>Eliminar</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </td>
@@ -203,27 +314,38 @@ function DetalleHistoria() {
         </table>
       </div>
 
-      {showTaskModal && (
-        <div className="modal-container">
-          <AgregarTarea
-            show={showTaskModal}
-            onHide={() => setShowTaskModal(false)}
-            addTask={addTask}
-            currentTask={currentTask}
-          />
-        </div>
-      )}
-
-      {showAsignarModal && (
-        <div className="modal-container">
-          <AsignarUsuario
-            show={showAsignarModal}
-            onHide={handleAsignarClose}
-            handleAsignarUsuario={handleAsignarUsuario}
-            currentTask={currentTask}
-          />
-        </div>
-      )}
+      <AgregarTarea
+        show={showTaskModal}
+        onHide={() => setShowTaskModal(false)}
+        currentTask={currentTask}
+        handleSave={handleSave}
+        titulo={"Agregar Actividad"}
+        isEditMode={false}
+      />  
+      <ModalEliminar
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        handleConfirmDelete={handleConfirmDelete}
+        titulo={"esta actividad"}
+      />
+      <AgregarTarea
+        show={showEditTaskModal}
+        onHide={() => setShowEditTaskModal(false)}
+        currentTask={currentTask}
+        handleSave={handleEditSave}
+        titulo={"Agregar Actividad"}
+        isEditMode={true}
+      /> 
+      <AsignarModal
+        show={showAsignarModal}
+        integrantes={integrantes}
+        onClose={() => setShowAsignarModal(false)}
+        onAsignar={handleAsignarIntegrante}
+        onSelectIntegrante={(id) => {
+          const integrante = integrantes.find(i => i.id === id);
+          setSelectedIntegrante(integrante);
+        }}
+      />
     </div>
   );
 }

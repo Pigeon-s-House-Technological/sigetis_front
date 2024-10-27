@@ -10,6 +10,7 @@ const Navbar = ({ userType }) => {  // Recibe 'userType' como prop
     const [tipo, setTipo] = useState(10);
 
     useEffect(() => {
+      console.log('Ejecutando useEffect de Navbar', userType);
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
         try {
@@ -74,8 +75,8 @@ const handleClick = () => {
         {(tipo === 0 || tipo === 2 || tipo === 3) && (
           <>
             <li>
-              <NavLink to="/historiaHU" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Historias de Usuario
+              <NavLink to="/sprints" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                Sprints
               </NavLink>
             </li>
             <li>

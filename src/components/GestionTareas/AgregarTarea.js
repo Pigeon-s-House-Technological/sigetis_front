@@ -1,73 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button } from 'react-bootstrap';
-import { API_BASE_URL } from '../config';
-import axios from 'axios';
+
 import './Modales/Modal.css'; // Importa el archivo CSS para el modal
 
-const endPoint = `${API_BASE_URL}/actividades`;
 
-function AgregarTarea({ show, onHide, addTask, currentTask }) {
+function AgregarTarea({ show, onHide, handleSave, currentTask, titulo, isEditMode }) {
   const [nombreActividad, setNombreActividad] = useState('');
   const [estadoActividad, setEstadoActividad] = useState('pendiente');
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
-  const [encargado, setEncargado] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
-  // Efecto para cargar los datos actuales de la tarea al editar
+  
   useEffect(() => {
-    if (currentTask) {
-      setNombreActividad(currentTask.nombre_actividad);
-      setEstadoActividad(currentTask.estado_actividad);
-      setFechaInicio(currentTask.fecha_inicio);
-      setFechaFin(currentTask.fecha_fin);
-      setEncargado(currentTask.encargado);
+    
+    if (isEditMode && currentTask) {
+      if(currentTask.estado_actividad === 1){
+        setEstadoActividad('pendiente');
+      }else if(currentTask.estado_actividad === 2){
+        setEstadoActividad('en_progreso');
+      }else{
+        setEstadoActividad('completada');
+      }
+
+      setNombreActividad(currentTask.nombre_actividad || '');
+      setFechaInicio(currentTask.fecha_inicio || '');
+      setFechaFin(currentTask.fecha_fin || '');
     } else {
       setNombreActividad('');
       setEstadoActividad('pendiente');
       setFechaInicio('');
       setFechaFin('');
-      setEncargado('');
     }
-  }, [currentTask]);
+  }, [currentTask, isEditMode]);
 
-  const handleSubmit = async (e) => {
+  const cargarDatos = (e) => {
     e.preventDefault();
-    
-    // Validación de fechas
-    const fechaInicioDate = new Date(fechaInicio);
-    const fechaFinDate = new Date(fechaFin);
-    if (fechaInicioDate > fechaFinDate) {
-      setErrorMessage('La fecha de inicio no puede ser posterior a la fecha de fin.');
+    if (new Date(fechaFin) < new Date(fechaInicio)) {
+      setErrorMessage('La fecha de fin no puede ser menor que la fecha de inicio');
+      return;
+    }
+    if (!nombreActividad || !estadoActividad || !fechaInicio || !fechaFin) {
+      setErrorMessage('Todos los campos son obligatorios');
       return;
     }
 
-    const task = {
-      id_hu: 1, 
-      nombre_actividad: nombreActividad,
-      estado_actividad: estadoActividad,
+    const datos = {
+      nombre: nombreActividad,
+      estado: estadoActividad,
       fecha_inicio: fechaInicio,
       fecha_fin: fechaFin,
-      encargado: 1,
     };
-  
-    console.log('Datos enviados:', task);
-   
-    try {
-      let response;
-      if (currentTask) {
-        response = await axios.put(`${endPoint}/${currentTask.id}`, task);
-      } else {
-        response = await axios.post(endPoint, task);
-      }
-      addTask(response.data);
-      onHide();
-    } catch (error) {
-      console.error(error);
-      setErrorMessage('Error al guardar la tarea. Intenta nuevamente.');
-    }
+    handleSave(datos);
+    limpiarFormulario();
+    onHide();
+    
+    
   };
-  
+
+  const limpiarFormulario = () => {
+    setNombreActividad('');
+    setEstadoActividad('pendiente');
+    setFechaInicio('');
+    setFechaFin('');
+    setErrorMessage('');
+  };
 
   return (
     
@@ -75,20 +70,21 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
     <div className="modal-dialog" role="document">
       <div className="modal-content">
         <div className="modal-header">
-          <h4 className="modal-title">{currentTask ? 'Editar Tarea' : 'Agregar Tarea'}</h4>
+          <h4 className="modal-title">{titulo}</h4>
           <button type="button" className="close" onClick={onHide} aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div className="modal-body">
           {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={cargarDatos}>
             <div className="form-group">
               <label htmlFor="nombreActividad">Nombre de la Actividad</label>
               <input
                 type="text"
                 className="form-control"
                 id="nombreActividad"
+                name="nombreActividad"
                 placeholder="Ingresa el nombre de la actividad"
                 value={nombreActividad}
                 onChange={(e) => setNombreActividad(e.target.value)}
@@ -100,6 +96,7 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
               <select
                 className="form-control"
                 id="estadoActividad"
+                name="estadoActividad"
                 value={estadoActividad}
                 onChange={(e) => setEstadoActividad(e.target.value)}
                 required
@@ -115,6 +112,8 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
             <input
               type="date"
               className="form-control"
+              id="fechaInicio"
+              name="fechaInicio"
               value={fechaInicio}
               onChange={(e) => setFechaInicio(e.target.value)}
               required
@@ -126,6 +125,8 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
               <input
                 type="date"
                 className="form-control"
+                id="fechaFin"
+                name="fechaFin"
                 value={fechaFin}
                 onChange={(e) => setFechaFin(e.target.value)}
                 required
@@ -137,8 +138,8 @@ function AgregarTarea({ show, onHide, addTask, currentTask }) {
                 Cancelar
               </button>
               <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#007BFF' }}>
-                Guardar
-              </button>
+                  Guardar
+                </button>
             </div>
           </form>
         </div>

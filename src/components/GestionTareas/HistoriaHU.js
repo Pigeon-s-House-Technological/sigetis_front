@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Dropdown } from 'react-bootstrap';
 import axios from 'axios';
 import {API_BASE_URL} from '../config';
 
+import BotonAtras from '../General/BotonAtras';
 import './Modales/Modal.css';
-import ModalAgregar from "../TiposDeEvaluacion/Modal/ModalAgregar";
+import ModalAgregarHU from "./Modales/ModalAgregarHU";
 import ModalEliminar from "../TiposDeEvaluacion/Modal/ModalEliminar";
 
 
@@ -19,13 +20,15 @@ function HistoriaHU() {
   const [selectedHistoria, setSelectedHistoria] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedHistoriaId, setSelectedHistoriaId] = useState(null);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  const { id } = useParams();
 
   const fetchHistorias = async () => {
     try {
       const response = await axios.get(endPoint);
       if (Array.isArray(response.data)) {
-        setHistoriasUsuario(response.data);
+        const filteredHistorias = response.data.filter(historia => historia.id_sprint === parseInt(id)); 
+        setHistoriasUsuario(filteredHistorias);
       } else {
         console.error("La respuesta de la API no es un array:", response.data);
         setHistoriasUsuario([]);
@@ -130,17 +133,24 @@ function HistoriaHU() {
     setShowModal(true);
   };
 
-  const openModalForEditStory = (index) => {
-    setSelectedHistoria(historiasUsuario[index]);
-    setNewHistoriaName(historiasUsuario[index].titulo_hu);
+  const openModalForEditStory = (id) => {
+    const historia = historiasUsuario.find((story) => story.id === id);
+    if (!historia || !historia.titulo_hu) {
+      console.error('El objeto historia es undefined o no tiene la propiedad titulo_hu:', historia);
+      return;
+    }
+    setSelectedHistoria(historia);
+    setNewHistoriaName(historia.titulo_hu);
     setShowEditModal(true);
   };
 
   return (
-    <div className="container mt-5" style={{ backgroundColor: '#215f88', color: 'white', padding: '10px 20px', borderRadius: '5px' }}>
+    <div className="container" style={{ color: 'black', padding: '10px 20px', borderRadius: '5px' }}>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h1>HISTORIA DE USUARIO</h1>
-        <button onClick={openModalForNewStory} className="btn btn-primary" style={{backgroundColor:"#09DDCC", color:"black"}}>AGREGAR HU</button>
+        <h3>HISTORIAS DE USUARIO</h3>
+        <button onClick={openModalForNewStory} className="btn btn-primary" style={{backgroundColor:"#007BFF", color:"white", borderStyle:"none"}}>
+          AGREGAR HU</button>
+        <BotonAtras />
       </div>
       <ul className="list-group">
         {historiasUsuario.map((historia, index) => (
@@ -159,7 +169,7 @@ function HistoriaHU() {
         ))}
       </ul>
 
-      <ModalAgregar
+      <ModalAgregarHU
                 show={showModal}
                 onClose={closeModal}
                 newName={newHistoriaName}
@@ -174,7 +184,7 @@ function HistoriaHU() {
                 handleConfirmDelete={handleConfirmDelete}
       />
 
-      <ModalAgregar
+      <ModalAgregarHU
                 show={showEditModal}
                 onClose={closeModal}
                 newName={newHistoriaName}
