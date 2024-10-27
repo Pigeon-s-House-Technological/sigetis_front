@@ -146,7 +146,9 @@ function DetalleHistoria() {
       });
       console.log('Tarea asignada correctamente:', response.data.actividad);
       setTasks(tasks.map(task => (task.id === idAsignar ? response.data.actividad : task)));
+      fetchTasks();
       setShowAsignarModal(false);
+      
     } catch (error) {
       console.error('Error al asignar la tarea:', error);
     }

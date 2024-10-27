@@ -7,7 +7,7 @@ import {API_BASE_URL} from '../config';
 
 import BotonAtras from '../General/BotonAtras';
 import './Modales/Modal.css';
-import ModalAgregar from "../TiposDeEvaluacion/Modal/ModalAgregar";
+import ModalAgregarHU from "./Modales/ModalAgregarHU";
 import ModalEliminar from "../TiposDeEvaluacion/Modal/ModalEliminar";
 
 
@@ -133,9 +133,14 @@ function HistoriaHU() {
     setShowModal(true);
   };
 
-  const openModalForEditStory = (index) => {
-    setSelectedHistoria(historiasUsuario[index]);
-    setNewHistoriaName(historiasUsuario[index].titulo_hu);
+  const openModalForEditStory = (id) => {
+    const historia = historiasUsuario.find((story) => story.id === id);
+    if (!historia || !historia.titulo_hu) {
+      console.error('El objeto historia es undefined o no tiene la propiedad titulo_hu:', historia);
+      return;
+    }
+    setSelectedHistoria(historia);
+    setNewHistoriaName(historia.titulo_hu);
     setShowEditModal(true);
   };
 
@@ -164,7 +169,7 @@ function HistoriaHU() {
         ))}
       </ul>
 
-      <ModalAgregar
+      <ModalAgregarHU
                 show={showModal}
                 onClose={closeModal}
                 newName={newHistoriaName}
@@ -179,7 +184,7 @@ function HistoriaHU() {
                 handleConfirmDelete={handleConfirmDelete}
       />
 
-      <ModalAgregar
+      <ModalAgregarHU
                 show={showEditModal}
                 onClose={closeModal}
                 newName={newHistoriaName}

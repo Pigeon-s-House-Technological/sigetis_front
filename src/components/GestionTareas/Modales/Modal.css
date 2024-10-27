@@ -62,3 +62,43 @@
     border: 0;
     cursor: pointer;
 }
+
+.btn-asignar{
+    background-color: #007bff;
+    color: #fff;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.btn-asignar:hover{
+    background-color: #0056b3;
+}
+
+.btn-cancelar{
+    background-color: #09DDCC;
+    color: black;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.btn-cancelar:hover{
+    background-color: #09CCCC;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end; /* Alinea los botones al final del contenedor */
+    gap: 10px; /* Espacio entre los botones */
+  }
+  
+  .btn-asignar, .btn-cancelar {
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+  }

@@ -16,8 +16,10 @@ const AsignarModal = ({ show, integrantes, onClose, onAsignar, onSelectIntegrant
             </option>
           ))}
         </select>
-        <button onClick={onAsignar}>Asignar</button>
-        <button onClick={onClose}>Cancelar</button>
+        <div className="modal-footer">
+          <button className="btn-cancelar" onClick={onClose}>Cancelar</button>
+          <button className="btn-asignar" onClick={onAsignar}>Asignar</button>
+        </div>
       </div>
     </div>
   );
