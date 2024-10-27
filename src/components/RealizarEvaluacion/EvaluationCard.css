@@ -1,40 +1,57 @@
-/* EvaluationCard */
 .evaluation-card {
-    background-color: #f4f4f4;
-    border-radius: 5px;
-    padding: 20px;
-    margin: 2%;
-    text-align: left;
-    margin-bottom: 20px; /* Asegura la separación entre tarjetas */
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .evaluation-card h2 {
-    color: #007BFF;
-  }
-  
-  .evaluation-status {
-    color: gray;
-    margin-bottom: 10px;
-  }
-  
-  .start-button {
-    background-color: #007BFF;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .evaluation-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Ajusta el valor según tus necesidades */
-  }
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  margin: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-  .evaluation-status {
-    color: gray;
-    margin-bottom: 10px;
-    font-size: 14px; /* Asegúrate de que el tamaño de fuente sea visible */
-  }
+.evaluation-card h2 {
+  font-size: 24px;
+  color: #006ba1;
+}
+
+.evaluation-card p {
+  font-size: 16px;
+  color: #333;
+}
+
+.evaluation-status {
+  font-size: 14px;
+  color: #777;
+}
+
+.start-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+}
+
+.modal-content button {
+  margin: 10px;
+}
