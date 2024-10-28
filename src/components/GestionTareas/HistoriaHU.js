@@ -25,6 +25,7 @@ function HistoriaHU() {
 
   const fetchHistorias = async () => {
     try {
+      console.log('id:', id);
       const response = await axios.get(endPoint);
       if (Array.isArray(response.data)) {
         const filteredHistorias = response.data.filter(historia => historia.id_sprint === parseInt(id)); 
@@ -57,7 +58,7 @@ function HistoriaHU() {
       }
       const data = {
         titulo_hu: newHistoriaName,
-        id_sprint: 1, // Asegúrate de que el id_sprint es correcto
+        id_sprint: id, // Asegúrate de que el id_sprint es correcto
       };
   
       console.log('Datos enviados:', data);

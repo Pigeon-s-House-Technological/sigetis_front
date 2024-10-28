@@ -3,6 +3,7 @@ import './RegistrarGrupo.css';
 import { IoMdClose } from 'react-icons/io';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
+import ModalUsuarios from './ModalUsuarios';
 
 const GroupForm = ({ onClose }) => {
     const [inputs, setInputs] = useState({
@@ -13,6 +14,8 @@ const GroupForm = ({ onClose }) => {
 
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [usuarios, setUsuarios] = useState([]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -35,17 +38,26 @@ const GroupForm = ({ onClose }) => {
         const validationErrors = validate();
         if (Object.keys(validationErrors).length === 0) {
             try {
+                const user_tutor = localStorage.getItem('user');
+                const user = JSON.parse(user_tutor);
+                const id_tutor = user.userData.id;
                 const response = await axios.post(`${API_BASE_URL}/grupos`, {
                     nombre_grupo: inputs.nombreGrupo,
                     descripcion_grupo: inputs.descripcion,
                     cantidad_integ: inputs.cantidadInteg,
-                    id_tutor: 1, // ID de tutor (se puede manejar dinámicamente)
+                    id_tutor: id_tutor, // ID de tutor (se puede manejar dinámicamente)
                     id_jefe_grupo: 1 // ID de jefe de grupo (se puede manejar dinámicamente)
                 });
+                console.log(response.data.message.id);
                 if (response.status === 201) {
+                    const idGrupo = response.data.message.id;
+                    const response2 = await axios.get(`${API_BASE_URL}/crearGrupo/${inputs.cantidadInteg}/${idGrupo}`);
+                    setUsuarios(response2.data.usuarios);
                     setSuccessMessage('Grupo registrado exitosamente');
                     setInputs({ nombreGrupo: '', descripcion: '', cantidadInteg: '' });
+                    handleOpenModal();
                 }
+                
             } catch (error) {
                 console.error('Error al registrar el grupo:', error);
                 setErrors({ apiError: 'Hubo un error al registrar el grupo.' });
@@ -54,6 +66,9 @@ const GroupForm = ({ onClose }) => {
             setErrors(validationErrors);
         }
     };
+
+    const handleOpenModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
 
     return (
         <div className="container-group">
@@ -109,6 +124,12 @@ const GroupForm = ({ onClose }) => {
                     Registrar Equipo
                 </button>
             </form>
+
+            <ModalUsuarios 
+                show={showModal} 
+                handleClose={handleCloseModal} 
+                usuarios={usuarios}  
+            />
         </div>
     );
 };
