@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Table, Modal} from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button, Table } from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
+import {  useParams } from 'react-router-dom';
 import axios from 'axios';
+
+import BotonAtras from '../General/BotonAtras';
+import ModalEliminar from './Modal/ModalEliminar';
 import './Evaluaciones.css';
 import AddPregunta from './addPregunta';
 import EditPreguntaModal from './EditPreguntaModal';
@@ -23,11 +25,13 @@ const PreguntaEvaluation = () => {
   const [selectedTipo, setSelectedTipo] = useState('');
   const [selectedPreguntaId, setSelectedPreguntaId] = useState(null);
   const [selectedPregunta, setSelectedPregunta] = useState(null);
-  const navigate = useNavigate();
+  const [nombreCriterio, setNombreCriterio] = useState('');
 
 // Función para obtener los datos de la API
-const fetchPreguntas = async () => {
+const fetchPreguntas = useCallback(async () => {
   try {
+    const obtenerCriterio = await axios.get(`${API_BASE_URL}/criterios/${id}`);
+    setNombreCriterio(obtenerCriterio.data.criterio_evaluacion.titulo_criterio);
     const response = await axios.get(`${API_BASE_URL}/preguntasOpcionMultiple`); 
     if(Array.isArray(response.data)) {
       const preguntasOpMul = response.data.filter(pregunta => pregunta.id_criterio_evaluacion === parseInt(id));
@@ -54,12 +58,12 @@ const fetchPreguntas = async () => {
   } catch (error) {
     console.error('Error al obtener los datos de la API', error);
   }
-};
+}, [id]);
 
 // useEffect para obtener los datos de la API al cargar el componente
 useEffect(() => {
   fetchPreguntas();
-}, []);
+}, [fetchPreguntas]);
 
 const handleClick = () => {
   setShowModal(true);
@@ -122,23 +126,17 @@ const handleCloseEditModal = () => {
   setSelectedTipo('');
 };
 
-const handleBack = () => {
-  navigate(-1); // Navegar a la página anterior
-};
-
 return (
   <div className='HomeAutoevaluacion'>
     <div className='row-home'>
-      <h2 className='col col-h1'>Preguntas</h2>
+      <h2 className='col col-h1'>{nombreCriterio}</h2>
       <div className='col col-h3'>
         <h4>{preguntasOpMul.length+preguntasComp.length+preguntasPunt.length} Preguntas</h4>
       </div>
       <div className='col col-button'>
-        <Button style={{backgroundColor: '#215f88'}} className="btn-custom-primary" onClick={handleClick}>Agregar Pregunta</Button>
+        <Button style={{backgroundColor: '#007BFF'}} className="btn-custom-primary" onClick={handleClick}>Agregar Pregunta</Button>
         <AddPregunta show={showModal} handleClose={handleClose} fetchPreguntas={fetchPreguntas} />
-        <Button className="boton_atras" onClick={handleBack} style={{ marginLeft: '10px', backgroundColor:'#09DDCC', color:'black'}}>
-              <FaArrowLeft />
-            </Button>
+        <BotonAtras />
       </div>
     </div>
     <Table striped bordered hover>
@@ -214,22 +212,11 @@ return (
       </tbody>
     </Table>
 
-    <Modal show={showConfirmModal} onHide={handleCloseConfirmModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Confirmar Eliminación</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        ¿Estás seguro de que deseas eliminar esta pregunta?
-      </Modal.Body>
-      <Modal.Footer>
-        <Button style={{backgroundColor: '#09DDCC', color: 'black'}}  className="btn-custom-secondary" onClick={handleCloseConfirmModal}>
-          Cancelar
-        </Button>
-        <Button style={{backgroundColor: 'red'}} className="btn-custom-danger" onClick={handleConfirmDelete}>
-          Eliminar
-        </Button>
-      </Modal.Footer>
-    </Modal>
+    <ModalEliminar
+                show={showConfirmModal}
+                onClose={handleCloseConfirmModal}
+                handleConfirmDelete={handleConfirmDelete}
+      />
 
     <EditPreguntaModal
         show={showEditModal}

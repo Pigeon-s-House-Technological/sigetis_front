@@ -1,0 +1,110 @@
+.content {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.title {
+    text-align: center;
+    color: rgb(24, 24, 154);
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 450px;
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-buttons {
+    display: flex;
+    justify-content: space-between; /* Ajuste para mejor distribución */
+    margin: 20px 0;
+    width: 100%;
+}
+
+.toggle-button {
+    flex: 1;
+    border: none;
+    border-radius: 5px;
+    background-color: #215F88; /* Color para estudiante */
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    margin: 0 5px; /* Ajuste de margen entre los botones */
+    transition: background-color 0.3s;
+}
+
+.toggle-button.active {
+    background-color: #175D51; /* Color para docente */
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form label {
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.submit-button {
+    padding: 10px 20px;
+    background-color: #626766; /* Color azul para botón de enviar */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.3s;
+    margin-top: 20px; /* Ajuste para mayor espacio entre campos y botón */
+}
+
+.submit-button:hover {
+    background-color: #004494;
+}
+
+
+/* Estilos dinámicos para los botones de Estudiante y Docente/Tutor */
+.submit-button.student {
+    background-color: #215F88; /* Azul oscuro para estudiante */
+    color: white;
+}
+
+.submit-button.teacher {
+    background-color: #175D51; /* Azul claro para docente */
+    color: white;
+}
+
+
+
+
+@media (max-width: 600px) {
+    .login-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .toggle-button {
+        margin: 0 2px;
+    }
+
+    .submit-button {
+        padding: 10px;
+    }
+}

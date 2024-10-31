@@ -1,74 +1,103 @@
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Principal/Navbar.js';
 import Footer from './components/Principal/Footer.js';
 import Homepage from './components/Principal/Homepage.js';
-
-
-import EvaluationCard from './components/EvaluationCard'; // Componente para la página inicial
-import EvaluationForm from './components/EvaluationForm'; // Formulario de la evaluación
-import ParesGrupal from './components/ParesGrupal';
-import AutoevaluacionGrupal from './components/AutoevaluacionGrupal';
-import CruzGrupal from './components/CruzGrupal';
-import ParesIndividual from './components/ParesIndividual';
-import AutoevaluacionIndividual from './components/AutoevaluacionIndividual';
-import EvaluacionesPares from './components/EvaluacionesPares';
-import EvaluationType from './components/EvaluationType';
-import TiposDeEvaluacion from './components/TiposDeEvaluacion/TiposDeEvaluacion.jsx';
-import HomeAutoevaluacion from './components/TiposDeEvaluacion/Autoevaluacion/HomeAutoevaluacion.jsx';
-import HomeEvaluacionCruzada from './components/TiposDeEvaluacion/EvaluacionCruzada/HomeEvaluacionCruzada.jsx';
-import HomeEvaluacionEnPares from './components/TiposDeEvaluacion/EvaluacionEnPares/HomeEvaluacionEnPares.jsx';
-import HistoriaHU from './components/Gestion/HistoriaHU';
-import DetalleHistoria from './components/Gestion/DetalleHistoria';
-import CriteriosEvaluacion from './components/TiposDeEvaluacion/CriteriosEvaluacion';
-import PreguntaEvaluation from './components/TiposDeEvaluacion/PreguntaEvaluation';
-
-
-
 import './App.css';
+//importaciones de componentes de sus respectivos indices (para optimizar espacio)
+import { EvaluationCard, EvaluationForm } from './components/RealizarEvaluacion';
+import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
+import { TiposDeEvaluacion, HomeAutoevaluacion, HomeEvaluacionCruzada, 
+          HomeEvaluacionEnPares, CriteriosEvaluacion, PreguntaEvaluation } from './components/TiposDeEvaluacion';
+import { HistoriaHU, DetalleHistoria, Sprints, Resultados } from './components/GestionTareas/index.js';
+import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
+import { RegistroDocente } from './components/RegistroTutor';
+import {  LoginModal } from './components/Login';
+import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
+import RegistroEstudiante from './components/RegistroEstudiante/RegistroEstudiante.js';
+import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 
+//Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
 function App() {
+
+// Crear el estado 'userType'
+const [userType, setUserType] = useState('student'); // 'student' por defecto
+const [user,setUser] = useState(null)
+
+// Crear la función 'toggleUserType' para cambiar el tipo de usuario
+const toggleUserType = (type) => {
+  setUserType(type); // Actualiza el estado con 'student' o 'teacher'
+};
+
+useEffect(() => {
+  const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser.userData);
+    } catch (error) {
+      setUser(null);
+      console.error('Error al parsear los datos del usuario:', error); 
+    }
+  }
+}, []);
+
   return (
     <Router>
       <div className="app-container">
-        <Navbar />
+         {/* Pasamos userType como prop a Navbar y Footer */}
+         <Navbar userType={userType} />
+        
         <div className='content'>        
         <Routes>
           <Route path="/" element={<Homepage />} />
+          <Route path="/login" element={<LoginModal userType={userType} toggleUserType={toggleUserType} />} />
 
+          {/* Rutas protegidas para Estudiante */}
+          <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["3", "2", "0"]} redirectTo="/" />} >
+            <Route path="/evaluacion" element={<EvaluationCard />} />
+            <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
+            <Route path="/evaluacion" element={<EvaluationCard />} />
+            <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
+            <Route path="/historiaHU/:id" element={<HistoriaHU />} />
+            <Route path="/detalle/:id" element={<DetalleHistoria />} />
+            <Route path="/sprints" element={<Sprints />} />
+            <Route path="/resultados/:idActividad" element={<Resultados />} />
+           
+          </Route>
 
-          {/* Ruta para "/evaluacion" que muestra EvaluationCard */}
-          <Route path="/evaluacion" element={<EvaluationCard />} />
-          {/* Ruta anidada "/evaluacion/formulario" para el formulario */}
-          <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
-           {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/tipoevaluacion" element={<EvaluationType />} />
-           {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/pares-grupal" element={<ParesGrupal />} />
-          {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/autoevaluacion-grupal" element={<AutoevaluacionGrupal />} />
-          {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/cruzada-grupal" element={<CruzGrupal />} />
-          {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/pares-individual" element={<ParesIndividual />} />
-          {/* Ruta para Asignar tipo de evaluación */}
-          <Route path="/autoevaluacion-individual" element={<AutoevaluacionIndividual />} />
-        
-          <Route path="/evaluacionespares" element={<EvaluacionesPares />} />
-          <Route path="/historiaHU" element={<HistoriaHU />} />
-          <Route path="/detalle/:id" element={<DetalleHistoria />} />
+          {/* Rutas protegidas para Docente */}
+          <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["1", "0"]} redirectTo="/" />} >
+            <Route path="/planilla" element={<PlanillaEvaluacion />} />
+            <Route path="/planilla/actividades/:idGrupo" element={<PlanillaEvaluacionActividades />} />
+            <Route path="/planilla/evaluaciones/:idGrupo" element={<PlanillaEvaluacionEvaluaciones />} />
+            <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
+            <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
+            <Route path="/gestionEvaluacion/:id" element={<CriteriosEvaluacion />} />
+            <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
+            <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
+            <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
+            <Route path="/asignarEvaluacion" element={<EvaluationType />} />
+            <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
+            <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
+          </Route>
 
-          <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
-          <Route path="/homeAutoevaluacion" element={<HomeAutoevaluacion />} />
-          <Route path="/gestionEvaluacion/:id" element={<CriteriosEvaluacion />} />
-          <Route path="/homeEvaluacionCruzada" element={<HomeEvaluacionCruzada />} />
-          <Route path="/homeEvaluacionEnPares" element={<HomeEvaluacionEnPares />} />
-          <Route path="/criterio/:id" element={<PreguntaEvaluation />} />
+          {/* Rutas protegidas para Jefe grupo */}
+          <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["2", "0"]} redirectTo="/" />} >
+            
+          </Route>
+
+          <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["0"]} redirectTo="/" />} >
+          <Route path="/planilla" element={<PlanillaEvaluacion />} />
+            <Route path="/registroDocente" element={<RegistroDocente />} />
+            <Route path="/registroEstudiante" element={<RegistroEstudiante />} />
+          </Route>
+          
         </Routes>
         </div>
-        <Footer />
+        <Footer userType={userType} /> {/* Pasamos userType como prop */}
       </div>
     </Router>
   );

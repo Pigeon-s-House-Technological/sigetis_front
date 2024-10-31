@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Modal, Form} from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
+
+import ModalEliminar from '../Modal/ModalEliminar';
+import ModalAgregar from '../Modal/ModalAgregar';
 import '../../../assets/css/Autoevaluacion.css';
 import '../Evaluaciones.css';
 import { API_BASE_URL } from '../../config';
 
 
 const HomeAutoevaluacion = () => {
-    const [autoevaluaciones, setAutoevaluaciones] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [newEvaluationName, setNewEvaluationName] = useState('');
-    const [selectedEvaluation, setSelectedEvaluation] = useState(null);
-    const [selectedEvaluationId, setSelectedEvaluationId] = useState(null);
-    const navigate = useNavigate();
+  const [autoevaluaciones, setAutoevaluaciones] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [newEvaluationName, setNewEvaluationName] = useState('');
+  const [selectedEvaluation, setSelectedEvaluation] = useState(null);
+  const [selectedEvaluationId, setSelectedEvaluationId] = useState(null);
+  const [tipoEvaluacion, setTipoEvaluacion] = useState(false);
 
   // Función para obtener los datos de la API
   const fetchAutoevaluaciones = async () => {
@@ -43,13 +46,14 @@ const HomeAutoevaluacion = () => {
   };
 
   const handleSave = async () => {
+    
     try {
       const response = await axios.post(`${API_BASE_URL}/evaluaciones`, {
         nombre_evaluacion: newEvaluationName,
         tipo_evaluacion: 1, // Asegúrate de que el tipo de evaluación es 1
-        tipo_destinatario: false // Ajusta este valor según sea necesario
+        tipo_destinatario: parseInt(tipoEvaluacion) // Ajusta este valor según sea necesario
       });
-      // Actualizar el estado con la nueva autoevaluación
+      
       setAutoevaluaciones([...autoevaluaciones, response.data]);
       fetchAutoevaluaciones();
       setNewEvaluationName('');
@@ -75,12 +79,14 @@ const HomeAutoevaluacion = () => {
   };
 
   const handleCloseConfirmModal = () => {
+    setNewEvaluationName('');
     setShowConfirmModal(false);
   };
 
   const editarClick = (id) => {
     const autoevaluacionEditar = autoevaluaciones.find((autoevaluacion) => autoevaluacion.id === id);
     setSelectedEvaluation(autoevaluacionEditar);
+    setTipoEvaluacion(autoevaluacionEditar.tipo_destinatario);
     setNewEvaluationName(autoevaluacionEditar.nombre_evaluacion);
     setShowEditModal(true);
   };
@@ -89,6 +95,7 @@ const HomeAutoevaluacion = () => {
     try {
       const response = await axios.patch(`${API_BASE_URL}/evaluacionesP/${selectedEvaluation.id}`, {
         nombre_evaluacion: newEvaluationName,
+        tipo_destinatario: parseInt(tipoEvaluacion)
       });
       // Actualizar el estado con la autoevaluación editada
       setAutoevaluaciones(autoevaluaciones.map((autoevaluacion) =>
@@ -102,6 +109,7 @@ const HomeAutoevaluacion = () => {
     } 
   };
   const handleCloseEditModal = () => {
+    setNewEvaluationName('');
     setShowEditModal(false);
   };
 
@@ -113,7 +121,7 @@ const HomeAutoevaluacion = () => {
           <h4>{autoevaluaciones.length} Autoevaluaciones</h4>
         </div>
         <div className='col col-button'>
-          <Button style={{backgroundColor: '#215f88'}} className="btn-custom-primary" onClick={handleClick}>Agregar Autoevaluación</Button>
+          <Button style={{backgroundColor: '#007BFF'}} className="btn-custom-primary" onClick={handleClick}>Agregar Autoevaluación</Button>
         </div>
       </div>
       <Table striped bordered hover>
@@ -121,6 +129,7 @@ const HomeAutoevaluacion = () => {
           <tr>
             <th>#</th>
             <th>Nombre</th>
+            <th>Tipo</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -132,6 +141,9 @@ const HomeAutoevaluacion = () => {
                 <Link to={`/gestionEvaluacion/${autoevaluacion.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
                   {autoevaluacion.nombre_evaluacion}
                 </Link>
+              </td>
+              <td>
+                {autoevaluacion.tipo_destinatario === true ? 'Grupal' : 'Individual'}
               </td>
               <td>
                 <Button style={{ backgroundColor: '#09DDCC', color: 'black' }} className="btn-custom-warning" onClick={() => editarClick(autoevaluacion.id)}>
@@ -147,76 +159,35 @@ const HomeAutoevaluacion = () => {
         </tbody>
       </Table>
 
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Agregar Autoevaluación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEvaluationName">
-              <Form.Label>Nombre de la Evaluación</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el nombre de la evaluación"
-                value={newEvaluationName}
-                onChange={(e) => setNewEvaluationName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button  style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleSave}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalAgregar
+                show={showModal}
+                onClose={handleClose}
+                newName={newEvaluationName}
+                setNewName={setNewEvaluationName}
+                handleSave={handleSave}
+                titulo={"Agregar Evaluación"}
+                autoevaluacion={true}
+                setTipoEvaluacion={setTipoEvaluacion}
+                tipoEvaluacion={tipoEvaluacion}
+      />
 
-      <Modal show={showConfirmModal} onHide={handleCloseConfirmModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Eliminación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          ¿Estás seguro de que deseas eliminar esta autoevaluación?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}}  className="btn-custom-secondary" onClick={handleCloseConfirmModal}>
-            Cancelar
-          </Button>
-          <Button style={{backgroundColor: 'red'}} className="btn-custom-danger" onClick={handleConfirmDelete}>
-            Eliminar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalEliminar
+                show={showConfirmModal}
+                onClose={handleCloseConfirmModal}
+                handleConfirmDelete={handleConfirmDelete}
+      />
 
-      <Modal show={showEditModal} onHide={handleCloseEditModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Autoevaluación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEditEvaluationName">
-              <Form.Label>Nombre de la Evaluación</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el nuevo nombre de la evaluación"
-                value={newEvaluationName}
-                onChange={(e) => setNewEvaluationName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={handleCloseEditModal}>
-            Cancelar
-          </Button>
-          <Button style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleEditSave}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalAgregar
+                show={showEditModal}
+                onClose={handleCloseEditModal}
+                newName={newEvaluationName}
+                setNewName={setNewEvaluationName}
+                handleSave={handleEditSave}
+                titulo="Editar Evaluación"
+                autoevaluacion={true}
+                setTipoEvaluacion={setTipoEvaluacion}
+                tipoEvaluacion={tipoEvaluacion}
+      />
     </div>
   );
 };

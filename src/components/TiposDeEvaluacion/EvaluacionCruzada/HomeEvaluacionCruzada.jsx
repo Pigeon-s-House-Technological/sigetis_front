@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Modal, Form} from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
+
+import ModalEliminar from '../Modal/ModalEliminar';
+import ModalAgregar from '../Modal/ModalAgregar';
 import '../../../assets/css/Autoevaluacion.css';
 import '../Evaluaciones.css';
 import { API_BASE_URL } from '../../config';
@@ -16,7 +19,6 @@ const HomeEvaluacionCruzada = () => {
     const [newEvaluationName, setNewEvaluationName] = useState('');
     const [selectedEvaluation, setSelectedEvaluation] = useState(null);
     const [selectedEvaluationId, setSelectedEvaluationId] = useState(null);
-    const navigate = useNavigate();
 
   // Función para obtener los datos de la API
   const fetchAutoevaluaciones = async () => {
@@ -39,6 +41,7 @@ const HomeEvaluacionCruzada = () => {
   };
 
   const handleClose = () => {
+    setNewEvaluationName('');
     setShowModal(false);
   };
 
@@ -75,6 +78,7 @@ const HomeEvaluacionCruzada = () => {
   };
 
   const handleCloseConfirmModal = () => {
+    setNewEvaluationName('');
     setShowConfirmModal(false);
   };
 
@@ -102,6 +106,7 @@ const HomeEvaluacionCruzada = () => {
     } 
   };
   const handleCloseEditModal = () => {
+    setNewEvaluationName('');
     setShowEditModal(false);
   };
 
@@ -113,7 +118,7 @@ const HomeEvaluacionCruzada = () => {
           <h4>{autoevaluaciones.length} evaluaciones cruzadas</h4>
         </div>
         <div className='col col-button'>
-          <Button style={{backgroundColor: '#215f88'}} className="btn-custom-primary" onClick={handleClick}>Agregar Evaluación Cruzada</Button>
+          <Button style={{backgroundColor: '#007BFF'}} className="btn-custom-primary" onClick={handleClick}>Agregar Evaluación Cruzada</Button>
         </div>
       </div>
       <Table striped bordered hover>
@@ -147,76 +152,29 @@ const HomeEvaluacionCruzada = () => {
         </tbody>
       </Table>
 
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Agregar Evaluación Cruzada</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEvaluationName">
-              <Form.Label>Nombre de la Evaluación</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el nombre de la evaluación"
-                value={newEvaluationName}
-                onChange={(e) => setNewEvaluationName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button  style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleSave}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalAgregar
+                show={showModal}
+                onClose={handleClose}
+                newName={newEvaluationName}
+                setNewName={setNewEvaluationName}
+                handleSave={handleSave}
+                titulo="Agregar Evaluación"
+      />
 
-      <Modal show={showConfirmModal} onHide={handleCloseConfirmModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Eliminación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          ¿Estás seguro de que deseas eliminar esta evaluación cruzada?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}}  className="btn-custom-secondary" onClick={handleCloseConfirmModal}>
-            Cancelar
-          </Button>
-          <Button style={{backgroundColor: 'red'}} className="btn-custom-danger" onClick={handleConfirmDelete}>
-            Eliminar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalEliminar
+                show={showConfirmModal}
+                onClose={handleCloseConfirmModal}
+                handleConfirmDelete={handleConfirmDelete}
+      />
 
-      <Modal show={showEditModal} onHide={handleCloseEditModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Evaluación Cruzada</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEditEvaluationName">
-              <Form.Label>Nombre de la Evaluación</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el nuevo nombre de la evaluación"
-                value={newEvaluationName}
-                onChange={(e) => setNewEvaluationName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={handleCloseEditModal}>
-            Cancelar
-          </Button>
-          <Button style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleEditSave}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalAgregar
+                show={showEditModal}
+                onClose={handleCloseEditModal}
+                newName={newEvaluationName}
+                setNewName={setNewEvaluationName}
+                handleSave={handleEditSave}
+                titulo="Editar Evaluación"
+      />
     </div>
   );
 };

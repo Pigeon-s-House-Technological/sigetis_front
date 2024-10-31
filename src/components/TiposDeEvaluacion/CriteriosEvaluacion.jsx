@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Modal, Form} from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import { BsTrashFill, BsPencilSquare } from 'react-icons/bs';
-import { Link, useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
+
+import ModalAgregar from './Modal/ModalAgregar';
+import ModalEliminar from './Modal/ModalEliminar';
+import BotonAtras from '../General/BotonAtras';
 import './Evaluaciones.css';
 import { API_BASE_URL } from '../config';
 
 const CriteriosEvaluacion = () => {
     const { id } = useParams();
+    const [nombreEvaluacion, setNombreEvaluacion] = useState('');
 
     const [criterios, setCriterios] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -17,13 +21,15 @@ const CriteriosEvaluacion = () => {
     const [newCriterioName, setNewCriterioName] = useState('');
     const [selectedCriterio, setSelectedCriterio] = useState(null);
     const [selectedCriterioId, setSelectedCriterioId] = useState(null);
-    const navigate = useNavigate();
 
   // Función para obtener los datos de la API
   const fetchCriterios = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/criterios`); // Reemplaza con la URL de tu API
       const criteriosFiltrado = response.data.filter(criterio => criterio.id_evaluacion === parseInt(id));
+      const obtenerNombreEvaluacion = await axios.get(`${API_BASE_URL}/evaluaciones/${id}`);
+      console.log(obtenerNombreEvaluacion.data.evaluacion.nombre_evaluacion);
+      setNombreEvaluacion(obtenerNombreEvaluacion.data.evaluacion.nombre_evaluacion);
       setCriterios(criteriosFiltrado);
     } catch (error) {
       console.error('Error al obtener los datos de la API', error);
@@ -57,10 +63,6 @@ const CriteriosEvaluacion = () => {
     } catch (error) {
       console.error('Error al guardar la nueva autoevaluación', error);
     }
-  };
-
-  const handleBack = () => {
-    navigate(-1); // Navegar a la página anterior
   };
 
   const eliminarClick = (id) => {
@@ -106,23 +108,22 @@ const CriteriosEvaluacion = () => {
     } 
   };
   const handleCloseEditModal = () => {
+    setNewCriterioName('');
     setShowEditModal(false);
   };
 
   return (
     <div className='HomeAutoevaluacion'>
       <div className='row-home'>
-        <h2 className='col col-h1'>Criterios</h2>
+        <h2 className='col col-h1'>{nombreEvaluacion} </h2>
         <div className='col col-h3'>
           <h4>{criterios.length} criterios</h4>
         </div>
         
         <div className='col col-button'>
           <div className='button-group'>
-            <Button style={{backgroundColor: '#215f88'}} className="btn-custom-primary" onClick={handleClick}>Agregar Criterio</Button>
-            <Button className="boton_atras" onClick={handleBack} style={{ marginLeft: '10px', backgroundColor:'#09DDCC', color:'black'}}>
-              <FaArrowLeft />
-            </Button>
+            <Button style={{backgroundColor: '#007BFF'}} className="btn-custom-primary" onClick={handleClick}>Agregar Criterio</Button>
+            <BotonAtras />
           </div>
         </div>
       </div>
@@ -157,76 +158,29 @@ const CriteriosEvaluacion = () => {
         </tbody>
       </Table>
 
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Agregar Criterio</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEvaluationName">
-              <Form.Label>Nombre del Criterio</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el nombre de la evaluación"
-                value={newCriterioName}
-                onChange={(e) => setNewCriterioName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button  style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleSave}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalAgregar
+                show={showModal}
+                onClose={handleClose}
+                newName={newCriterioName}
+                setNewName={setNewCriterioName}
+                handleSave={handleSave}
+                titulo={"Agregar Criterio"}
+      />
 
-      <Modal show={showConfirmModal} onHide={handleCloseConfirmModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Eliminación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          ¿Estás seguro de que deseas eliminar este criterio?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}}  className="btn-custom-secondary" onClick={handleCloseConfirmModal}>
-            Cancelar
-          </Button>
-          <Button style={{backgroundColor: 'red'}} className="btn-custom-danger" onClick={handleConfirmDelete}>
-            Eliminar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalEliminar
+                show={showConfirmModal}
+                onClose={handleCloseConfirmModal}
+                handleConfirmDelete={handleConfirmDelete}
+      />
 
-      <Modal show={showEditModal} onHide={handleCloseEditModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Criterio</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formEditEvaluationName">
-              <Form.Label>Nombre del Criterio</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el nuevo nombre de la evaluación"
-                value={newCriterioName}
-                onChange={(e) => setNewCriterioName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{backgroundColor: '#09DDCC', color: 'black'}} className="btn-custom-secondary" onClick={handleCloseEditModal}>
-            Cancelar
-          </Button>
-          <Button style={{backgroundColor: '#215F88'}} className="btn-custom-primary" onClick={handleEditSave}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ModalAgregar
+                show={showEditModal}
+                onClose={handleCloseEditModal}
+                newName={newCriterioName}
+                setNewName={setNewCriterioName}
+                handleSave={handleEditSave}
+                titulo="Editar Criterio"
+      />
     </div>
   );
 };
