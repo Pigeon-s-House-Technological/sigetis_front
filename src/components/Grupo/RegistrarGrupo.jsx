@@ -121,7 +121,7 @@ const GroupForm = ({ onClose }) => {
                 {errors.apiError && <span className="error-message">{errors.apiError}</span>}
 
                 <button type="submit" className="submit-button">
-                    Registrar Equipo
+                    Registrar Grupo
                 </button>
             </form>
 

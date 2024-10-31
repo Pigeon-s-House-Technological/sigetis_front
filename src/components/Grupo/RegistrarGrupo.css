@@ -149,3 +149,20 @@ input.error {
     cursor: pointer;
     transition: 0.5s;
 }
+
+.modal-body {
+    text-align: left; /* Asegúrate de que el texto no esté centrado */
+  }
+  
+  .usuarios-list {
+    list-style-type: none; /* Elimina los puntos de la lista */
+    padding: 0;
+  }
+  
+  .usuarios-list li {
+    margin-bottom: 10px; /* Espacio entre los elementos de la lista */
+  }
+  
+  .usuarios-list strong {
+    font-weight: bold; /* Aplica negrita a los títulos */
+  }

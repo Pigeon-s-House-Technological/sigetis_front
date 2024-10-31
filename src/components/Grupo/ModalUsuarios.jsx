@@ -13,12 +13,12 @@ const ModalUsuarios = ({ show, handleClose, usuarios }) => {
             </button>
           </div>
           <div className="modal-body">
-            <ul>
+            <ul className="usuarios-list">
               {usuarios.map((usuario) => (
                 <li key={usuario.id}>
-                  Usuario: {usuario.usuario} <br />
-                  Contraseña: {usuario.contraseña} <br />
-                  {usuario.tipo_usuario === 2 ? 'Jefe' : 'Estudiante'}
+                  <b>Usuario:</b> {usuario.usuario} <br />
+                  <b>Contraseña:</b> {usuario.contraseña} <br />
+                  <b>Tipo:</b> {usuario.tipo_usuario === 2 ? 'Jefe' : 'Estudiante'}
                 </li>
               ))}
             </ul>

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config'; 
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Iconos para mostrar/ocultar contraseña
 
-const endPoint = `${API_BASE_URL}/usuarios`; 
+const endPoint = `${API_BASE_URL}/register`; 
 
 function RegistroEstudiante() {
   const [nombre_user, setNombre] = useState('');
@@ -76,12 +76,13 @@ function RegistroEstudiante() {
   
 
       const data = {
-        nombre_user,
-        apellido_user,
+        nombre: nombre_user,
+        apellido: apellido_user,
         correo,
-        tipo_usuario: 1, 
-        contrasena_usuario, // Aquí enviamos la contraseña validada
-        confirmarContrasena
+        usuario,
+        tipo_usuario: 3, 
+        password: contrasena_usuario, // Aquí enviamos la contraseña validada
+        password_confirmation:confirmarContrasena
 
       };
 
@@ -94,6 +95,7 @@ function RegistroEstudiante() {
       setApellido('');
       setCorreo('');
       setContrasena('');
+      setConfirmarContrasena('');
     } catch (error) {
       if (error.response) {
         setError(`Error al registrar el estudiante: ${error.response.data.message || error.response.data}`);

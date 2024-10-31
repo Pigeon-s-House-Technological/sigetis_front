@@ -7,7 +7,7 @@ const LoginModal = ({ userType, toggleUserType }) => {
         <div className={`login-container ${userType}`}>
             <h2 className="title">Iniciar Sesión</h2>
 
-            <div className="toggle-buttons">
+            {/*<div className="toggle-buttons">
                 <button
                     className={`toggle-button ${userType === 'student' ? 'active' : ''}`}
                     onClick={() => toggleUserType('student')}
@@ -20,7 +20,7 @@ const LoginModal = ({ userType, toggleUserType }) => {
                 >
                     Docente/Tutor
                 </button>
-            </div>
+            </div>**/}
 
             <div className="form-container">
                 <LoginForm userType={userType} />

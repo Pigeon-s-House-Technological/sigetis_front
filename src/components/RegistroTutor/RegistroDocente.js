@@ -5,11 +5,11 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config'; 
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Iconos para mostrar/ocultar contraseña
 
-const endPoint = `${API_BASE_URL}/usuarios`; 
+const endPoint = `${API_BASE_URL}/register`; 
 
 function RegistroEstudiante() {
-  const [nombre_user, setNombre] = useState('');
-  const [apellido_user, setApellido] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
   const [correo, setCorreo] = useState('');
   const [error, setError] = useState('');  
   const [exito, setExito] = useState(false);  
@@ -63,7 +63,7 @@ function RegistroEstudiante() {
     e.preventDefault();
 
     try {
-      if (!nombre_user || !apellido_user || !correo) {
+      if (!nombre || !apellido || !correo) {
         setError('Todos los campos son requeridos');
         return;
       }
@@ -76,12 +76,13 @@ function RegistroEstudiante() {
   
 
       const data = {
-        nombre_user,
-        apellido_user,
+        nombre,
+        apellido,
         correo,
         tipo_usuario: 1, 
-        contrasena_usuario, // Aquí enviamos la contraseña validada
-        confirmarContrasena
+        usuario: usuario, // Aquí enviamos el usuario validado
+        password: contrasena_usuario, // Aquí enviamos la contraseña validada
+        password_confirmation: confirmarContrasena
 
       };
 
@@ -92,11 +93,14 @@ function RegistroEstudiante() {
       setError('');
       setNombre('');
       setApellido('');
+      setUsuario('');
       setCorreo('');
       setContrasena('');
+      setConfirmarContrasena('');
     } catch (error) {
       if (error.response) {
         setError(`Error al registrar el estudiante: ${error.response.data.message || error.response.data}`);
+        console.log('Error:', error.response.data);
       } else {
         setError('Error al registrar el estudiante: No se pudo conectar con el servidor.');
       }
@@ -117,7 +121,7 @@ function RegistroEstudiante() {
           <Form.Control
             type="text"
             placeholder="Ingresa tu nombre"
-            value={nombre_user}
+            value={nombre}
             onChange={(e) => {
               const regex = /^[a-zA-Z\s]*$/;
               if (regex.test(e.target.value)) {
@@ -132,7 +136,7 @@ function RegistroEstudiante() {
           <Form.Control
             type="text"
             placeholder="Ingresa tu apellido"
-            value={apellido_user}
+            value={apellido}
             onChange={(e) => {
               const regex = /^[a-zA-Z\s]*$/;
               if (regex.test(e.target.value)) {

@@ -90,9 +90,15 @@ const handleClick = () => {
           <>
           <li>
               <NavLink to="/registroDocente" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Registrar Docente
+                Docente
               </NavLink>
+              
             </li>
+            <li>
+            <NavLink to="/registroEstudiante" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                Estudiante
+              </NavLink>
+              </li>
           </>  
         )}
         
