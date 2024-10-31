@@ -8,11 +8,11 @@ const ModalEvaluacion = ({ visible, onClose, evaluacion }) => {
         <div className="modal">
             <div className="modal-content">
                 <div className='modal-header'>
-                <h2>{evaluacion.nombre}</h2>
+                <h2>{evaluacion.nombre_evaluacion}</h2>
                 <span className="close" onClick={onClose}>&times;</span>
                 </div>
                 
-                <p>Este es un modal gaaaaaaaaaa</p>
+                <p>Muy Pronto!!!</p>
                 <hr></hr>
             </div>
         </div>

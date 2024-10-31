@@ -89,7 +89,6 @@ const Asignar = () => {
   };
 
   const handleAddMemberClick = (group) => {
-    
     if (!evaluacionSeleccionada) {
       setMensaje('Debe seleccionar una evaluación.');
     } else if(parseInt(tipo) === 1 && destinatario === 'individual') {
@@ -106,10 +105,15 @@ const Asignar = () => {
   };
 
   const individualAutoevaluacion = async(group) => {
-    const grupoAsignado = asignaciones.some(asignacion =>
-      asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
-      group.integrantes.some(integrante => asignacion.id_usuario === integrante.id)
-    );
+    let grupoAsignado = false;
+    if (!Array.isArray(asignaciones)) {
+      console.error('Asignaciones no es un array:', asignaciones);
+    }else{
+      grupoAsignado = asignaciones.some(asignacion =>
+        asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
+        group.integrantes.some(integrante => asignacion.id_usuario === integrante.id)
+      );
+    }
 
     if (grupoAsignado) {
       alert('Este grupo ya está asignado a esta evaluación.');
@@ -121,6 +125,7 @@ const Asignar = () => {
         return axios.post(`${API_BASE_URL}/asignaciones`, {
           id_evaluacion: evaluacionId,
           id_usuario: integrante.id,
+          id_grupo: group.id,
           estado_evaluacion: 0
         });
         
@@ -139,10 +144,15 @@ const Asignar = () => {
   };
 
   const grupalAutoevaluacion = async(group) => {
-    const grupoAsignado = asignaciones.some(asignacion =>
-      asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
-      asignacion.id_grupo === group.id
-    );
+    let grupoAsignado = false;
+    if (!Array.isArray(asignaciones)) {
+      console.error('Asignaciones no es un array:', asignaciones);
+    }else{
+      grupoAsignado = asignaciones.some(asignacion =>
+        asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
+        group.integrantes.some(integrante => asignacion.id_usuario === integrante.id)
+      );
+    }
 
     if (grupoAsignado) {
       alert('Este grupo ya está asignado a esta evaluación.');

@@ -34,9 +34,12 @@ const PlanillaEvaluacionEvaluaciones = () => {
 
     const obtenerEvaluaciones = async () => {
         try {
+            const response2 = await axios.get(`${API_BASE_URL}/asignaciones`);
             const response = await axios.get(`${API_BASE_URL}/evaluaciones`);
+            console.log(response2.data)
             //filtrar por evaluaciones grupo
             if(response.data.length > 0){
+                setAsignaciones(response2.data);
                 setEvaluaciones(response.data);
             }else{
                 setEvaluaciones([]);
@@ -45,33 +48,28 @@ const PlanillaEvaluacionEvaluaciones = () => {
             console.error("Error al obtener los datos de la API", error);
         }
     }
-
-    const mapearTipoEvaluacion = (tipo) => {
-        const tipos = {
-            1: "Autoevaluación",
-            2: "Evaluación Cruzada",
-            3: "Evaluación en Pares",
-            // Añade más mapeos según tus tipos de evaluación
-        };
-        return tipos[tipo] || "Desconocido";
-    };
-
-
-    useEffect(() => {
-        obtenerEvaluaciones();
-        obtenerNombreGrupo();
-        //obtenerEstudiantes();
-    }, []);
-
-    useEffect(() => {
-        //if (evaluaciones.length > 0 && estudiantes.length > 0) {
-        if(evaluaciones.length > 0){
-            generarDatosTabla();
-        } else {
-            setDatosTabla([]);
-            console.log("No hay datos");
+    const obtenerAsignaciones = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/planilla-evaluacion-datos/${idGrupo}`);
+            console.log(response.data.asignaciones)
+            if(response.data.asignaciones.length > 0){
+                setAsignaciones(response.data.asignaciones);
+                setDatosTabla(response.data.asignaciones);
+                console.log('asignaciones', asignaciones)
+            }else{
+                setAsignaciones([]);
+            }
+        } catch (error) {
+            console.error("Error al obtener los datos de la API", error);
         }
-    }, [evaluaciones]);//, estudiantes]);
+    }
+
+
+    useEffect(() => {
+        obtenerNombreGrupo();
+        obtenerAsignaciones();
+    }, [idGrupo]);
+
 
     const handleFiltroChange = (event) => {
         setTipoFiltro(event.target.value);
@@ -82,23 +80,8 @@ const PlanillaEvaluacionEvaluaciones = () => {
 
     const datosFiltrados = datosTabla.filter(dato => {
         return (tipoFiltro === "" || dato.tipo_destinatario === tipoFiltro) &&
-               (tipoEvaluacionFiltro === "" || dato.tipoEvaluacion === tipoEvaluacionFiltro);
+               (tipoEvaluacionFiltro === "" || dato.tipo_evaluacion === tipoEvaluacionFiltro);
     });
-
-    const generarDatosTabla = () => {
-        const datosCombinados = evaluaciones.map(evaluacion => {
-            //const estudiante = estudiantes.find(est => est.id === evaluacion.estudianteId);
-            const estudiante = "nombre Estudiante";
-            return {
-                nombre: evaluacion.nombre_evaluacion,
-                tipo_destinatario: evaluacion.tipo_destinatario ? "Grupal" : "Individual",
-                tipoEvaluacion:  mapearTipoEvaluacion(evaluacion.tipo_evaluacion),
-                //nombreEstudiante: estudiante ? estudiante.nombre : "Desconocido"
-                nombreEstudiante: estudiante
-            };
-        });
-        setDatosTabla(datosCombinados);
-    };
 
     const abrirModal = (evaluacion) => {
         setEvaluacionSeleccionada(evaluacion);
@@ -153,10 +136,10 @@ const PlanillaEvaluacionEvaluaciones = () => {
                 <tbody>
                     {datosFiltrados.map((dato, index) => (
                         <tr key={index}>
-                            <td id="eva-table"><a onClick={() => abrirModal(dato)}>{dato.nombre}</a></td>
+                            <td id="eva-table"><a onClick={() => abrirModal(dato)}>{dato.nombre_evaluacion}</a></td>
                             <td>{dato.tipo_destinatario}</td>
-                            <td>{dato.tipoEvaluacion}</td>
-                            <td>{dato.nombreEstudiante}</td>
+                            <td>{dato.tipo_evaluacion}</td>
+                            <td>{dato.nombre_estudiante}</td>
                             {/* Añade más celdas según tus necesidades */}
                         </tr>
                     ))}
