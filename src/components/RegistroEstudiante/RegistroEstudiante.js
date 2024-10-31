@@ -98,7 +98,7 @@ function RegistroEstudiante() {
       setConfirmarContrasena('');
     } catch (error) {
       if (error.response) {
-        setError(`Error al registrar el estudiante: ${error.response.data.message || error.response.data}`);
+        setError(`Error al registrar el estudiante: ${error.response.data.message || error.response.data}, usuario o email ya usados.`);
       } else {
         setError('Error al registrar el estudiante: No se pudo conectar con el servidor.');
       }
@@ -120,6 +120,7 @@ function RegistroEstudiante() {
             type="text"
             placeholder="Ingresa tu nombre"
             value={nombre_user}
+            maxLength={50}
             onChange={(e) => {
               const regex = /^[a-zA-Z\s]*$/;
               if (regex.test(e.target.value)) {
@@ -135,6 +136,7 @@ function RegistroEstudiante() {
             type="text"
             placeholder="Ingresa tu apellido"
             value={apellido_user}
+            maxLength={50}
             onChange={(e) => {
               const regex = /^[a-zA-Z\s]*$/;
               if (regex.test(e.target.value)) {
@@ -150,6 +152,7 @@ function RegistroEstudiante() {
             type="email"
             placeholder="Ingresa tu correo electronico"
             value={correo}
+            maxLength={100}
             onChange={(e) => setCorreo(e.target.value)}
             style={{ '::placeholder': { fontSize: '10px', color: '#999' } }}
 
@@ -162,6 +165,7 @@ function RegistroEstudiante() {
             type="text"
             placeholder="Ingresa tu usuario"
             value={usuario}
+            maxLength={50}
             onChange={(e) => setUsuario(e.target.value)}
             required
           />
@@ -173,6 +177,7 @@ function RegistroEstudiante() {
             <Form.Control
               type={showPassword ? 'text' : 'password'}
               placeholder="Ingresa tu contraseña"
+              maxLength={50}
               value={contrasena_usuario}
               onChange={handlePasswordChange}
             />

@@ -99,10 +99,10 @@ function RegistroEstudiante() {
       setConfirmarContrasena('');
     } catch (error) {
       if (error.response) {
-        setError(`Error al registrar el estudiante: ${error.response.data.message || error.response.data}`);
+        setError(`Error al registrar el Docente: ${error.response.data.message || error.response.data}, usuario o email ya usados.`);
         console.log('Error:', error.response.data);
       } else {
-        setError('Error al registrar el estudiante: No se pudo conectar con el servidor.');
+        setError('Error al registrar el Docente: Usuario o Email ya usados.');
       }
       setExito(false);
     }
@@ -122,6 +122,7 @@ function RegistroEstudiante() {
             type="text"
             placeholder="Ingresa tu nombre"
             value={nombre}
+            maxLength={50}
             onChange={(e) => {
               const regex = /^[a-zA-Z\s]*$/;
               if (regex.test(e.target.value)) {
@@ -137,6 +138,7 @@ function RegistroEstudiante() {
             type="text"
             placeholder="Ingresa tu apellido"
             value={apellido}
+            maxLength={50}
             onChange={(e) => {
               const regex = /^[a-zA-Z\s]*$/;
               if (regex.test(e.target.value)) {
@@ -152,6 +154,7 @@ function RegistroEstudiante() {
             type="email"
             placeholder="Ingresa tu correo electronico"
             value={correo}
+            maxLength={100}
             onChange={(e) => setCorreo(e.target.value)}
             style={{ '::placeholder': { fontSize: '10px', color: '#999' } }}
 
@@ -164,6 +167,7 @@ function RegistroEstudiante() {
             type="text"
             placeholder="Ingresa tu usuario"
             value={usuario}
+            maxLength={50}
             onChange={(e) => setUsuario(e.target.value)}
             required
           />
@@ -176,6 +180,7 @@ function RegistroEstudiante() {
               type={showPassword ? 'text' : 'password'}
               placeholder="Ingresa tu contraseña"
               value={contrasena_usuario}
+              maxLength={50}
               onChange={handlePasswordChange}
             />
             {/* Cambiar el estilo del InputGroup.Text para que no parezca un botón */}

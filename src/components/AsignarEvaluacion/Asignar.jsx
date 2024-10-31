@@ -22,6 +22,8 @@ const Asignar = () => {
   const [evaluacionSeleccionada, setEvaluacionSeleccionada] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [asignaciones, setAsignaciones] = useState([]);
+  const [grupoPrincipal, setGrupoPrincipal] = useState(null);
+  const [grupoAux, setGrupoAux] = useState(null);
   
   const obtenerEvaluaciones = async () => {
     try {
@@ -104,7 +106,8 @@ const Asignar = () => {
     }else if(parseInt(tipo) === 1 && destinatario === 'grupal'){
       grupalAutoevaluacion(group);
     }else if(parseInt(tipo) === 2){
-      evaluacionCruzada(group);
+      setGrupoPrincipal(group);
+      setGrupoAux(null);
     }else if(parseInt(tipo) === 3){
       evaluacionPares(group);
     }else{
@@ -148,7 +151,6 @@ const Asignar = () => {
   };
 
   const evaluacionPares = async (group) => {
-    console.log('evaluacionPares', group.integrantes);
     let grupoAsignado = false;
     if (!Array.isArray(asignaciones)) {
       console.error('Asignaciones no es un array:', asignaciones);
@@ -183,7 +185,7 @@ const Asignar = () => {
     }else{
       grupoAsignado = asignaciones.some(asignacion =>
         asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
-        group.integrantes.some(integrante => asignacion.id_usuario === integrante.id)
+        asignacion.id_grupo === group.id
       );
     }
 
@@ -209,8 +211,52 @@ const Asignar = () => {
     }
   };
 
-  const evaluacionCruzada = () => {
-    console.log('evaluacionCruzada');
+  const evaluacionCruzada = async(group, auxGroup) => {
+    let grupoAsignado = false;
+    if (!Array.isArray(asignaciones)) {
+      console.error('Asignaciones no es un array:', asignaciones);
+    }else{
+      grupoAsignado = asignaciones.some(asignacion =>
+        asignacion.id_evaluacion === parseInt(evaluacionSeleccionada) &&
+        asignacion.id_grupo === group.id
+      );
+    }
+
+    if (grupoAsignado) {
+      alert('Este grupo ya está asignado a esta evaluación.');
+      return;
+    }
+
+    if(group.id === auxGroup.id){
+      alert('No puedes asignar una evaluación cruzada al mismo grupo');
+      return;
+    }
+    try {
+      const evaluacionId = evaluacionSeleccionada; 
+      
+      const response = await axios.post(`${API_BASE_URL}/asignaciones`, {
+          id_evaluacion: evaluacionId,
+          id_grupo: group.id,
+          id_grupo_aux: auxGroup.id,
+          estado_evaluacion: 0
+        });
+        
+      
+      console.log('requests:', response);
+      obtenerAsignaciones();
+      alert('Evaluacion cruzada asignada correctamente');
+      setGrupoPrincipal(null);
+      setGrupoAux(null);
+    } catch (error) {
+      console.error('Error al asignar autoevaluaciones:', error);
+      alert('Error al asignar evaluaciones cruzadas');
+    }
+  };
+
+  const handleAddAuxGroupClick = (group) => {
+    setGrupoAux(group);
+    // Aquí puedes llamar a la función para asignar la evaluación cruzada
+    evaluacionCruzada(grupoPrincipal, group);
   };
 
   return (
@@ -258,6 +304,19 @@ const Asignar = () => {
                 </div>
               ) : (
                 <p>No hay miembros asignados.</p>
+              )}
+              {grupoPrincipal && grupoPrincipal.id === group.id && destinatarioVar === 'Grupal' && parseInt(tipo) === 2 && (
+                <div>
+                  <h4>Seleccione el Grupo que Será Evaluado:</h4>
+                  {grupos.map((grupo) => (
+                    <div key={grupo.id} className="group">
+                      <div className="group-header" onClick={() => handleAddAuxGroupClick(grupo)}>
+                        <span>{grupo.nombre_grupo}</span>
+                        <FaPlus /> {/* Icono de + */}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           )}
