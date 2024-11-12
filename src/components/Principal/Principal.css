@@ -129,3 +129,12 @@
     color: white;
     border-radius: 4px;
 }
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logout-button {
+    margin-left: 20px; /* Ajusta este valor según el espacio que desees */
+  }

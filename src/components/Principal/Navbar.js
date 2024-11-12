@@ -3,6 +3,8 @@ import { NavLink, useNavigate, Link } from 'react-router-dom';
 import './Principal.css';
 import Cookies from 'js-cookie';
 
+import Notificaciones from './Notificaciones/Notificaciones';
+
 const Navbar = ({ userType }) => {  // Recibe 'userType' como prop
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
@@ -104,7 +106,10 @@ const handleClick = () => {
         
         <li>
           {isAuthenticated ? (
+            <div className='navbar-actions'>
+            <Notificaciones />
             <button onClick={logout} className="logout-button">Cerrar sesión</button>
+            </div>
           ) : (
             <button onClick={handleClick} className="login-button">Iniciar sesión</button>
           )}
