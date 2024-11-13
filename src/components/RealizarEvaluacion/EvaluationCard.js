@@ -12,38 +12,88 @@ const EvaluationCard = () => {
 
   useEffect(() => {
     const fetchEvaluaciones = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/asignaciones`);
-        const filtered = response.data.filter(asignacion => asignacion.id_usuario === 1);
-        const evaluaciones = await axios.get(`${API_BASE_URL}/evaluaciones`);
-        const evaluacionesFiltradas = [];
-        for (const filtro of filtered) {
-          const filtradas = evaluaciones.data.filter(eva => eva.id === filtro.id_evaluacion);
-          evaluacionesFiltradas.push(...filtradas);
+      const storedUser = localStorage.getItem('user');
+      let userId = null;
+
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          userId = parsedUser.userData.id;
+        } catch (error) {
+          console.error('Error al parsear los datos del usuario:', error);
         }
-        const datosImprimir = [];
-        for(let i=0; i<evaluacionesFiltradas.length; i++){
-          const nombre = evaluacionesFiltradas[i].nombre_evaluacion;
-          const estado = filtered[i].estado_evaluacion ? "Entregado" : "No entregado";
-          let tipoTexto;
-          const tipo = evaluacionesFiltradas[i].tipo_evaluacion;
-          if(tipo === 1){
-            tipoTexto = "Autoevaluacion";
-          }else if(tipo === 2){
-            tipoTexto = "Evaluacion en pares";
-          }else if(tipo === 3){
-            tipoTexto = "Evaluacion cruzada";
-          }
-          datosImprimir.push({id: evaluacionesFiltradas[i].id, nombre, estado, tipo: tipoTexto}); // Asegúrate de incluir el id aquí
+      }
+
+      if (userId) {
+        try {
+          const asignacionesResponse = await axios.get(`${API_BASE_URL}/asignaciones`);
+          const filtered = asignacionesResponse.data.filter(asignacion => asignacion.id_usuario === userId);
+
+          const evaluacionesResponse = await axios.get(`${API_BASE_URL}/evaluaciones`);
+          const evaluacionesFiltradas = evaluacionesResponse.data.filter(evaluacion =>
+            filtered.some(filtro => evaluacion.id === filtro.id_evaluacion)
+          );
+
+          const datosImprimir = evaluacionesFiltradas.map(evaluacion => {
+            const estado = filtered.find(filtro => filtro.id_evaluacion === evaluacion.id)?.estado_evaluacion ? "Entregado" : "No entregado";
+            let tipoTexto;
+
+            switch (evaluacion.tipo_evaluacion) {
+              case 1:
+                tipoTexto = "Autoevaluacion";
+                break;
+              case 2:
+                tipoTexto = "Evaluacion en pares";
+                break;
+              case 3:
+                tipoTexto = "Evaluacion cruzada";
+                break;
+              default:
+                tipoTexto = "Tipo desconocido";
+            }
+
+            return {
+              id: evaluacion.id,
+              nombre: evaluacion.nombre_evaluacion,
+              estado,
+              tipo: tipoTexto,
+            };
+          });
+
+          setEvaluaciones(datosImprimir);
+        } catch (error) {
+          console.error('Error al obtener las evaluaciones:', error);
         }
-        console.log('Evaluaciones:', datosImprimir);
-        setEvaluaciones(datosImprimir);
-      } catch (error) {
-        console.error('Error al obtener las evaluaciones:', error);
+      } else {
+        console.warn('No se encontró el ID del usuario.');
       }
     };
+
     fetchEvaluaciones();
+
+    const handleStorageChange = () => {
+      const storedEvaluaciones = localStorage.getItem('evaluaciones');
+      if (storedEvaluaciones) {
+        setEvaluaciones(JSON.parse(storedEvaluaciones));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
+
+  const handleFinishEvaluation = (evaluacionId) => {
+    setEvaluaciones(prevEvaluaciones => {
+      const updatedEvaluaciones = prevEvaluaciones.map(e => 
+        e.id === evaluacionId ? { ...e, estado: "Entregado" } : e
+      );
+      localStorage.setItem('evaluaciones', JSON.stringify(updatedEvaluaciones));
+      return updatedEvaluaciones;
+    });
+  };
 
   const handleStartClick = (evaluacionId) => {
     setSelectedEvaluacion(evaluacionId);
@@ -51,7 +101,9 @@ const EvaluationCard = () => {
   };
 
   const handleConfirmStart = () => {
-    navigate('/evaluacion/formulario', { state: { evaluacionId: selectedEvaluacion } });
+    navigate('/evaluacion/formulario', {
+      state: { evaluacionId: selectedEvaluacion }, // No pasar onFinish aquí
+    });
     setModalIsOpen(false);
   };
 
@@ -61,16 +113,20 @@ const EvaluationCard = () => {
 
   return (
     <div className="evaluation-card">
-      {evaluaciones.map((evaluacion) => (
-        <div key={evaluacion.id} className="evaluation-card">
-          <h2>{evaluacion.nombre}</h2>
-          <p>{evaluacion.tipo}</p>
-          <div className="evaluation-status">{evaluacion.estado}</div>
-          <button className="start-button" onClick={() => handleStartClick(evaluacion.id)}>
-            Iniciar
-          </button>
-        </div>
-      ))}
+      {evaluaciones.length === 0 ? (
+        <p>No hay evaluaciones disponibles.</p>
+      ) : (
+        evaluaciones.map((evaluacion) => (
+          <div key={evaluacion.id} className="evaluation-card">
+            <h2>{evaluacion.nombre}</h2>
+            <p>{evaluacion.tipo}</p>
+            <div className="evaluation-status">{evaluacion.estado}</div>
+            <button className="start-button" onClick={() => handleStartClick(evaluacion.id)}>
+              Iniciar
+            </button>
+          </div>
+        ))
+      )}
       {modalIsOpen && (
         <div className="modal">
           <div className="modal-content">

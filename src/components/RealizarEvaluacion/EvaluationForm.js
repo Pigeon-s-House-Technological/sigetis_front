@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './EvaluationForm.css';
 
 const EvaluationForm = () => {
   const navigate = useNavigate();
   const [criterios, setCriterios] = useState([]);
-  const [responses, setResponses] = useState({});
-
+  const [respuestas, setResponses] = useState({});
+  const { state } = useLocation();
+  const evaluacionId = state.evaluacionId;
   useEffect(() => {
     cargarCriterios();
   }, []);
@@ -15,8 +16,8 @@ const EvaluationForm = () => {
   const cargarCriterios = async () => {
     try {
       const response = await axios.get('http://localhost:8000/api/criterios');
-      console.log('Respuesta de criterios:', response.data); // Verifica la respuesta
       const datos = Array.isArray(response.data) ? response.data : [];
+
       setCriterios(datos);
       // Cargar preguntas para cada criterio
       await Promise.all(datos.map(criterio => cargarPreguntas(criterio.id)));
@@ -65,53 +66,65 @@ const EvaluationForm = () => {
   };
 
   const handleFinish = async () => {
-  const allAnswered = criterios.every(criterio =>
-    (criterio.opcionMultiple || []).every(pregunta => responses[pregunta.id]) &&
-    (criterio.puntuacion || []).every(pregunta => responses[pregunta.id]) &&
-    (criterio.complemento || []).every(pregunta => responses[pregunta.id])
-  );
-
-  if (!allAnswered) {
-    alert('Por favor, responda todas las preguntas.');
-    return;
+    const allAnswered = criterios.every(criterio =>
+      (criterio.opcionMultiple || []).every(pregunta => respuestas[pregunta.id]) &&
+      (criterio.puntuacion || []).every(pregunta => respuestas[pregunta.id]) &&
+      (criterio.complemento || []).every(pregunta => respuestas[pregunta.id])
+    );
+    
+    if (!allAnswered) {
+      alert('Por favor, responda todas las preguntas.');
+      return;
+    }
+    if(state.onFinish) {
+      state.onFinish(evaluacionId); // actualizamos el estado de Feedback en EvaluationCard
   }
-
-  try {
-    const promises = [];
-    criterios.forEach(criterio => {
-      (criterio.opcionMultiple || []).forEach(pregunta => {
-        const respuestaId = responses[pregunta.id];
-        if (respuestaId) {
-          promises.push(guardarRespuestaOpcionMultiple(pregunta.id, respuestaId));
-        }
+    try {
+      const promises = [];
+  
+      criterios.forEach(criterio => {
+        (criterio.opcionMultiple || []).forEach(pregunta => {
+          const respuestaId = respuestas[pregunta.id];
+          if (respuestaId) {
+            promises.push(guardarRespuestaOpcionMultiple(pregunta.id, respuestaId));
+          }
+        });
+        (criterio.puntuacion || []).forEach(pregunta => {
+          const puntuacion = respuestas[pregunta.id];
+          if (puntuacion) {
+            promises.push(guardarRespuestaPuntuacion(pregunta.id, puntuacion));
+          }
+        });
+        (criterio.complemento || []).forEach(pregunta => {
+          const respuesta = respuestas[pregunta.id];
+          if (respuesta) {
+            promises.push(guardarRespuestaComplemento(pregunta.id, respuesta));
+          }
+        });
       });
-      (criterio.puntuacion || []).forEach(pregunta => {
-        const puntuacion = responses[pregunta.id];
-        if (puntuacion) {
-          promises.push(guardarRespuestaPuntuacion(pregunta.id, puntuacion));
-        }
-      });
-      (criterio.complemento || []).forEach(pregunta => {
-        const respuesta = responses[pregunta.id];
-        if (respuesta) {
-          promises.push(guardarRespuestaComplemento(pregunta.id, respuesta));
-        }
-      });
-    });
-
-    await Promise.all(promises);
-    alert('Evaluación terminada y respuestas guardadas');
-    navigate('/evaluacion');
-  } catch (error) {
-    console.error('Error al guardar las respuestas:', error);
-    alert('Hubo un problema al guardar las respuestas. Inténtalo de nuevo.');
-  }
-};
+  
+      await Promise.all(promises);
+      alert('Evaluación terminada y respuestas guardadas');
+      navigate('/evaluacion');
+    } catch (error) {
+      console.error('Error al guardar las respuestas:', error);
+      alert('Hubo un problema al guardar las respuestas. Inténtalo de nuevo.');
+    }
+  };
 
   const guardarRespuestaOpcionMultiple = async (preguntaId, respuestaId) => {
     const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
+  
+    // Asegúrate de que respuestaId sea un número
+    const idOpcion = Number(respuestaId);
+  
+    // Verifica si la conversión fue exitosa
+    if (isNaN(idOpcion)) {
+      throw new Error("respuestaId debe ser un número válido");
+    }
+  
     return await axios.post('http://localhost:8000/api/respuestasOpcionMultiple', {
-      id_opcion_pregunta_multiple: respuestaId,
+      id_opcion_pregunta_multiple: idOpcion, // Usa el número aquí
       estado_respuesta_opcion_multiple: 1,
       id_grupo_evaluacion: grupoEvaluacionId,
     });
@@ -119,9 +132,29 @@ const EvaluationForm = () => {
 
   const guardarRespuestaPuntuacion = async (preguntaId, puntuacion) => {
     const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
+  
+    // Asegúrate de que preguntaId y puntuacion sean números
+    const idPregunta = Number(preguntaId);
+    const idPuntuacion = Number(puntuacion);
+  
+    // Validación de datos
+    if (isNaN(idPregunta) || isNaN(idPuntuacion)) {
+      throw new Error("preguntaId y puntuacion deben ser números válidos");
+    }
+  
+    if (idPuntuacion < 1 || idPuntuacion > 5) {
+      throw new Error("puntuacion debe estar entre 1 y 5");
+    }
+  
+    console.log("Enviando datos a la API:", {
+      id_pregunta_puntuacion: idPregunta,
+      respuesta_puntuacion: idPuntuacion,
+      id_grupo_evaluacion: grupoEvaluacionId,
+    });
+  
     return await axios.post('http://localhost:8000/api/respuestasPuntuacion', {
-      id_pregunta_puntuacion: preguntaId,
-      respuesta_puntuacion: puntuacion,
+      id_pregunta_puntuacion: idPregunta,
+      respuesta_puntuacion: idPuntuacion,
       id_grupo_evaluacion: grupoEvaluacionId,
     });
   };
@@ -135,10 +168,10 @@ const EvaluationForm = () => {
     });
   };
 
-  const handleResponseChange = (id, value) => {
+  const handleResponseChange = (id, valor) => {
     setResponses(prevResponses => ({
       ...prevResponses,
-      [id]: value,
+      [id]: Number(valor), // Asegúrate de convertir a número aquí
     }));
   };
 
@@ -148,7 +181,7 @@ const EvaluationForm = () => {
 
       {criterios.length > 0 && criterios.map(criterio => (
         <div key={criterio.id} className="criterio-section">
-          <h2>{criterio.titulo_criterio}</h2>
+          <h2 className="criterio-title">{criterio.titulo_criterio}</h2>
 
           {/* Renderiza preguntas de opción múltiple */}
           {criterio.opcionMultiple && criterio.opcionMultiple.length > 0 && criterio.opcionMultiple.map(pregunta => (
