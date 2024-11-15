@@ -1,24 +1,61 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaBell } from 'react-icons/fa';
+import axios from 'axios';
 import './Notificaciones.css'; // Importa el archivo CSS para los estilos
+import { API_BASE_URL } from '../../config';
 
 const Notificaciones = () => {
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notificaciones, setNotificaciones] = useState([
-    { id: 1, mensaje: 'Notificación 1', timestamp: new Date() },
-    { id: 2, mensaje: 'Notificación 2 con un mensaje un poco largo para la utilizacion', timestamp: new Date(Date.now() - 60000) }, // Hace 1 minuto
-    { id: 3, mensaje: 'Notificación 3', timestamp: new Date(Date.now() - 3600000) },
-    { id: 3, mensaje: 'Notificación 3', timestamp: new Date(Date.now() - 3600000) },
-    { id: 3, mensaje: 'Notificación 3', timestamp: new Date(Date.now() - 3600000) },
-    { id: 3, mensaje: 'Notificación 3', timestamp: new Date(Date.now() - 3600000) },
-    { id: 3, mensaje: 'Notificación 3', timestamp: new Date(Date.now() - 3600000) },
-  ]);
+  const [notificaciones, setNotificaciones] = useState([]);
 
   const notificacionesRef = useRef(null);
+  const [usuario, setUsuario] = useState(0);
+
+  useEffect(() => {
+    const obtenerId = () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        setUsuario(user.userData.id);
+      } else {
+        console.error('Usuario no autenticado');
+      }
+    };
+
+    obtenerId();
+  }, []);
+
+  
+  const fetchNotificaciones = async () => {
+    if (usuario) {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/notificaciones/usuario/${usuario}`);
+        if (response.data && response.data.notificaciones) {
+          const notificacionesData = response.data.notificaciones.map((notificacion) => {
+            const data = JSON.parse(notificacion.data);
+            return {
+              id: notificacion.id, // Usa el UUID como clave única
+              mensaje: "El usuario " + data.nombre_creador + " del grupo " + data.nombre_grupo + " ha creado una nueva tarea",
+              timestamp: new Date(notificacion.created_at),
+            };
+          });
+          notificacionesData.sort((a, b) => b.timestamp - a.timestamp);
+          console.log('notificacionesData', notificacionesData);
+          setNotificaciones(notificacionesData);
+        } else {
+          console.error('Respuesta de la API no válida', response.data);
+        }
+      } catch (error) {
+        console.error('Error al obtener las notificaciones:', error);
+      }
+    }
+  };
 
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
-    console.log('notificaciones', notificaciones);
+    if (!showNotifications) {
+      fetchNotificaciones();
+    }
   };
 
   const handleClickOutside = (event) => {
@@ -26,6 +63,8 @@ const Notificaciones = () => {
       setShowNotifications(false);
     }
   };
+
+
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -57,10 +96,11 @@ const Notificaciones = () => {
       <FaBell className="icono-campanita" onClick={toggleNotifications} />
       {showNotifications && (
         <div className="lista-notificaciones">
+          <h4>Notificaciones</h4>
           {notificaciones.length > 0 ? (
             notificaciones.map((notificacion) => (
               <div key={notificacion.id} className="notificacion">
-                <p className="mensaje">{notificacion.mensaje}</p>
+                <p className="mensaje" data-full-message={notificacion.mensaje}>{notificacion.mensaje}</p>
                 <small className="timestamp">{calcularTiempoTranscurrido(notificacion.timestamp)}</small>
               </div>
             ))

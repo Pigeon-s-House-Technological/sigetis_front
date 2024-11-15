@@ -2,6 +2,17 @@
     position: relative;
     display: inline-block;
   }
+
+  .lista-notificaciones h4 {
+    margin: 0; /* Elimina el margen por defecto */
+    padding: 10px; /* Agrega padding para que el texto no esté pegado al borde */
+
+    font-weight: bold;
+    color: #444;
+    background-color: #cae9fa; /* Agrega esta línea para el color de fondo */
+    border-bottom: 1px solid #ccc; /* Agrega un borde inferior para separar el título del contenido */
+    border-radius: 8px 8px 0 0; /* Bordes redondeados en la parte superior */
+  }
   
   .icono-campanita {
     font-size: 24px;
@@ -43,6 +54,8 @@
   .notificacion .mensaje {
     flex: 1;
     margin-right: 10px;
+    color: #444;
+    font-size: 12px;
     white-space: normal;
     overflow: hidden; /* Oculta el texto que se desborda */
     text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto que se desborda */
@@ -50,7 +63,7 @@
   }
   
   .timestamp {
-    font-size: 12px;
+    font-size: 8px;
     color: #999;
   }
 
