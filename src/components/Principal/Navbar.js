@@ -3,6 +3,8 @@ import { NavLink, useNavigate, Link } from 'react-router-dom';
 import './Principal.css';
 import Cookies from 'js-cookie';
 
+import Notificaciones from './Notificaciones/Notificaciones';
+
 const Navbar = ({ userType }) => {  // Recibe 'userType' como prop
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
@@ -41,75 +43,81 @@ const handleClick = () => {
 
   return (
     <nav className={`navbar ${userType}`}> {/* Aplicamos clase dinámica */}
-      <ul>
-      <li className="navbar-brand">
-        <Link to="/" className="navbar-brand">
-          <span>SIGETIS</span>
-        </Link>
-        </li>
-        {(tipo === 0 || tipo === 1) && (
-          <>
-            <li>
-              <NavLink to="/registrarGrupo" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Registrar Grupo
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/gestionarEvaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Evaluaciones
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/planilla" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Planilla de Evaluacion
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/asignarEvaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Asignar
-              </NavLink>
-            </li>
-            
-          </>
-        )}
-        {(tipo === 0 || tipo === 2 || tipo === 3) && (
-          <>
-            <li>
-              <NavLink to="/sprints" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Sprints
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/evaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Realizar Evaluacion
-              </NavLink>
-            </li>
-          </>
-        )}
-        {(tipo === 0) && (
-          <>
-          <li>
-              <NavLink to="/registroDocente" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Docente
-              </NavLink>
-              
-            </li>
-            <li>
-            <NavLink to="/registroEstudiante" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                Estudiante
-              </NavLink>
+      <div className="navbar-left">
+        <ul>
+          <li className="navbar-brand">
+            <Link to="/" className="navbar-brand">
+              <span>SIGETIS</span>
+            </Link>
+          </li>
+          {(tipo === 0 || tipo === 1) && (
+            <>
+              <li>
+                <NavLink to="/registrarGrupo" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Registrar Grupo
+                </NavLink>
               </li>
-          </>  
-        )}
-        
-        <li>
-          {isAuthenticated ? (
-            <button onClick={logout} className="logout-button">Cerrar sesión</button>
-          ) : (
-            <button onClick={handleClick} className="login-button">Iniciar sesión</button>
+              <li>
+                <NavLink to="/gestionarEvaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Evaluaciones
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/planilla" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Planilla de Evaluacion
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/asignarEvaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Asignar
+                </NavLink>
+              </li>
+            </>
           )}
-        </li>
-      </ul>
+          {(tipo === 0 || tipo === 2 || tipo === 3) && (
+            <>
+              <li>
+                <NavLink to="/sprints" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Sprints
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/evaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Realizar Evaluacion
+                </NavLink>
+              </li>
+            </>
+          )}
+          {(tipo === 0) && (
+            <>
+              <li>
+                <NavLink to="/registroDocente" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Docente
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/registroEstudiante" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Estudiante
+                </NavLink>
+              </li>
+            </>
+          )}
+        </ul>
+      </div>
+      <div className="navbar-right">
+        <ul>
+          <li>
+            {isAuthenticated ? (
+              <div className='navbar-actions'>
+                <Notificaciones />
+                <button onClick={logout} className="logout-button">Cerrar sesión</button>
+              </div>
+            ) : (
+              <button onClick={handleClick} className="login-button">Iniciar sesión</button>
+            )}
+          </li>
+        </ul>
+      </div>
     </nav>
   );
 };

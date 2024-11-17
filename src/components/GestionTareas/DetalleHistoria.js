@@ -24,6 +24,7 @@ function DetalleHistoria() {
   const [integrantes, setIntegrantes] = useState([]);
   const [selectedIntegrante, setSelectedIntegrante] = useState(null);
   const [grupo, setGrupo] = useState(null);
+  const [usuario, setUsuario ] = useState(null);
   const [idAsignar, setIdAsignar] = useState(null);
   const navigate = useNavigate(); // Inicializar useNavigate
 
@@ -121,6 +122,7 @@ function DetalleHistoria() {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const user = JSON.parse(storedUser);
+      setUsuario(user.userData.id);
       setGrupo(user.grupoId);
     }else{
       console.error('Usuario no autenticado');
@@ -186,8 +188,11 @@ function DetalleHistoria() {
         estado_actividad: datos.estado,
         fecha_inicio: datos.fecha_inicio,
         fecha_fin: datos.fecha_fin,
-        id_hu: id
+        id_hu: id,
+        creador: usuario,
+        grupo: grupo,
       });
+      console.log('creador', usuario);
       console.log ('Tarea guardada:', response.data.actividad);
       setTasks([...tasks, response.data.actividad]);
     }catch(error){
