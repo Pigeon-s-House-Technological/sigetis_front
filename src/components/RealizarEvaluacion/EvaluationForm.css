@@ -19,14 +19,20 @@
 }
 
 
-.criteria-title {
-  background-color: #006ba1;  
-  color: white;               
+.criteria-title {  
+  color:black;               
   padding: 10px;             
   border-radius: 5px;         
   margin-bottom: 20px;        
 }
 
+.criterio-title {
+  background-color: #006ba1;  
+  color: white;          
+  padding: 10px;         
+  border-radius: 5px;    
+  margin-bottom: 20px;   
+}
 
 .question {
   margin-bottom: 20px; /* Separación entre preguntas */
