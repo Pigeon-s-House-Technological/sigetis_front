@@ -17,6 +17,8 @@ const Resultados = () => {
   const [resultadoActual, setResultadoActual] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedResultadoId, setSelectedResultadoId] = useState(null);
+  const [nombreActividad, setNombreActividad] = useState(null);
+  const [idHu, setIdHu] = useState(null);
 
   useEffect(() => {
     const fetchResultados = async () => {
@@ -25,7 +27,7 @@ const Resultados = () => {
         const filteredData = response.data.filter((resultado) => resultado.id_actividad === parseInt(idActividad));
         
         const observacionesResponse = await axios.get(`${API_BASE_URL}/observaciones`);
-        const observaciones = observacionesResponse.data;
+        const observaciones = Array.isArray(observacionesResponse.data) ? observacionesResponse.data : [];
 
         const dataWithObservaciones = filteredData.map((resultado) => {
           const observacion = observaciones.find(obs => obs.id_resultado === resultado.id);
@@ -47,6 +49,22 @@ const Resultados = () => {
     };
 
     fetchResultados();
+  }, [idActividad]);
+
+  useEffect(() => {
+    const fetchNombreActividad = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/actividades/${idActividad}`);
+        setNombreActividad(response.data.nombre_actividad);
+        setIdHu(response.data.id_hu);
+
+      } catch (error) {
+        console.error('Error al obtener el nombre:', error);
+        setNombreActividad("error cargar nombre");
+      }
+    };
+
+    fetchNombreActividad();
   }, [idActividad]);
 
   const handleExpand = (id) => {
@@ -107,11 +125,11 @@ const Resultados = () => {
 
   return (
     <div className='container'>
-      <h2>Resultados de la Actividad {idActividad}</h2>
+      <h2>Resultados de la "{nombreActividad}"</h2>
       <div className='col col-button'>
           <Button style={{backgroundColor: '#007BFF'}} className="btn-custom-primary" onClick={crearClick}>Agregar Resultado</Button>
       </div>
-        <BotonAtras />
+      <BotonAtras direccion={`detalle/${idHu}`} />
       <table>
         <thead>
           <tr>

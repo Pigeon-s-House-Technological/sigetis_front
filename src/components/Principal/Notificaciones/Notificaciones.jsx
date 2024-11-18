@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaBell } from 'react-icons/fa';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Notificaciones.css'; // Importa el archivo CSS para los estilos
 import { API_BASE_URL } from '../../config';
 
@@ -10,6 +11,7 @@ const Notificaciones = () => {
 
   const notificacionesRef = useRef(null);
   const [usuario, setUsuario] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerId = () => {
@@ -37,6 +39,8 @@ const Notificaciones = () => {
               id: notificacion.id, // Usa el UUID como clave única
               mensaje: "El usuario " + data.nombre_creador + " del grupo " + data.nombre_grupo + " ha creado una nueva tarea",
               timestamp: new Date(notificacion.created_at),
+              data: data,
+              type:notificacion.type,
             };
           });
           notificacionesData.sort((a, b) => b.timestamp - a.timestamp);
@@ -91,6 +95,17 @@ const Notificaciones = () => {
     }
   };
 
+  const handleNotificationClick = (tipo, id) => {
+    console.log('tipo', tipo);
+    console.log('id', id);
+    let link = '';
+    if (tipo === 'App\\Notifications\\TareaNotification') {
+      link = '/resultados/' + id;
+    }
+    setShowNotifications(false);
+    navigate(link);
+  };
+
   return (
     <div className="notificaciones" ref={notificacionesRef}>
       <FaBell className="icono-campanita" onClick={toggleNotifications} />
@@ -99,7 +114,7 @@ const Notificaciones = () => {
           <h4>Notificaciones</h4>
           {notificaciones.length > 0 ? (
             notificaciones.map((notificacion) => (
-              <div key={notificacion.id} className="notificacion">
+              <div key={notificacion.id} className="notificacion" onClick={() => handleNotificationClick(notificacion.type, notificacion.data.actividad_id)}>
                 <p className="mensaje" data-full-message={notificacion.mensaje}>{notificacion.mensaje}</p>
                 <small className="timestamp">{calcularTiempoTranscurrido(notificacion.timestamp)}</small>
               </div>
