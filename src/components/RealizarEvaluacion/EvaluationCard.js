@@ -26,37 +26,50 @@ const EvaluationCard = () => {
 
       if (userId) {
         try {
+          // Obtener las asignaciones del usuario
           const asignacionesResponse = await axios.get(`${API_BASE_URL}/asignaciones`);
           const filtered = asignacionesResponse.data.filter(asignacion => asignacion.id_usuario === userId);
 
+          // Obtener todas las evaluaciones
           const evaluacionesResponse = await axios.get(`${API_BASE_URL}/evaluaciones`);
+          
+          // Filtrar las evaluaciones según las asignaciones
           const evaluacionesFiltradas = evaluacionesResponse.data.filter(evaluacion =>
             filtered.some(filtro => evaluacion.id === filtro.id_evaluacion)
           );
 
+          // Mapear las evaluaciones y usar el estado de las asignaciones
           const datosImprimir = evaluacionesFiltradas.map(evaluacion => {
-            const estado = filtered.find(filtro => filtro.id_evaluacion === evaluacion.id)?.estado_evaluacion ? "Entregado" : "No entregado";
+            const asignacion = filtered.find(filtro => filtro.id_evaluacion === evaluacion.id);
+            let estadoTexto = asignacion ? (asignacion.estado_evaluacion === 1 ? "Entregado" : "No entregado") : "No asignado";
+            
             let tipoTexto;
-
+            let modalidadTexto;
+          
             switch (evaluacion.tipo_evaluacion) {
               case 1:
-                tipoTexto = "Autoevaluacion";
+                tipoTexto = "Autoevaluación";
+                modalidadTexto = "individual";
                 break;
               case 2:
-                tipoTexto = "Evaluacion en pares";
+                tipoTexto = "Evaluación cruzada";
+                modalidadTexto = "grupal";
                 break;
               case 3:
-                tipoTexto = "Evaluacion cruzada";
+                tipoTexto = "Evaluación por pares";
+                modalidadTexto = "individual";
                 break;
               default:
                 tipoTexto = "Tipo desconocido";
+                modalidadTexto = "DESCONOCIDA";
             }
-
+          
             return {
               id: evaluacion.id,
               nombre: evaluacion.nombre_evaluacion,
-              estado,
+              estado: estadoTexto,
               tipo: tipoTexto,
+              modalidad: modalidadTexto,
             };
           });
 
@@ -85,24 +98,16 @@ const EvaluationCard = () => {
     };
   }, []);
 
-  const handleFinishEvaluation = (evaluacionId) => {
-    setEvaluaciones(prevEvaluaciones => {
-      const updatedEvaluaciones = prevEvaluaciones.map(e => 
-        e.id === evaluacionId ? { ...e, estado: "Entregado" } : e
-      );
-      localStorage.setItem('evaluaciones', JSON.stringify(updatedEvaluaciones));
-      return updatedEvaluaciones;
-    });
-  };
-
-  const handleStartClick = (evaluacionId) => {
-    setSelectedEvaluacion(evaluacionId);
+  const handleStartClick = (id) => {    
+    setSelectedEvaluacion(id);
     setModalIsOpen(true);
   };
 
   const handleConfirmStart = () => {
+    console.log("Empezando: ", selectedEvaluacion);
+    
     navigate('/evaluacion/formulario', {
-      state: { evaluacionId: selectedEvaluacion }, // No pasar onFinish aquí
+      state: { id: selectedEvaluacion },
     });
     setModalIsOpen(false);
   };
@@ -120,6 +125,7 @@ const EvaluationCard = () => {
           <div key={evaluacion.id} className="evaluation-card">
             <h2>{evaluacion.nombre}</h2>
             <p>{evaluacion.tipo}</p>
+            <p>Modalidad: {evaluacion.modalidad}</p>
             <div className="evaluation-status">{evaluacion.estado}</div>
             <button className="start-button" onClick={() => handleStartClick(evaluacion.id)}>
               Iniciar

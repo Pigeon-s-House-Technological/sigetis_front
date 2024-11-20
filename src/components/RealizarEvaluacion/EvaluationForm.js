@@ -1,31 +1,33 @@
+// EvaluationForm.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './EvaluationForm.css';
 
 const EvaluationForm = () => {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const { id } = state;
   const [criterios, setCriterios] = useState([]);
   const [respuestas, setResponses] = useState({});
-  const { state } = useLocation();
-  const evaluacionId = state.evaluacionId;
+
   useEffect(() => {
-    cargarCriterios();
-  }, []);
+    cargarCriterios(id);
+  }, [id]);
 
-  const cargarCriterios = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/api/criterios');
-      const datos = Array.isArray(response.data) ? response.data : [];
+  const cargarCriterios = async (evaluacionId) => {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/criterios/${evaluacionId}`);
+    const criterios = Array.isArray(response.data) ? response.data : [];
+    setCriterios(criterios);
 
-      setCriterios(datos);
-      // Cargar preguntas para cada criterio
-      await Promise.all(datos.map(criterio => cargarPreguntas(criterio.id)));
-    } catch (error) {
-      console.error('Error al obtener los criterios:', error);
-      setCriterios([]);
-    }
-  };
+    // Cargar preguntas para cada criterio
+    await Promise.all(criterios.map(criterio => cargarPreguntas(criterio.id)));
+  } catch (error) {
+    console.error('Error al obtener los criterios:', error);
+    setCriterios([]);
+  }
+};
 
   const cargarPreguntas = async (criterioId) => {
     try {
@@ -39,14 +41,13 @@ const EvaluationForm = () => {
       const puntuacion = Array.isArray(puntuacionResponse.data) ? puntuacionResponse.data : [];
       const complemento = Array.isArray(complementoResponse.data) ? complementoResponse.data : [];
 
-      // Cargar opciones para cada pregunta de opción múltiple
       await Promise.all(opcionMultiple.map(async (pregunta) => {
         try {
           const opcionesResponse = await axios.get(`http://localhost:8000/api/opcionesPreguntaMultiple?id_pregunta_multiple=${pregunta.id}`);
           pregunta.opciones = Array.isArray(opcionesResponse.data) ? opcionesResponse.data : [];
         } catch (error) {
           console.error(`Error al obtener opciones para la pregunta ${pregunta.id}:`, error);
-          pregunta.opciones = []; // Asegúrate de manejar errores
+          pregunta.opciones = [];
         }
       }));
 
@@ -71,17 +72,15 @@ const EvaluationForm = () => {
       (criterio.puntuacion || []).every(pregunta => respuestas[pregunta.id]) &&
       (criterio.complemento || []).every(pregunta => respuestas[pregunta.id])
     );
-    
+
     if (!allAnswered) {
       alert('Por favor, responda todas las preguntas.');
       return;
     }
-    if(state.onFinish) {
-      state.onFinish(evaluacionId); // actualizamos el estado de Feedback en EvaluationCard
-  }
+
     try {
       const promises = [];
-  
+
       criterios.forEach(criterio => {
         (criterio.opcionMultiple || []).forEach(pregunta => {
           const respuestaId = respuestas[pregunta.id];
@@ -102,10 +101,12 @@ const EvaluationForm = () => {
           }
         });
       });
-  
+
       await Promise.all(promises);
       alert('Evaluación terminada y respuestas guardadas');
-      navigate('/evaluacion');
+      
+      // Navegar de vuelta a EvaluationCard y cambiar el estado
+      navigate('/evaluacion', { state: { evaluacionId: id.id } }); // Pasar el ID de la evaluación
     } catch (error) {
       console.error('Error al guardar las respuestas:', error);
       alert('Hubo un problema al guardar las respuestas. Inténtalo de nuevo.');
@@ -114,17 +115,9 @@ const EvaluationForm = () => {
 
   const guardarRespuestaOpcionMultiple = async (preguntaId, respuestaId) => {
     const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
-  
-    // Asegúrate de que respuestaId sea un número
-    const idOpcion = Number(respuestaId);
-  
-    // Verifica si la conversión fue exitosa
-    if (isNaN(idOpcion)) {
-      throw new Error("respuestaId debe ser un número válido");
-    }
-  
+
     return await axios.post('http://localhost:8000/api/respuestasOpcionMultiple', {
-      id_opcion_pregunta_multiple: idOpcion, // Usa el número aquí
+      id_opcion_pregunta_multiple: Number(respuestaId),
       estado_respuesta_opcion_multiple: 1,
       id_grupo_evaluacion: grupoEvaluacionId,
     });
@@ -132,29 +125,10 @@ const EvaluationForm = () => {
 
   const guardarRespuestaPuntuacion = async (preguntaId, puntuacion) => {
     const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
-  
-    // Asegúrate de que preguntaId y puntuacion sean números
-    const idPregunta = Number(preguntaId);
-    const idPuntuacion = Number(puntuacion);
-  
-    // Validación de datos
-    if (isNaN(idPregunta) || isNaN(idPuntuacion)) {
-      throw new Error("preguntaId y puntuacion deben ser números válidos");
-    }
-  
-    if (idPuntuacion < 1 || idPuntuacion > 5) {
-      throw new Error("puntuacion debe estar entre 1 y 5");
-    }
-  
-    console.log("Enviando datos a la API:", {
-      id_pregunta_puntuacion: idPregunta,
-      respuesta_puntuacion: idPuntuacion,
-      id_grupo_evaluacion: grupoEvaluacionId,
-    });
-  
+
     return await axios.post('http://localhost:8000/api/respuestasPuntuacion', {
-      id_pregunta_puntuacion: idPregunta,
-      respuesta_puntuacion: idPuntuacion,
+      id_pregunta_puntuacion: Number(preguntaId),
+      respuesta_puntuacion: Number(puntuacion),
       id_grupo_evaluacion: grupoEvaluacionId,
     });
   };
@@ -171,9 +145,12 @@ const EvaluationForm = () => {
   const handleResponseChange = (id, valor) => {
     setResponses(prevResponses => ({
       ...prevResponses,
-      [id]: Number(valor), // Asegúrate de convertir a número aquí
+      [id]: Number(valor),
     }));
   };
+
+  console.log(criterios);
+  
 
   return (
     <div className="evaluation-form">
