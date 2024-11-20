@@ -35,9 +35,24 @@ const Notificaciones = () => {
         if (response.data && response.data.notificaciones) {
           const notificacionesData = response.data.notificaciones.map((notificacion) => {
             const data = JSON.parse(notificacion.data);
+            let mensaje = '';
+            switch (data.accion) {
+              case 'crear':
+                mensaje = `El usuario ${data.nombre_creador} del grupo ${data.nombre_grupo} ha creado una nueva tarea`;
+                break;
+              case 'editar':
+                mensaje = `El usuario ${data.nombre_creador} del grupo ${data.nombre_grupo} ha editado una tarea`;
+                break;
+              case 'eliminar':
+                mensaje = `El usuario ${data.nombre_creador} del grupo ${data.nombre_grupo} ha eliminado una tarea`;
+                break;
+              default:
+                mensaje = `El usuario ${data.nombre_creador} del grupo ${data.nombre_grupo} ha realizado una acción`;
+                break;
+            }
             return {
               id: notificacion.id, // Usa el UUID como clave única
-              mensaje: "El usuario " + data.nombre_creador + " del grupo " + data.nombre_grupo + " ha creado una nueva tarea",
+              mensaje: mensaje,
               timestamp: new Date(notificacion.created_at),
               data: data,
               type:notificacion.type,
