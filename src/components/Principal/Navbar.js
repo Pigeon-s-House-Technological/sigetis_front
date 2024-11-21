@@ -4,6 +4,8 @@ import './Principal.css';
 import Cookies from 'js-cookie';
 
 import Notificaciones from './Notificaciones/Notificaciones';
+import { FaUser } from 'react-icons/fa';
+
 
 const Navbar = ({ userType }) => {  // Recibe 'userType' como prop
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -104,12 +106,17 @@ const handleClick = () => {
           )}
         </ul>
       </div>
+
       <div className="navbar-right">
         <ul>
           <li>
             {isAuthenticated ? (
               <div className='navbar-actions'>
+                
                 <Notificaciones />
+                <Link to="/perfil" className="profile-icon" title="Perfil">
+                                    <FaUser style={{ fontSize: '1.5rem', color: '#fff' }} />
+                                </Link>
                 <button onClick={logout} className="logout-button">Cerrar sesión</button>
               </div>
             ) : (
