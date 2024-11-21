@@ -1,29 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Row, Col } from 'react-bootstrap';
-import { FaUser, FaEdit, FaUserTag } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar'; // Importar react-avatar!!!!
 
 function PerfilUsuario() {
-  // Estados para almacenar datos dinámicos
   const [nombre_user, setNombre] = useState('');
   const [apellido_user, setApellido] = useState('');
   const [correo, setCorreo] = useState('');
+  const [tipoUsuario, setTipoUsuario] = useState(null);
 
   useEffect(() => {
-    // Obtener los datos del usuario desde localStorage
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-  
-      
       const userData = parsedUser.userData || {};
-  
-      // Asignar valores a los estados
+
       setNombre(userData.nombre || '');
       setApellido(userData.apellido || '');
-      setCorreo(userData.correo || ''); 
+      setCorreo(userData.correo || '');
+      setTipoUsuario(userData.tipo_usuario || null); // Guardamos el tipo de usuario
     }
   }, []);
+
+  const getAvatarColor = () => {
+    // Asignar colores según el tipo de usuario
+    if (tipoUsuario === 1) return '#28a745'; // Verde para docentes 
+    if (tipoUsuario === 2 || tipoUsuario === 3) return '#007bff'; // Azul para estudiantes
+    return '#6c757d'; // Gris para otros
+  };
 
   return (
     <Card
@@ -32,11 +36,16 @@ function PerfilUsuario() {
         width: '350px',
         padding: '20px',
         borderRadius: '15px',
-        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)'
+        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
       }}
     >
       <div style={{ position: 'relative' }}>
-        <FaUser style={{ fontSize: '80px', color: '#ccc' }} />
+        <Avatar
+          name={`${nombre_user} ${apellido_user}`} 
+          size="80" 
+          round={true} 
+          color={getAvatarColor()} // Color según el tipo de usuario
+        />
       </div>
 
       <Card.Body>
@@ -44,9 +53,7 @@ function PerfilUsuario() {
           {nombre_user} {apellido_user}
         </Card.Title>
 
-        <Card.Text style={{ color: '#666' }}>
-          {correo}
-        </Card.Text>
+        <Card.Text style={{ color: '#666' }}>{correo}</Card.Text>
       </Card.Body>
 
       <Card
@@ -54,14 +61,13 @@ function PerfilUsuario() {
         style={{
           borderRadius: '10px',
           boxShadow: 'none',
-          border: '1px solid #e6e6e6'
+          border: '1px solid #e6e6e6',
         }}
       >
         <Card.Body>
-          {/* Opción: Editar perfil */}
           <Row className="text-start">
             <Col xs={2}>
-              <FaEdit />
+              <span className="icon">🖊️</span>
             </Col>
             <Col>
               <Link to="/editarPerfil" style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -70,15 +76,19 @@ function PerfilUsuario() {
             </Col>
           </Row>
           <hr />
-          {/* Opción: Rol */}
           <Row className="text-start">
-            <Col xs={2}>
-              <FaUserTag />
-            </Col>
-            <Col>
-              Rol de usuario
-            </Col>
-          </Row>
+  <Col xs={2}>
+    <span className="icon">📋</span>
+  </Col>
+  <Col>Rol</Col>
+  <Col className="text-end" style={{ color: '#666' }}>
+    {tipoUsuario === 1 && 'Docente'}
+    {tipoUsuario === 2 && 'Jefe de grupo'}
+    {tipoUsuario === 3 && 'Estudiante'}
+    {tipoUsuario === null && 'Desconocido'}
+  </Col>
+</Row>
+
         </Card.Body>
       </Card>
     </Card>

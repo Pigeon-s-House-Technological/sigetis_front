@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button, InputGroup } from 'react-bootstrap';
 import axios from 'axios';
-import { API_BASE_URL } from '../config'; 
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Iconos para mostrar/ocultar contraseña
+import { API_BASE_URL } from '../config';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
-const endPoint = `${API_BASE_URL}/editar-perfil`; 
 
 function EditarPerfil() {
   const [nombres, setNombres] = useState('');
@@ -15,11 +14,22 @@ function EditarPerfil() {
   const [contrasenaActual, setContrasenaActual] = useState('');
   const [contrasenaNueva, setContrasenaNueva] = useState('');
   const [confirmarContrasena, setConfirmarContrasena] = useState('');
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [exito, setExito] = useState(false);
 
-  // Función para guardar los cambios del perfil
+  useEffect(() => {
+    // Cargar datos del usuario desde localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser).userData || {};
+      setNombres(parsedUser.nombre || '');
+      setApellidos(parsedUser.apellido || '');
+      setCorreo(parsedUser.correo || '');
+      setUsuario(parsedUser.usuario || '');
+    }
+  }, []);
+
   const handleSave = async (e) => {
     e.preventDefault();
 
@@ -35,26 +45,34 @@ function EditarPerfil() {
 
     try {
       const data = {
-        nombres,
-        apellidos,
+        nombre: nombres,
+        apellido: apellidos,
         correo,
         usuario,
         contrasena_actual: contrasenaActual,
         contrasena_nueva: contrasenaNueva,
       };
 
-      console.log('Datos enviados:', data);
-      const response = await axios.put(endPoint, data);
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setError('No se encontró el token de autenticación.');
+        return;
+      }
+
+      // Realizar la solicitud al endpoint /register
+      const response = await axios.put(`${API_BASE_URL}/register`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setExito(true);
       setError('');
-      setNombres('');
-      setApellidos('');
-      setCorreo('');
-      setUsuario('');
-      setContrasenaActual('');
-      setContrasenaNueva('');
-      setConfirmarContrasena('');
+      console.log('Perfil actualizado:', response.data);
+
+      // Actualizar los datos en localStorage después de la actualización
+      const updatedUser = { ...JSON.parse(localStorage.getItem('user')).userData, ...data };
+      localStorage.setItem('user', JSON.stringify({ userData: updatedUser }));
     } catch (error) {
       if (error.response) {
         setError(`Error al actualizar el perfil: ${error.response.data.message || error.response.data}`);
@@ -70,7 +88,7 @@ function EditarPerfil() {
       <h2 className="text-center" style={{ color: '#007BFF' }}>Editar Perfil</h2>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {exito && <p style={{ color: 'green' }}>Perfil actualizado exitosamente</p>}
+      {exito && <p style={{ color: 'green' }}>¡Perfil actualizado exitosamente!</p>}
 
       <Form onSubmit={handleSave}>
         <Form.Group className="mb-3" controlId="formNombres">
@@ -136,14 +154,14 @@ function EditarPerfil() {
               value={contrasenaNueva}
               onChange={(e) => setContrasenaNueva(e.target.value)}
             />
-            <InputGroup.Text 
-              onClick={() => setShowPassword(!showPassword)} 
+            <InputGroup.Text
+              onClick={() => setShowPassword(!showPassword)}
               style={{
                 backgroundColor: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
               }}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
