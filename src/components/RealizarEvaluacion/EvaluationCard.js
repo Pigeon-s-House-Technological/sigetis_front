@@ -8,6 +8,7 @@ const EvaluationCard = () => {
   const [evaluaciones, setEvaluaciones] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedEvaluacion, setSelectedEvaluacion] = useState(null);
+  const [criterios, setCriterios] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -98,9 +99,18 @@ const EvaluationCard = () => {
     };
   }, []);
 
-  const handleStartClick = (id) => {    
+  const handleStartClick = async (id) => {    
     setSelectedEvaluacion(id);
     setModalIsOpen(true);
+
+    // Obtener criterios para la evaluación seleccionada
+    try {
+      const response = await axios.get(`${API_BASE_URL}/evaluaciones/${id}/criterios`);
+      setCriterios(response.data);
+    } catch (error) {
+      console.error('Error al obtener los criterios:', error);
+      setCriterios([]); // Manejar el error estableciendo criterios vacíos
+    }
   };
 
   const handleConfirmStart = () => {
@@ -138,6 +148,15 @@ const EvaluationCard = () => {
           <div className="modal-content">
             <h2>Confirmación</h2>
             <p>¿Estás seguro de que deseas iniciar esta evaluación?</p>
+            <ul>
+              {criterios.length > 0 ? (
+                criterios.map(criterio => (
+                  <li key={criterio.id}>{criterio.titulo_criterio}</li>
+                ))
+              ) : (
+                <li>No hay criterios disponibles para esta evaluación.</li>
+              )}
+            </ul>
             <button onClick={handleConfirmStart}>Sí, iniciar</button>
             <button onClick={handleCancelStart}>Cancelar</button>
           </div>

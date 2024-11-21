@@ -1,4 +1,3 @@
-// EvaluationForm.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -6,35 +5,34 @@ import './EvaluationForm.css';
 
 const EvaluationForm = () => {
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const { id } = state;
   const [criterios, setCriterios] = useState([]);
   const [respuestas, setResponses] = useState({});
+  const { state } = useLocation();
+  const evaluacionId = state.id;
 
   useEffect(() => {
-    cargarCriterios(id);
-  }, [id]);
+    cargarCriterios();
+  }, []);
 
-  const cargarCriterios = async (evaluacionId) => {
-  try {
-    const response = await axios.get(`http://localhost:8000/api/criterios/${evaluacionId}`);
-    const criterios = Array.isArray(response.data) ? response.data : [];
-    setCriterios(criterios);
-
-    // Cargar preguntas para cada criterio
-    await Promise.all(criterios.map(criterio => cargarPreguntas(criterio.id)));
-  } catch (error) {
-    console.error('Error al obtener los criterios:', error);
-    setCriterios([]);
-  }
-};
+  const cargarCriterios = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/evaluaciones/${evaluacionId}/criterios`);
+      const datos = Array.isArray(response.data) ? response.data : [];
+      
+      setCriterios(datos);
+      await Promise.all(datos.map(criterio => cargarPreguntas(criterio.id)));
+    } catch (error) {
+      console.error('Error al obtener los criterios:', error);
+      setCriterios([]);
+    }
+  };
 
   const cargarPreguntas = async (criterioId) => {
     try {
       const [opcionMultipleResponse, puntuacionResponse, complementoResponse] = await Promise.all([
-        axios.get(`http://localhost:8000/api/preguntasOpcionMultiple?criterioId=${criterioId}`),
-        axios.get(`http://localhost:8000/api/preguntasPuntuacion?criterioId=${criterioId}`),
-        axios.get(`http://localhost:8000/api/preguntasComplemento?criterioId=${criterioId}`)
+        axios.get(`http://localhost:8000/api/preguntasOpcionMultiple/${criterioId}`),
+        axios.get(`http://localhost:8000/api/preguntasPuntuacion/${criterioId}`),
+        axios.get(`http://localhost:8000/api/preguntasComplemento/${criterioId}`)
       ]);
 
       const opcionMultiple = Array.isArray(opcionMultipleResponse.data) ? opcionMultipleResponse.data : [];
@@ -77,7 +75,9 @@ const EvaluationForm = () => {
       alert('Por favor, responda todas las preguntas.');
       return;
     }
-
+    if (state.onFinish) {
+      state.onFinish(evaluacionId);
+    }
     try {
       const promises = [];
 
@@ -104,9 +104,7 @@ const EvaluationForm = () => {
 
       await Promise.all(promises);
       alert('Evaluación terminada y respuestas guardadas');
-      
-      // Navegar de vuelta a EvaluationCard y cambiar el estado
-      navigate('/evaluacion', { state: { evaluacionId: id.id } }); // Pasar el ID de la evaluación
+      navigate('/evaluacion');
     } catch (error) {
       console.error('Error al guardar las respuestas:', error);
       alert('Hubo un problema al guardar las respuestas. Inténtalo de nuevo.');
@@ -115,9 +113,14 @@ const EvaluationForm = () => {
 
   const guardarRespuestaOpcionMultiple = async (preguntaId, respuestaId) => {
     const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
+    const idOpcion = Number(respuestaId);
+
+    if (isNaN(idOpcion)) {
+      throw new Error("respuestaId debe ser un número válido");
+    }
 
     return await axios.post('http://localhost:8000/api/respuestasOpcionMultiple', {
-      id_opcion_pregunta_multiple: Number(respuestaId),
+      id_opcion_pregunta_multiple: idOpcion,
       estado_respuesta_opcion_multiple: 1,
       id_grupo_evaluacion: grupoEvaluacionId,
     });
@@ -125,10 +128,20 @@ const EvaluationForm = () => {
 
   const guardarRespuestaPuntuacion = async (preguntaId, puntuacion) => {
     const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
+    const idPregunta = Number(preguntaId);
+    const idPuntuacion = Number(puntuacion);
+
+    if (isNaN(idPregunta) || isNaN(idPuntuacion)) {
+      throw new Error("preguntaId y puntuacion deben ser números válidos");
+    }
+
+    if (idPuntuacion < 1 || idPuntuacion > 5) {
+      throw new Error("puntuacion debe estar entre 1 y 5");
+    }
 
     return await axios.post('http://localhost:8000/api/respuestasPuntuacion', {
-      id_pregunta_puntuacion: Number(preguntaId),
-      respuesta_puntuacion: Number(puntuacion),
+      id_pregunta_puntuacion: idPregunta,
+      respuesta_puntuacion: idPuntuacion,
       id_grupo_evaluacion: grupoEvaluacionId,
     });
   };
@@ -149,12 +162,9 @@ const EvaluationForm = () => {
     }));
   };
 
-  console.log(criterios);
-  
-
   return (
     <div className="evaluation-form">
-      <h2 className="evaluation-title">Evaluación Primer Sprint</h2>
+      <h2 className="evaluation-title">Evaluación</h2>
 
       {criterios.length > 0 && criterios.map(criterio => (
         <div key={criterio.id} className="criterio-section">
