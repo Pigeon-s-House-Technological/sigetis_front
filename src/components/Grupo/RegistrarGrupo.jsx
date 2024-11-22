@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import './RegistrarGrupo.css';
 import { IoMdClose } from 'react-icons/io';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import ModalUsuarios from './ModalUsuarios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const GroupForm = ({ onClose }) => {
     const [inputs, setInputs] = useState({
@@ -13,7 +16,6 @@ const GroupForm = ({ onClose }) => {
     });
 
     const [errors, setErrors] = useState({});
-    const [successMessage, setSuccessMessage] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [usuarios, setUsuarios] = useState([]);
 
@@ -45,22 +47,22 @@ const GroupForm = ({ onClose }) => {
                     nombre_grupo: inputs.nombreGrupo,
                     descripcion_grupo: inputs.descripcion,
                     cantidad_integ: inputs.cantidadInteg,
-                    id_tutor: id_tutor, // ID de tutor (se puede manejar dinámicamente)
-                    id_jefe_grupo: 1 // ID de jefe de grupo (se puede manejar dinámicamente)
+                    id_tutor: id_tutor, // ID de tutor
+                    id_jefe_grupo: 1 // ID de jefe de grupo
                 });
-                console.log(response.data.message.id);
+
                 if (response.status === 201) {
                     const idGrupo = response.data.message.id;
                     const response2 = await axios.get(`${API_BASE_URL}/crearGrupo/${inputs.cantidadInteg}/${idGrupo}`);
                     setUsuarios(response2.data.usuarios);
-                    setSuccessMessage('Grupo registrado exitosamente');
                     setInputs({ nombreGrupo: '', descripcion: '', cantidadInteg: '' });
+                    toast.success('¡Grupo registrado exitosamente!');
                     handleOpenModal();
                 }
-                
             } catch (error) {
                 console.error('Error al registrar el grupo:', error);
                 setErrors({ apiError: 'Hubo un error al registrar el grupo.' });
+                toast.error('Hubo un error al registrar el grupo.');
             }
         } else {
             setErrors(validationErrors);
@@ -72,8 +74,11 @@ const GroupForm = ({ onClose }) => {
 
     return (
         <div className="container-group">
+            <ToastContainer /> 
             <div className="form-header">
-                <IoMdClose className="close-icon" onClick={onClose} />
+                <Link to="/homeGrupo">
+                    <IoMdClose className="close-icon" />
+                </Link>
             </div>
             <h2 className="title">Registro de Grupos</h2>
             <form className="group-form" onSubmit={handleSubmit}>
@@ -82,6 +87,7 @@ const GroupForm = ({ onClose }) => {
                     <input
                         type="text"
                         name="nombreGrupo"
+                        placeholder="Ingrese el nombre del grupo"
                         value={inputs.nombreGrupo}
                         onChange={handleChange}
                         className={errors.nombreGrupo ? 'error' : ''}
@@ -94,6 +100,7 @@ const GroupForm = ({ onClose }) => {
                     <input
                         type="text"
                         name="descripcion"
+                        placeholder="Ingrese la descripción"
                         value={inputs.descripcion}
                         onChange={handleChange}
                         className={errors.descripcion ? 'error' : ''}
@@ -117,7 +124,6 @@ const GroupForm = ({ onClose }) => {
                     </select>
                 </div>
 
-                {successMessage && <span className="success-message">{successMessage}</span>}
                 {errors.apiError && <span className="error-message">{errors.apiError}</span>}
 
                 <button type="submit" className="submit-button">
@@ -125,10 +131,10 @@ const GroupForm = ({ onClose }) => {
                 </button>
             </form>
 
-            <ModalUsuarios 
-                show={showModal} 
-                handleClose={handleCloseModal} 
-                usuarios={usuarios}  
+            <ModalUsuarios
+                show={showModal}
+                handleClose={handleCloseModal}
+                usuarios={usuarios}
             />
         </div>
     );

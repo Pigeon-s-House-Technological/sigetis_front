@@ -53,7 +53,7 @@ const handleClick = () => {
           {(tipo === 0 || tipo === 1) && (
             <>
               <li>
-                <NavLink to="/registrarGrupo" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                <NavLink to="/homeGrupo" className={({ isActive }) => (isActive ? 'active-link' : '')}>
                   Registrar Grupo
                 </NavLink>
               </li>
