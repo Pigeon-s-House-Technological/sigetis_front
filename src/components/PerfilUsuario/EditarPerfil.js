@@ -17,6 +17,7 @@ function EditarPerfil() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [exito, setExito] = useState(false);
+  const [id, setId] = useState('');
 
   useEffect(() => {
     // Cargar datos del usuario desde localStorage
@@ -27,6 +28,7 @@ function EditarPerfil() {
       setApellidos(parsedUser.apellido || '');
       setCorreo(parsedUser.correo || '');
       setUsuario(parsedUser.usuario || '');
+      setId(parsedUser.id || '');
     }
   }, []);
 
@@ -49,22 +51,12 @@ function EditarPerfil() {
         apellido: apellidos,
         correo,
         usuario,
-        contrasena_actual: contrasenaActual,
-        contrasena_nueva: contrasenaNueva,
+        current_password: contrasenaActual,
+        password: contrasenaNueva,
       };
 
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setError('No se encontró el token de autenticación.');
-        return;
-      }
-
       // Realizar la solicitud al endpoint /register
-      const response = await axios.put(`${API_BASE_URL}/register`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.patch(`${API_BASE_URL}/user-edit/${id}`, data);
 
       setExito(true);
       setError('');
