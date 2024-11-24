@@ -51,7 +51,7 @@ const HomeAutoevaluacion = () => {
       const response = await axios.post(`${API_BASE_URL}/evaluaciones`, {
         nombre_evaluacion: newEvaluationName,
         tipo_evaluacion: 1, // Asegúrate de que el tipo de evaluación es 1
-        tipo_destinatario: parseInt(tipoEvaluacion) // Ajusta este valor según sea necesario
+        tipo_destinatario: tipoEvaluacion // Ajusta este valor según sea necesario
       });
       
       setAutoevaluaciones([...autoevaluaciones, response.data]);
@@ -95,7 +95,7 @@ const HomeAutoevaluacion = () => {
     try {
       const response = await axios.patch(`${API_BASE_URL}/evaluacionesP/${selectedEvaluation.id}`, {
         nombre_evaluacion: newEvaluationName,
-        tipo_destinatario: parseInt(tipoEvaluacion)
+        tipo_destinatario: tipoEvaluacion
       });
       // Actualizar el estado con la autoevaluación editada
       setAutoevaluaciones(autoevaluaciones.map((autoevaluacion) =>
