@@ -4,6 +4,7 @@ import { Form, Button, InputGroup } from 'react-bootstrap';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate
 
 function EditarPerfil() {
   const [nombres, setNombres] = useState('');
@@ -17,6 +18,8 @@ function EditarPerfil() {
   const [error, setError] = useState('');
   const [exito, setExito] = useState(false);
   const [id, setId] = useState('');
+
+  const navigate = useNavigate(); // Hook para redireccionar
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -66,6 +69,9 @@ function EditarPerfil() {
       // Actualizar los datos en localStorage
       const updatedUser = { ...JSON.parse(localStorage.getItem('user')).userData, ...data };
       localStorage.setItem('user', JSON.stringify({ userData: updatedUser }));
+
+      // Redirigir al perfil
+      navigate('/perfil');
     } catch (error) {
       if (error.response) {
         setError(`Error al actualizar el perfil: ${error.response.data.message || error.response.data}`);
