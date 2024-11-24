@@ -15,12 +15,15 @@ import { HistoriaHU, DetalleHistoria, Sprints, Resultados } from './components/G
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { RegistroDocente } from './components/RegistroTutor';
 import {  LoginModal } from './components/Login';
-import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx';
 import HomeGrupo from './components/Grupo/HomeGrupo.jsx';
 import EditarGrupo from './components/Grupo/EditarGrupo.jsx';
 import PerfilUsuario from './components/PerfilUsuario/PerfilUsuario.js';
 import EditarPerfil from './components/PerfilUsuario/EditarPerfil.js';
+import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
+
 import RegistroEstudiante from './components/RegistroEstudiante/RegistroEstudiante.js';
+
+
 
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 
@@ -63,6 +66,8 @@ useEffect(() => {
           <Route path="/login" element={<LoginModal userType={userType} toggleUserType={toggleUserType} />} />
           <Route path="/perfil" element={<PerfilUsuario />} />
           <Route path="/editarPerfil" element={<EditarPerfil />} />
+          <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
+          <Route path="/homeGrupo" element={<HomeGrupo />} />
 
 
 
@@ -100,7 +105,6 @@ useEffect(() => {
             <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
             <Route path="/homeGrupo" element={<HomeGrupo />} />
             <Route path="/editarGrupo/:id" element={<EditarGrupo />} />
-
           </Route>
 
           {/* Rutas protegidas para Jefe grupo */}
