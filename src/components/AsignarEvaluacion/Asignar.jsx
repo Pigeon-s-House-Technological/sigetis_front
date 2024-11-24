@@ -171,10 +171,10 @@ const Asignar = () => {
         
       console.log('requests:', response);
       obtenerAsignaciones();
-      alert('Autoevaluaciones asignadas correctamente');
+      alert('Evaluaciones por pares asignadas correctamente');
     } catch (error) {
       console.error('Error al asignar autoevaluaciones:', error);
-      alert('Error al asignar autoevaluaciones');
+      alert('Error al asignar evaluaciones por pares');
     }
   };
 

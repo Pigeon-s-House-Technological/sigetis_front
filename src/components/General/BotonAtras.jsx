@@ -4,11 +4,16 @@ import { Button } from 'react-bootstrap';
 import { FaArrowLeft } from 'react-icons/fa';
 import './general.css'; // Asegúrate de importar el archivo CSS si tienes estilos adicionales
 
-const BotonAtras = () => {
+const BotonAtras = ({direccion="no"}) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1); // Navega a la página anterior en el historial
+    if(direccion==="no"){
+      navigate(-1); // Navega a la página anterior en el historial
+    }else{
+      console.log('navegando a:', direccion);
+      navigate(`/${direccion}`, { replace: true });
+    }
   };
 
   return (

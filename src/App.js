@@ -18,8 +18,12 @@ import {  LoginModal } from './components/Login';
 import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx';
 import HomeGrupo from './components/Grupo/HomeGrupo.jsx';
 import EditarGrupo from './components/Grupo/EditarGrupo.jsx';
+import PerfilUsuario from './components/PerfilUsuario/PerfilUsuario.js';
+import EditarPerfil from './components/PerfilUsuario/EditarPerfil.js';
 import RegistroEstudiante from './components/RegistroEstudiante/RegistroEstudiante.js';
+
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
+
 
 //Fin importaciones de componentes de sus respectivos indices (para optimizar espacio)
 
@@ -57,10 +61,16 @@ useEffect(() => {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<LoginModal userType={userType} toggleUserType={toggleUserType} />} />
+          <Route path="/perfil" element={<PerfilUsuario />} />
+          <Route path="/editarPerfil" element={<EditarPerfil />} />
+
+
 
           {/* Rutas protegidas para Estudiante */}
           <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["3", "2", "0"]} redirectTo="/" />} >
             <Route path="/evaluacion" element={<EvaluationCard />} />
+            <Route path="/perfil" element={<PerfilUsuario />} />
+            <Route path="/editarPerfil" element={<EditarPerfil />} />
             <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
             <Route path="/evaluacion" element={<EvaluationCard />} />
             <Route path="/evaluacion/formulario" element={<EvaluationForm />} />
@@ -68,12 +78,15 @@ useEffect(() => {
             <Route path="/detalle/:id" element={<DetalleHistoria />} />
             <Route path="/sprints" element={<Sprints />} />
             <Route path="/resultados/:idActividad" element={<Resultados />} />
+            
            
           </Route>
 
           {/* Rutas protegidas para Docente */}
           <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["1", "0"]} redirectTo="/" />} >
             <Route path="/planilla" element={<PlanillaEvaluacion />} />
+            <Route path="/perfil" element={<PerfilUsuario />} />
+            <Route path="/editarPerfil" element={<EditarPerfil />} />
             <Route path="/planilla/actividades/:idGrupo" element={<PlanillaEvaluacionActividades />} />
             <Route path="/planilla/evaluaciones/:idGrupo" element={<PlanillaEvaluacionEvaluaciones />} />
             <Route path="/gestionarEvaluacion" element={<TiposDeEvaluacion />} />
@@ -87,10 +100,12 @@ useEffect(() => {
             <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
             <Route path="/homeGrupo" element={<HomeGrupo />} />
             <Route path="/editarGrupo/:id" element={<EditarGrupo />} />
+
           </Route>
 
           {/* Rutas protegidas para Jefe grupo */}
           <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["2", "0"]} redirectTo="/" />} >
+         
             
           </Route>
 
@@ -98,6 +113,9 @@ useEffect(() => {
           <Route path="/planilla" element={<PlanillaEvaluacion />} />
             <Route path="/registroDocente" element={<RegistroDocente />} />
             <Route path="/registroEstudiante" element={<RegistroEstudiante />} />
+            <Route path="/perfil" element={<PerfilUsuario />} />
+            <Route path="/editarPerfil" element={<EditarPerfil />} />
+
           </Route>
           
         </Routes>
