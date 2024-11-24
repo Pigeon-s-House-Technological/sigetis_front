@@ -5,6 +5,7 @@ import Navbar from './components/Principal/Navbar.js';
 import Footer from './components/Principal/Footer.js';
 import Homepage from './components/Principal/Homepage.js';
 import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 //importaciones de componentes de sus respectivos indices (para optimizar espacio)
 import { EvaluationCard, EvaluationForm } from './components/RealizarEvaluacion';
 import { EvaluationType, Asignar } from './components/AsignarEvaluacion';
@@ -14,9 +15,11 @@ import { HistoriaHU, DetalleHistoria, Sprints, Resultados } from './components/G
 import { PlanillaEvaluacion, PlanillaEvaluacionActividades, PlanillaEvaluacionEvaluaciones } from './components/PlanillaEvaluacion';
 import { RegistroDocente } from './components/RegistroTutor';
 import {  LoginModal } from './components/Login';
+import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx';
+import HomeGrupo from './components/Grupo/HomeGrupo.jsx';
+import EditarGrupo from './components/Grupo/EditarGrupo.jsx';
 import PerfilUsuario from './components/PerfilUsuario/PerfilUsuario.js';
 import EditarPerfil from './components/PerfilUsuario/EditarPerfil.js';
-import RegistrarGrupo from './components/Grupo/RegistrarGrupo.jsx'
 import RegistroEstudiante from './components/RegistroEstudiante/RegistroEstudiante.js';
 
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
@@ -95,8 +98,9 @@ useEffect(() => {
             <Route path="/asignarEvaluacion" element={<EvaluationType />} />
             <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
             <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
-           
-            
+            <Route path="/homeGrupo" element={<HomeGrupo />} />
+            <Route path="/editarGrupo/:id" element={<EditarGrupo />} />
+
           </Route>
 
           {/* Rutas protegidas para Jefe grupo */}
