@@ -83,6 +83,7 @@ useEffect(() => {
             <Route path="/detalle/:id" element={<DetalleHistoria />} />
             <Route path="/sprints" element={<Sprints />} />
             <Route path="/resultados/:idActividad" element={<Resultados />} />
+            <Route path="/editarGrupo/:id" element={<EditarGrupo />} />
             
            
           </Route>

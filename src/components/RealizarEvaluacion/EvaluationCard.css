@@ -55,3 +55,16 @@
 .modal-content button {
   margin: 10px;
 }
+
+.btn-iniciar{
+  background-color: #007BFF;
+  color: white;
+  border-radius: 5px;
+  height: 45px;
+}
+
+.btn-iniciar:hover{
+  background-color: #0056b3;
+}
+
+

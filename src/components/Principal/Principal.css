@@ -36,8 +36,13 @@
 }
 
 .navbar ul li {
-    color: white;
+    display: flex;
+  align-items: center;
+  justify-content: center; /* Centra el texto horizontalmente */
+  height: 100%;
+  color: white;
 }
+
 
 .navbar li {
     color: white;
