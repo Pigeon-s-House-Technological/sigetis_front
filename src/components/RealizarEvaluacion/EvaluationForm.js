@@ -30,9 +30,18 @@ const EvaluationForm = () => {
   const cargarPreguntas = async (criterioId) => {
     try {
       const [opcionMultipleResponse, puntuacionResponse, complementoResponse] = await Promise.all([
-        axios.get(`http://localhost:8000/api/preguntasOpcionMultiple/${criterioId}`),
-        axios.get(`http://localhost:8000/api/preguntasPuntuacion/${criterioId}`),
-        axios.get(`http://localhost:8000/api/preguntasComplemento/${criterioId}`)
+        axios.get(`http://localhost:8000/api/preguntasOpcionMultiple/${criterioId}`).catch(error => {
+          console.error(`Error al obtener preguntas de opción múltiple: ${error.message}`);
+          return { data: [] }; // Retornar un array vacío si hay error
+        }),
+        axios.get(`http://localhost:8000/api/preguntasPuntuacion/${criterioId}`).catch(error => {
+          console.error(`Error al obtener preguntas de puntuación: ${error.message}`);
+          return { data: [] }; // Retornar un array vacío si hay error
+        }),
+        axios.get(`http://localhost:8000/api/preguntasComplemento/${criterioId}`).catch(error => {
+          console.error(`Error al obtener preguntas de complemento: ${error.message}`);
+          return { data: [] }; // Retornar un array vacío si hay error
+        })
       ]);
 
       const opcionMultiple = Array.isArray(opcionMultipleResponse.data) ? opcionMultipleResponse.data : [];
