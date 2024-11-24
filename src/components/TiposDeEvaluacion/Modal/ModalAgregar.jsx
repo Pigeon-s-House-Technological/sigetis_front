@@ -2,6 +2,16 @@ import React from 'react';
 import './Modal.css'; // Importa el archivo CSS para el modal
 
 const ModalAgregar = ({ show, onClose, newName, setNewName, handleSave, titulo, autoevaluacion=false, setTipoEvaluacion=null, tipoEvaluacion=null  }) => {
+
+    const handleTipoEvaluacionChange = (e) => {
+        const value = parseInt(e.target.value, 10);
+        if (value === 0) {
+          setTipoEvaluacion(false);
+        } else if (value === 1) {
+          setTipoEvaluacion(true);
+        }
+    };
+
     return (
         <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }} tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
@@ -27,16 +37,16 @@ const ModalAgregar = ({ show, onClose, newName, setNewName, handleSave, titulo, 
                             </div>
                             {autoevaluacion && (
                                 <div className="form-group">
-                                    <label htmlFor="formEvaluationType">Tipo de Evaluación</label>
-                                    <select
-                                        className="form-control"
-                                        id="formEvaluationType"
-                                        value={tipoEvaluacion}
-                                        onChange={(e) => setTipoEvaluacion(e.target.value)}
-                                    >
-                                        <option value="1">Grupal</option>
-                                        <option value="0">Individual</option>
-                                    </select>
+                                <label htmlFor="formEvaluationType">Tipo de Evaluación</label>
+                                <select
+                                    className="form-control"
+                                    id="formEvaluationType"
+                                    value={tipoEvaluacion ? 1 : 0}
+                                    onChange={handleTipoEvaluacionChange}
+                                >
+                                    <option value={0}>Individual</option>
+                                    <option value={1}>Grupal</option>
+                                </select>
                                 </div>
                             )}
                         </form>

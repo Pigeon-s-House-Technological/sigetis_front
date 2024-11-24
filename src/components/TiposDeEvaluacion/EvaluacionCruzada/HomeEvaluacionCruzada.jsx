@@ -50,7 +50,7 @@ const HomeEvaluacionCruzada = () => {
       const response = await axios.post(`${API_BASE_URL}/evaluaciones`, {
         nombre_evaluacion: newEvaluationName,
         tipo_evaluacion: 2, // Asegúrate de que el tipo de evaluación es 1
-        tipo_destinatario: false // Ajusta este valor según sea necesario
+        tipo_destinatario: true // Ajusta este valor según sea necesario
       });
       // Actualizar el estado con la nueva autoevaluación
       setAutoevaluaciones([...autoevaluaciones, response.data]);
