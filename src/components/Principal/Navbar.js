@@ -114,9 +114,11 @@ const handleClick = () => {
               <div className='navbar-actions'>
                 
                 <Notificaciones />
+                <div className >
                 <Link to="/perfil" className="profile-icon" title="Perfil">
-                                    <FaUser style={{ fontSize: '1.5rem', color: '#fff' }} />
-                                </Link>
+                  <FaUser style={{ fontSize: '1.5rem', color: '#fff' }} />
+                </Link>
+                </div>
                 <button onClick={logout} className="logout-button">Cerrar sesión</button>
               </div>
             ) : (
