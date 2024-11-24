@@ -5,7 +5,6 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
-
 function EditarPerfil() {
   const [nombres, setNombres] = useState('');
   const [apellidos, setApellidos] = useState('');
@@ -20,7 +19,6 @@ function EditarPerfil() {
   const [id, setId] = useState('');
 
   useEffect(() => {
-    // Cargar datos del usuario desde localStorage
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser).userData || {};
@@ -35,14 +33,18 @@ function EditarPerfil() {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!nombres || !apellidos || !correo || !usuario || !contrasenaActual || !contrasenaNueva || !confirmarContrasena) {
-      setError('Todos los campos son requeridos');
+    // Validar campos obligatorios
+    if (!nombres || !apellidos || !correo || !usuario || !contrasenaActual) {
+      setError('Todos los campos son requeridos, excepto la nueva contraseña.');
       return;
     }
 
-    if (contrasenaNueva !== confirmarContrasena) {
-      setError('Las contraseñas nuevas no coinciden');
-      return;
+    // Validar coincidencia de contraseñas nuevas solo si están llenadas
+    if (contrasenaNueva || confirmarContrasena) {
+      if (contrasenaNueva !== confirmarContrasena) {
+        setError('Las contraseñas nuevas no coinciden.');
+        return;
+      }
     }
 
     try {
@@ -52,17 +54,16 @@ function EditarPerfil() {
         correo,
         usuario,
         current_password: contrasenaActual,
-        password: contrasenaNueva,
+        ...(contrasenaNueva && { password: contrasenaNueva }), // Agregar contraseña nueva solo si se especificó
       };
 
-      // Realizar la solicitud al endpoint /register
       const response = await axios.patch(`${API_BASE_URL}/user-edit/${id}`, data);
 
       setExito(true);
       setError('');
       console.log('Perfil actualizado:', response.data);
 
-      // Actualizar los datos en localStorage después de la actualización
+      // Actualizar los datos en localStorage
       const updatedUser = { ...JSON.parse(localStorage.getItem('user')).userData, ...data };
       localStorage.setItem('user', JSON.stringify({ userData: updatedUser }));
     } catch (error) {
@@ -84,7 +85,9 @@ function EditarPerfil() {
 
       <Form onSubmit={handleSave}>
         <Form.Group className="mb-3" controlId="formNombres">
-          <Form.Label>Nombres</Form.Label>
+          <Form.Label>
+            Nombres <span style={{ color: 'red' }}>*</span>
+          </Form.Label>
           <Form.Control
             type="text"
             placeholder="Ingresa tus nombres"
@@ -95,7 +98,9 @@ function EditarPerfil() {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formApellidos">
-          <Form.Label>Apellidos</Form.Label>
+          <Form.Label>
+            Apellidos <span style={{ color: 'red' }}>*</span>
+          </Form.Label>
           <Form.Control
             type="text"
             placeholder="Ingresa tus apellidos"
@@ -106,7 +111,9 @@ function EditarPerfil() {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formCorreo">
-          <Form.Label>Correo Electrónico</Form.Label>
+          <Form.Label>
+            Correo Electrónico <span style={{ color: 'red' }}>*</span>
+          </Form.Label>
           <Form.Control
             type="email"
             placeholder="Ingresa tu correo"
@@ -117,7 +124,9 @@ function EditarPerfil() {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formUsuario">
-          <Form.Label>Usuario</Form.Label>
+          <Form.Label>
+            Usuario <span style={{ color: 'red' }}>*</span>
+          </Form.Label>
           <Form.Control
             type="text"
             placeholder="Ingresa tu usuario"
@@ -128,7 +137,9 @@ function EditarPerfil() {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formContrasenaActual">
-          <Form.Label>Contraseña Actual</Form.Label>
+          <Form.Label>
+            Contraseña Actual <span style={{ color: 'red' }}>*</span>
+          </Form.Label>
           <Form.Control
             type="password"
             placeholder="Ingresa tu contraseña actual"
@@ -138,11 +149,11 @@ function EditarPerfil() {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formContrasenaNueva">
-          <Form.Label>Contraseña Nueva</Form.Label>
+          <Form.Label>Contraseña Nueva (opcional)</Form.Label>
           <InputGroup>
             <Form.Control
               type={showPassword ? 'text' : 'password'}
-              placeholder="Ingresa tu nueva contraseña"
+              placeholder="Ingresa tu nueva contraseña (opcional)"
               value={contrasenaNueva}
               onChange={(e) => setContrasenaNueva(e.target.value)}
             />
@@ -162,10 +173,10 @@ function EditarPerfil() {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formConfirmarContrasena">
-          <Form.Label>Confirmar Nueva Contraseña</Form.Label>
+          <Form.Label>Confirmar Nueva Contraseña (opcional)</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Confirma tu nueva contraseña"
+            placeholder="Confirma tu nueva contraseña (opcional)"
             value={confirmarContrasena}
             onChange={(e) => setConfirmarContrasena(e.target.value)}
           />
