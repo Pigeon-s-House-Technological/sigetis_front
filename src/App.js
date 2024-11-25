@@ -67,7 +67,7 @@ useEffect(() => {
           <Route path="/perfil" element={<PerfilUsuario />} />
           <Route path="/editarPerfil" element={<EditarPerfil />} />
           <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
-          <Route path="/homeGrupo" element={<HomeGrupo />} />
+          
 
 
 
@@ -106,6 +106,7 @@ useEffect(() => {
             <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
             <Route path="/homeGrupo" element={<HomeGrupo />} />
             <Route path="/editarGrupo/:id" element={<EditarGrupo />} />
+            <Route path="/homeGrupo" element={<HomeGrupo />} />
           </Route>
 
           {/* Rutas protegidas para Jefe grupo */}

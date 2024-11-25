@@ -6,6 +6,7 @@ import { API_BASE_URL } from "../config";
 import BotonAtras from "../General/BotonAtras";
 import ModalEvaluacion from "./modales/ModalEvaluacion";
 import "./estilos/PlanillaEvaluacionEvaluaciones.css";
+import VisualizarEvaluacion from "../AsignarEvaluacion/VisualizarEvaluacion/VisualizarEvaluacion";
 
 
 
@@ -18,6 +19,7 @@ const PlanillaEvaluacionEvaluaciones = () => {
     const [tipoEvaluacionFiltro, setTipoEvaluacionFiltro] = useState("");//para el tipo de evaluacion
     const [nombreGrupo, setNombreGrupo] = useState("");
 
+    const [idAsignacionSelected, setIdAsignacionSelected] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [evaluacionSeleccionada, setEvaluacionSeleccionada] = useState(null);
     
@@ -55,7 +57,7 @@ const PlanillaEvaluacionEvaluaciones = () => {
             if(response.data.asignaciones.length > 0){
                 setAsignaciones(response.data.asignaciones);
                 setDatosTabla(response.data.asignaciones);
-                console.log('asignaciones', asignaciones)
+                console.log('asignaciones', response.data.asignaciones)
             }else{
                 setAsignaciones([]);
             }
@@ -84,7 +86,7 @@ const PlanillaEvaluacionEvaluaciones = () => {
     });
 
     const abrirModal = (evaluacion) => {
-        setEvaluacionSeleccionada(evaluacion);
+        setIdAsignacionSelected(evaluacion);
         setModalVisible(true);
     };
 
@@ -136,7 +138,7 @@ const PlanillaEvaluacionEvaluaciones = () => {
                 <tbody>
                     {datosFiltrados.map((dato, index) => (
                         <tr key={index}>
-                            <td id="eva-table"><a onClick={() => abrirModal(dato)}>{dato.nombre_evaluacion}</a></td>
+                            <td id="eva-table"><a onClick={() => abrirModal(dato.id)}>{dato.nombre_evaluacion}</a></td>
                             <td>{dato.tipo_destinatario}</td>
                             <td>{dato.tipo_evaluacion}</td>
                             <td>{dato.nombre_estudiante}</td>
@@ -145,10 +147,10 @@ const PlanillaEvaluacionEvaluaciones = () => {
                     ))}
                 </tbody>
             </table>
-            <ModalEvaluacion 
-                visible={modalVisible} 
-                onClose={cerrarModal} 
-                evaluacion={evaluacionSeleccionada} 
+            <VisualizarEvaluacion
+                idAsignacion={idAsignacionSelected}
+                show={modalVisible}
+                handleClose={cerrarModal}
             />
         </div>
     );

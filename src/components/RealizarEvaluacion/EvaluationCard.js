@@ -4,12 +4,15 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import './EvaluationCard.css';
 
+import VisualizarEvaluacion from '../AsignarEvaluacion/VisualizarEvaluacion/VisualizarEvaluacion'; 
+
 const EvaluationCard = () => {
   const [evaluaciones, setEvaluaciones] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedEvaluacion, setSelectedEvaluacion] = useState(null);
   const [idAsignacionSelected, setSelectedAsignacion] = useState(null);
   const [estado, setEstado]=useState(false);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -123,8 +126,14 @@ const EvaluationCard = () => {
     setModalIsOpen(false);
   };
 
-  const handleViewResultsClick = (id) => {
-    console.log("Viendo resultados de: ", id);
+  const handleShowModal = (idAsignacion) => {
+    setSelectedAsignacion(idAsignacion);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedAsignacion(null);
   };
 
   return (
@@ -144,9 +153,16 @@ const EvaluationCard = () => {
                 Iniciar
               </button>
             ):(
-              <button className="start-button" onClick={() => handleViewResultsClick(evaluacion.idAsignacion)}>
+              <button className="start-button" onClick={() => handleShowModal(evaluacion.idAsignacion)}>
                 Ver Evaluación
               </button>
+            )}
+            {idAsignacionSelected && (
+              <VisualizarEvaluacion
+                idAsignacion={idAsignacionSelected}
+                show={showModal}
+                handleClose={handleCloseModal}
+              />
             )}
           </div>
         ))
