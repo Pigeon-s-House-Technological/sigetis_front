@@ -67,7 +67,7 @@ useEffect(() => {
           <Route path="/perfil" element={<PerfilUsuario />} />
           <Route path="/editarPerfil" element={<EditarPerfil />} />
           <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
-          
+          <Route path="/editarGrupo/:id" element={<EditarGrupo />} />
 
 
 
