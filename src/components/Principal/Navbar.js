@@ -12,6 +12,7 @@ const Navbar = ({ userType }) => {  // Recibe 'userType' como prop
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [tipo, setTipo] = useState(10);
+    const [grupo, setGrupo] = useState(null);
 
     useEffect(() => {
       console.log('Ejecutando useEffect de Navbar', userType);
@@ -21,6 +22,7 @@ const Navbar = ({ userType }) => {  // Recibe 'userType' como prop
           const parsedUser = JSON.parse(storedUser);
           setUser(parsedUser.userData);
           setTipo(parsedUser.userData.tipo_usuario);
+          setGrupo(parsedUser.grupoId);
           console.log(parsedUser.userData.tipo_usuario);
         } catch (error) {
           setUser(null);
@@ -52,7 +54,7 @@ const handleClick = () => {
               <span>SIGETIS</span>
             </Link>
           </li>
-          {(tipo === 0 || tipo === 1) && (
+          {(tipo === 1) && (
             <>
               <li>
                 <NavLink to="/homeGrupo" className={({ isActive }) => (isActive ? 'active-link' : '')}>
@@ -76,7 +78,7 @@ const handleClick = () => {
               </li>
             </>
           )}
-          {(tipo === 0 || tipo === 2 || tipo === 3) && (
+          {( tipo === 2 || tipo === 3) && (
             <>
               <li>
                 <NavLink to="/sprints" className={({ isActive }) => (isActive ? 'active-link' : '')}>
@@ -86,6 +88,11 @@ const handleClick = () => {
               <li>
                 <NavLink to="/evaluacion" className={({ isActive }) => (isActive ? 'active-link' : '')}>
                   Realizar Evaluacion
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to={`/editarGrupo/${grupo}`} className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Grupo
                 </NavLink>
               </li>
             </>
@@ -102,6 +109,12 @@ const handleClick = () => {
                   Estudiante
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/homeGrupo" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Registrar Grupo
+                </NavLink>
+              </li>
+              
             </>
           )}
         </ul>
@@ -114,9 +127,11 @@ const handleClick = () => {
               <div className='navbar-actions'>
                 
                 <Notificaciones />
+                <div className >
                 <Link to="/perfil" className="profile-icon" title="Perfil">
-                                    <FaUser style={{ fontSize: '1.5rem', color: '#fff' }} />
-                                </Link>
+                  <FaUser style={{ fontSize: '1.5rem', color: '#fff' }} />
+                </Link>
+                </div>
                 <button onClick={logout} className="logout-button">Cerrar sesión</button>
               </div>
             ) : (

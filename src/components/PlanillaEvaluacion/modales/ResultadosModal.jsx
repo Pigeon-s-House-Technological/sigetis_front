@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Modal.css'; // Importar el archivo CSS
+import './ResultadosModal.css'; // Importar el archivo CSS
 import axios from 'axios';
 import { API_BASE_URL } from '../../config';
 const ResultadosModal = ({ show, handleClose, resultados }) => {
@@ -81,8 +81,11 @@ const ResultadosModal = ({ show, handleClose, resultados }) => {
                   <ul>
                     <li><strong>Nombre del Elemento:</strong> {resultado.nombre_elemento}</li>
                     <li><strong>Descripción del Elemento:</strong> {resultado.descripcion_elemento}</li>
-                    <li><strong>Link del Elemento:</strong> <a href={resultado.link_elemento} target="_blank" rel="noopener noreferrer">{resultado.link_elemento}</a></li>
-                    <li><strong>Archivo del Elemento:</strong> {resultado.archivo_elemento || 'No disponible'}</li>
+                    <li><strong>Link del Elemento: </strong> 
+                    <a href={resultado.link_elemento} target="_blank" rel="noopener noreferrer" className="break-word">
+                      {resultado.link_elemento}
+                    </a>
+                    </li>
                     <li>
                       <strong>Observación:</strong>
                       <textarea

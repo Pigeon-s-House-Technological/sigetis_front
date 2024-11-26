@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Avatar from 'react-avatar'; // Importar react-avatar!!!!
+import './PerfilUsuario.css';
 
 function PerfilUsuario() {
   const [nombre_user, setNombre] = useState('');
@@ -45,6 +46,7 @@ function PerfilUsuario() {
           size="80" 
           round={true} 
           color={getAvatarColor()} // Color según el tipo de usuario
+          className="avatar-no-hover" // Aplica la clase CSS
         />
       </div>
 

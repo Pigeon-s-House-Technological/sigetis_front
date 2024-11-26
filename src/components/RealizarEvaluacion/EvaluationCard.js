@@ -4,11 +4,14 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import './EvaluationCard.css';
 
+import VisualizarEvaluacion from '../AsignarEvaluacion/VisualizarEvaluacion/VisualizarEvaluacion'; 
+
 const EvaluationCard = () => {
   const [evaluaciones, setEvaluaciones] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedEvaluacion, setSelectedEvaluacion] = useState(null);
-  const [criterios, setCriterios] = useState([]);
+  const [idAsignacionSelected, setSelectedAsignacion] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,8 +45,9 @@ const EvaluationCard = () => {
           // Mapear las evaluaciones y usar el estado de las asignaciones
           const datosImprimir = evaluacionesFiltradas.map(evaluacion => {
             const asignacion = filtered.find(filtro => filtro.id_evaluacion === evaluacion.id);
-            let estadoTexto = asignacion ? (asignacion.estado_evaluacion === 1 ? "Entregado" : "No entregado") : "No asignado";
-            
+            let estadoTexto = asignacion ? (asignacion.estado_evaluacion === true ? "Entregado" : "No entregado") : "No asignado";
+            let nombreAux = "Personal";
+
             let tipoTexto;
             let modalidadTexto;
           
@@ -71,6 +75,9 @@ const EvaluationCard = () => {
               estado: estadoTexto,
               tipo: tipoTexto,
               modalidad: modalidadTexto,
+              userAux: nombreAux,
+              idAsignacion: asignacion ? asignacion.id : null,
+              estado_evaluacion: asignacion ? asignacion.estado_evaluacion : false,
             };
           });
 
@@ -99,31 +106,33 @@ const EvaluationCard = () => {
     };
   }, []);
 
-  const handleStartClick = async (id) => {    
+  const handleStartClick = async (id, idAsignacion) => {    
     setSelectedEvaluacion(id);
+    setSelectedAsignacion(idAsignacion);
     setModalIsOpen(true);
-
-    // Obtener criterios para la evaluación seleccionada
-    try {
-      const response = await axios.get(`${API_BASE_URL}/evaluaciones/${id}/criterios`);
-      setCriterios(response.data);
-    } catch (error) {
-      console.error('Error al obtener los criterios:', error);
-      setCriterios([]); // Manejar el error estableciendo criterios vacíos
-    }
   };
 
   const handleConfirmStart = () => {
     console.log("Empezando: ", selectedEvaluacion);
     
     navigate('/evaluacion/formulario', {
-      state: { id: selectedEvaluacion },
+      state: { id: selectedEvaluacion, idAsignacion: idAsignacionSelected }, 
     });
     setModalIsOpen(false);
   };
 
   const handleCancelStart = () => {
     setModalIsOpen(false);
+  };
+
+  const handleShowModal = (idAsignacion) => {
+    setSelectedAsignacion(idAsignacion);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedAsignacion(null);
   };
 
   return (
@@ -136,10 +145,25 @@ const EvaluationCard = () => {
             <h2>{evaluacion.nombre}</h2>
             <p>{evaluacion.tipo}</p>
             <p>Modalidad: {evaluacion.modalidad}</p>
+            <p>Evaluar a: {evaluacion.userAux ? evaluacion.userAux : 'Personal'}</p>
             <div className="evaluation-status">{evaluacion.estado}</div>
-            <button className="start-button" onClick={() => handleStartClick(evaluacion.id)}>
-              Iniciar
-            </button>
+            
+            {evaluacion.estado_evaluacion !== true ? (
+               <button className="start-button" onClick={() => handleStartClick(evaluacion.id, evaluacion.idAsignacion)}>
+                Iniciar
+              </button>
+            ):(
+              <button className="start-button" onClick={() => handleShowModal(evaluacion.idAsignacion)}>
+                Ver Evaluación
+              </button>
+            )}
+            {idAsignacionSelected && (
+              <VisualizarEvaluacion
+                idAsignacion={idAsignacionSelected}
+                show={showModal}
+                handleClose={handleCloseModal}
+              />
+            )}
           </div>
         ))
       )}
@@ -148,17 +172,10 @@ const EvaluationCard = () => {
           <div className="modal-content">
             <h2>Confirmación</h2>
             <p>¿Estás seguro de que deseas iniciar esta evaluación?</p>
-            <ul>
-              {criterios.length > 0 ? (
-                criterios.map(criterio => (
-                  <li key={criterio.id}>{criterio.titulo_criterio}</li>
-                ))
-              ) : (
-                <li>No hay criterios disponibles para esta evaluación.</li>
-              )}
-            </ul>
-            <button onClick={handleConfirmStart}>Sí, iniciar</button>
-            <button onClick={handleCancelStart}>Cancelar</button>
+            <div className="modal-buttons">
+              <button onClick={handleCancelStart} className='btn-cancelar'>Cancelar</button>
+              <button onClick={handleConfirmStart} className='btn-iniciar'>Iniciar</button>
+            </div>
           </div>
         </div>
       )}

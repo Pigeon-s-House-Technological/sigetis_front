@@ -28,7 +28,9 @@ const EditarGrupo = () => {
         const fetchGrupo = async () => {
             try {
                 const response = await axios.get(`${API_BASE_URL}/grupos/${id}`);
+                const response2 = await axios.get(`${API_BASE_URL}/gruposUsuarios/integrantes/${id}`);
                 const grupo = response.data.grupo;
+                const datosIntegrantes = response2.data;
 
                 setInputs({
                     nombreGrupo: grupo.nombre_grupo,
@@ -37,9 +39,9 @@ const EditarGrupo = () => {
                 });
 
                 setGrupoInfo({
-                    docente: grupo.docente || 'No asignado',
-                    jefeDeGrupo: grupo.jefeDeGrupo || 'No asignado',
-                    integrantes: grupo.integrantes || [],
+                    docente: datosIntegrantes.tutor_grupo || 'No asignado',
+                    jefeDeGrupo: datosIntegrantes.jefe_grupo || 'No asignado',
+                    integrantes: datosIntegrantes.integrantes || [],
                 });
 
                 setLoading(false);
@@ -100,10 +102,10 @@ const EditarGrupo = () => {
                 <label htmlFor="jefe-de-grupo">Líder de grupo:</label>
                 <p>{grupoInfo.jefeDeGrupo}</p>
                 <label htmlFor="integrantes">Integrantes:</label>
-                <ul>
+                <ul style={{ listStyleType: 'none', padding: '0'}}>
                     {grupoInfo.integrantes.length > 0 ? (
                         grupoInfo.integrantes.map((integrante, index) => (
-                            <li key={index}>{integrante}</li>
+                            <li key={index} style={{ listStyleType: 'none', padding: '0'}}>{integrante.nombre}</li>
                         ))
                     ) : (
                         <p>No hay integrantes registrados.</p>
@@ -134,21 +136,6 @@ const EditarGrupo = () => {
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="cantidadInteg">Cantidad de integrantes:</label>
-                        <select
-                            id="cantidadInteg"
-                            name="cantidadInteg"
-                            value={inputs.cantidadInteg}
-                            onChange={handleChange}
-                        >
-                            {[3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                                <option key={num} value={num}>
-                                    {num}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
 
                     <button type="submit" className="submit-button">
                         Guardar Cambios

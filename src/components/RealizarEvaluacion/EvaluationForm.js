@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './EvaluationForm.css';
+import { API_BASE_URL } from '../config';
 
 const EvaluationForm = () => {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ const EvaluationForm = () => {
   const [respuestas, setResponses] = useState({});
   const { state } = useLocation();
   const evaluacionId = state.id;
+  const idAsignacion = state.idAsignacion;
 
   useEffect(() => {
     cargarCriterios();
@@ -16,56 +18,13 @@ const EvaluationForm = () => {
 
   const cargarCriterios = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/evaluaciones/${evaluacionId}/criterios`);
-      const datos = Array.isArray(response.data) ? response.data : [];
-      
+      console.log('idAsignacion', idAsignacion);
+      const response = await axios.get(`${API_BASE_URL}/listarPreguntas/${evaluacionId}`);
+      const datos = response.data.evaluacion.criterios || [];
       setCriterios(datos);
-      await Promise.all(datos.map(criterio => cargarPreguntas(criterio.id)));
     } catch (error) {
       console.error('Error al obtener los criterios:', error);
       setCriterios([]);
-    }
-  };
-
-  const cargarPreguntas = async (criterioId) => {
-    try {
-      const [opcionMultipleResponse, puntuacionResponse, complementoResponse] = await Promise.all([
-        axios.get(`http://localhost:8000/api/preguntasOpcionMultiple/${criterioId}`).catch(error => {
-          console.error(`Error al obtener preguntas de opción múltiple: ${error.message}`);
-          return { data: [] }; // Retornar un array vacío si hay error
-        }),
-        axios.get(`http://localhost:8000/api/preguntasPuntuacion/${criterioId}`).catch(error => {
-          console.error(`Error al obtener preguntas de puntuación: ${error.message}`);
-          return { data: [] }; // Retornar un array vacío si hay error
-        }),
-        axios.get(`http://localhost:8000/api/preguntasComplemento/${criterioId}`).catch(error => {
-          console.error(`Error al obtener preguntas de complemento: ${error.message}`);
-          return { data: [] }; // Retornar un array vacío si hay error
-        })
-      ]);
-
-      const opcionMultiple = Array.isArray(opcionMultipleResponse.data) ? opcionMultipleResponse.data : [];
-      const puntuacion = Array.isArray(puntuacionResponse.data) ? puntuacionResponse.data : [];
-      const complemento = Array.isArray(complementoResponse.data) ? complementoResponse.data : [];
-
-      await Promise.all(opcionMultiple.map(async (pregunta) => {
-        try {
-          const opcionesResponse = await axios.get(`http://localhost:8000/api/opcionesPreguntaMultiple?id_pregunta_multiple=${pregunta.id}`);
-          pregunta.opciones = Array.isArray(opcionesResponse.data) ? opcionesResponse.data : [];
-        } catch (error) {
-          console.error(`Error al obtener opciones para la pregunta ${pregunta.id}:`, error);
-          pregunta.opciones = [];
-        }
-      }));
-
-      setCriterios(prevCriterios => prevCriterios.map(criterio => {
-        if (criterio.id === criterioId) {
-          return { ...criterio, opcionMultiple, puntuacion, complemento };
-        }
-        return criterio;
-      }));
-    } catch (error) {
-      console.error('Error al obtener las preguntas:', error);
     }
   };
 
@@ -75,9 +34,9 @@ const EvaluationForm = () => {
 
   const handleFinish = async () => {
     const allAnswered = criterios.every(criterio =>
-      (criterio.opcionMultiple || []).every(pregunta => respuestas[pregunta.id]) &&
-      (criterio.puntuacion || []).every(pregunta => respuestas[pregunta.id]) &&
-      (criterio.complemento || []).every(pregunta => respuestas[pregunta.id])
+      (criterio.pregunta_opcion_multiple || []).every(pregunta => respuestas[pregunta.id]) &&
+      (criterio.pregunta_puntuacion || []).every(pregunta => respuestas[pregunta.id]) &&
+      (criterio.pregunta_complemento || []).every(pregunta => respuestas[pregunta.id])
     );
 
     if (!allAnswered) {
@@ -91,26 +50,28 @@ const EvaluationForm = () => {
       const promises = [];
 
       criterios.forEach(criterio => {
-        (criterio.opcionMultiple || []).forEach(pregunta => {
+        (criterio.pregunta_opcion_multiple || []).forEach(pregunta => {
           const respuestaId = respuestas[pregunta.id];
           if (respuestaId) {
             promises.push(guardarRespuestaOpcionMultiple(pregunta.id, respuestaId));
           }
         });
-        (criterio.puntuacion || []).forEach(pregunta => {
+        (criterio.pregunta_puntuacion || []).forEach(pregunta => {
           const puntuacion = respuestas[pregunta.id];
           if (puntuacion) {
             promises.push(guardarRespuestaPuntuacion(pregunta.id, puntuacion));
           }
         });
-        (criterio.complemento || []).forEach(pregunta => {
+        (criterio.pregunta_complemento || []).forEach(pregunta => {
           const respuesta = respuestas[pregunta.id];
           if (respuesta) {
             promises.push(guardarRespuestaComplemento(pregunta.id, respuesta));
           }
         });
       });
-
+      promises.push(axios.patch(`${API_BASE_URL}/asignacionesP/${idAsignacion}`, {
+        estado_evaluacion: true // Cambia esto según el estado que desees establecer
+      }));
       await Promise.all(promises);
       alert('Evaluación terminada y respuestas guardadas');
       navigate('/evaluacion');
@@ -121,22 +82,20 @@ const EvaluationForm = () => {
   };
 
   const guardarRespuestaOpcionMultiple = async (preguntaId, respuestaId) => {
-    const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
     const idOpcion = Number(respuestaId);
 
     if (isNaN(idOpcion)) {
       throw new Error("respuestaId debe ser un número válido");
     }
 
-    return await axios.post('http://localhost:8000/api/respuestasOpcionMultiple', {
+    return await axios.post(`${API_BASE_URL}/respuestasOpcionMultiple`, {
       id_opcion_pregunta_multiple: idOpcion,
       estado_respuesta_opcion_multiple: 1,
-      id_grupo_evaluacion: grupoEvaluacionId,
+      id_grupo_evaluacion: idAsignacion,
     });
   };
 
   const guardarRespuestaPuntuacion = async (preguntaId, puntuacion) => {
-    const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
     const idPregunta = Number(preguntaId);
     const idPuntuacion = Number(puntuacion);
 
@@ -148,26 +107,25 @@ const EvaluationForm = () => {
       throw new Error("puntuacion debe estar entre 1 y 5");
     }
 
-    return await axios.post('http://localhost:8000/api/respuestasPuntuacion', {
+    return await axios.post(`${API_BASE_URL}/respuestasPuntuacion`, {
       id_pregunta_puntuacion: idPregunta,
       respuesta_puntuacion: idPuntuacion,
-      id_grupo_evaluacion: grupoEvaluacionId,
+      id_grupo_evaluacion: idAsignacion,
     });
   };
 
   const guardarRespuestaComplemento = async (preguntaId, respuesta) => {
-    const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
-    return await axios.post('http://localhost:8000/api/respuestasComplemento', {
+    return await axios.post(`${API_BASE_URL}/respuestasComplemento`, {
       id_pregunta_complemento: preguntaId,
       respuesta_complemento: respuesta,
-      id_grupo_evaluacion: grupoEvaluacionId,
+      id_grupo_evaluacion: idAsignacion,
     });
   };
 
   const handleResponseChange = (id, valor) => {
     setResponses(prevResponses => ({
       ...prevResponses,
-      [id]: Number(valor),
+      [id]: valor,
     }));
   };
 
@@ -180,7 +138,7 @@ const EvaluationForm = () => {
           <h2 className="criterio-title">{criterio.titulo_criterio}</h2>
 
           {/* Renderiza preguntas de opción múltiple */}
-          {criterio.opcionMultiple && criterio.opcionMultiple.length > 0 && criterio.opcionMultiple.map(pregunta => (
+          {criterio.pregunta_opcion_multiple && criterio.pregunta_opcion_multiple.length > 0 && criterio.pregunta_opcion_multiple.map(pregunta => (
             <div className="criteria-section" key={pregunta.id}>
               <h3 className="criteria-title">{pregunta.pregunta_opcion_multiple}</h3>
               <div className="question">
@@ -202,7 +160,7 @@ const EvaluationForm = () => {
           ))}
 
           {/* Renderiza preguntas de puntuación */}
-          {criterio.puntuacion && criterio.puntuacion.length > 0 && criterio.puntuacion.map(pregunta => (
+          {criterio.pregunta_puntuacion && criterio.pregunta_puntuacion.length > 0 && criterio.pregunta_puntuacion.map(pregunta => (
             <div className="criteria-section" key={pregunta.id}>
               <h3 className="criteria-title">{pregunta.pregunta_puntuacion}</h3>
               <div className="question">
@@ -224,7 +182,7 @@ const EvaluationForm = () => {
           ))}
 
           {/* Renderiza preguntas de complemento */}
-          {criterio.complemento && criterio.complemento.length > 0 && criterio.complemento.map(pregunta => (
+          {criterio.pregunta_complemento && criterio.pregunta_complemento.length > 0 && criterio.pregunta_complemento.map(pregunta => (
             <div className="criteria-section" key={pregunta.id}>
               <h3 className="criteria-title">{pregunta.pregunta_complemento}</h3>
               <div className="question">
@@ -242,7 +200,7 @@ const EvaluationForm = () => {
 
       <div className="buttons">
         <button className="cancel-button" onClick={handleCancel}>Cancelar</button>
-        <button className="submit-button" onClick={handleFinish}>Finalizar</button>
+        <button className="enviar-button" onClick={handleFinish}>Finalizar</button>
       </div>
     </div>
   );

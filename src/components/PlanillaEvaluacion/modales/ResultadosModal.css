@@ -79,3 +79,12 @@
   .button-secondary-custom:hover {
     background-color: #07b3a3;
   }
+
+  .break-word {
+    word-break: break-all; /* Permite que las palabras largas se dividan y ajusten al contenedor */
+    white-space: normal; /* Asegura que el texto se ajuste al contenedor y se divida en varias líneas */
+  }
+
+  ul {
+    padding-left: 0px;
+  }

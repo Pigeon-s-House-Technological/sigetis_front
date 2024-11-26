@@ -7,6 +7,7 @@ import './RegistrarGrupo.css'
 import { API_BASE_URL } from '../config';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Importar estilos de Toastify
+import BotonAtras from '../General/BotonAtras';
 
 const HomeGrupo = () => {
     const [grupos, setGrupos] = useState([]);
@@ -48,6 +49,10 @@ const HomeGrupo = () => {
     };
 
     return (
+        <div className="container">
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <BotonAtras direccion=''/>
+            </div>
         <div className="home-grupo">
             <ToastContainer />
             <div className="header">
@@ -62,7 +67,6 @@ const HomeGrupo = () => {
                         <th>#</th>
                         <th>Nombre</th>
                         <th>Descripción</th>
-                        <th>Integrantes</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -72,7 +76,6 @@ const HomeGrupo = () => {
                             <td>{index + 1}</td>
                             <td>{grupo.nombre_grupo}</td>
                             <td>{grupo.descripcion_grupo}</td>
-                            <td>{grupo.cantidad_integ}</td>
                             <td>
                                 <Button style={{ backgroundColor: '#09DDCC', color: 'black' }} className="btn-custom-warning" onClick={() => editarClick(grupo.id)}>
                                     <BsPencilSquare />
@@ -86,6 +89,7 @@ const HomeGrupo = () => {
                     ))}
                 </tbody>
             </Table>
+        </div>
         </div>
     );
 };

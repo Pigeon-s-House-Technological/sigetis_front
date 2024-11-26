@@ -73,6 +73,7 @@ const GroupForm = ({ onClose }) => {
     const handleCloseModal = () => setShowModal(false);
 
     return (
+        <div className="container">
         <div className="container-group">
             <ToastContainer /> 
             <div className="form-header">
@@ -136,6 +137,7 @@ const GroupForm = ({ onClose }) => {
                 handleClose={handleCloseModal}
                 usuarios={usuarios}
             />
+        </div>
         </div>
     );
 };

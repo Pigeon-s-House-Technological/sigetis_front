@@ -5,6 +5,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Importar useNavigate
+import BotonAtras from '../General/BotonAtras';
 
 function EditarPerfil() {
   const [nombres, setNombres] = useState('');
@@ -84,8 +85,10 @@ function EditarPerfil() {
 
   return (
     <div className="container mt-5" style={{ maxWidth: '500px', backgroundColor: '#F8F9FA', padding: '20px', borderRadius: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <BotonAtras direccion='perfil'/>
+      </div>
       <h2 className="text-center" style={{ color: '#007BFF' }}>Editar Perfil</h2>
-
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {exito && <p style={{ color: 'green' }}>¡Perfil actualizado exitosamente!</p>}
 

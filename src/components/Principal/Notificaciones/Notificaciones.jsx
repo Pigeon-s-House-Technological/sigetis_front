@@ -115,7 +115,7 @@ const Notificaciones = () => {
           mensaje = `El tutor asignó la evaluación ${data.nombre_evaluacion}`;
           break;
         case 'editar':
-          mensaje = `El estudiante del grupo ${data.nombre_grupo} realizó la evaluación ${data.nombre_evaluacion}`;
+          mensaje = `Un estudiante realizó la evaluación ${data.nombre_evaluacion}`;
           break;
         default:
           mensaje = `El tutor hizo una acción de asiganar`;
