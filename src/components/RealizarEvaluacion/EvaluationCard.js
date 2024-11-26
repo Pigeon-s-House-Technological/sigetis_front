@@ -11,7 +11,6 @@ const EvaluationCard = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedEvaluacion, setSelectedEvaluacion] = useState(null);
   const [idAsignacionSelected, setSelectedAsignacion] = useState(null);
-  const [estado, setEstado]=useState(false);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
@@ -47,7 +46,6 @@ const EvaluationCard = () => {
           const datosImprimir = evaluacionesFiltradas.map(evaluacion => {
             const asignacion = filtered.find(filtro => filtro.id_evaluacion === evaluacion.id);
             let estadoTexto = asignacion ? (asignacion.estado_evaluacion === true ? "Entregado" : "No entregado") : "No asignado";
-            setEstado(asignacion ? (asignacion.estado_evaluacion === true ? true : false) : false);
             let nombreAux = "Personal";
 
             let tipoTexto;
@@ -79,6 +77,7 @@ const EvaluationCard = () => {
               modalidad: modalidadTexto,
               userAux: nombreAux,
               idAsignacion: asignacion ? asignacion.id : null,
+              estado_evaluacion: asignacion ? asignacion.estado_evaluacion : false,
             };
           });
 
@@ -148,7 +147,8 @@ const EvaluationCard = () => {
             <p>Modalidad: {evaluacion.modalidad}</p>
             <p>Evaluar a: {evaluacion.userAux ? evaluacion.userAux : 'Personal'}</p>
             <div className="evaluation-status">{evaluacion.estado}</div>
-            {estado !== true ? (
+            
+            {evaluacion.estado_evaluacion !== true ? (
                <button className="start-button" onClick={() => handleStartClick(evaluacion.id, evaluacion.idAsignacion)}>
                 Iniciar
               </button>
