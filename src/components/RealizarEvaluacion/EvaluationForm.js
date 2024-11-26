@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './EvaluationForm.css';
+import { API_BASE_URL } from '../config';
 
 const EvaluationForm = () => {
   const navigate = useNavigate();
   const [criterios, setCriterios] = useState([]);
-  const [responses, setResponses] = useState({});
+  const [respuestas, setResponses] = useState({});
+  const { state } = useLocation();
+  const evaluacionId = state.id;
+  const idAsignacion = state.idAsignacion;
 
   useEffect(() => {
     cargarCriterios();
@@ -14,49 +18,13 @@ const EvaluationForm = () => {
 
   const cargarCriterios = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/criterios');
-      console.log('Respuesta de criterios:', response.data); // Verifica la respuesta
-      const datos = Array.isArray(response.data) ? response.data : [];
+      console.log('idAsignacion', idAsignacion);
+      const response = await axios.get(`${API_BASE_URL}/listarPreguntas/${evaluacionId}`);
+      const datos = response.data.evaluacion.criterios || [];
       setCriterios(datos);
-      // Cargar preguntas para cada criterio
-      await Promise.all(datos.map(criterio => cargarPreguntas(criterio.id)));
     } catch (error) {
       console.error('Error al obtener los criterios:', error);
       setCriterios([]);
-    }
-  };
-
-  const cargarPreguntas = async (criterioId) => {
-    try {
-      const [opcionMultipleResponse, puntuacionResponse, complementoResponse] = await Promise.all([
-        axios.get(`http://localhost:8000/api/preguntasOpcionMultiple?criterioId=${criterioId}`),
-        axios.get(`http://localhost:8000/api/preguntasPuntuacion?criterioId=${criterioId}`),
-        axios.get(`http://localhost:8000/api/preguntasComplemento?criterioId=${criterioId}`)
-      ]);
-
-      const opcionMultiple = Array.isArray(opcionMultipleResponse.data) ? opcionMultipleResponse.data : [];
-      const puntuacion = Array.isArray(puntuacionResponse.data) ? puntuacionResponse.data : [];
-      const complemento = Array.isArray(complementoResponse.data) ? complementoResponse.data : [];
-
-      // Cargar opciones para cada pregunta de opción múltiple
-      await Promise.all(opcionMultiple.map(async (pregunta) => {
-        try {
-          const opcionesResponse = await axios.get(`http://localhost:8000/api/opcionesPreguntaMultiple?id_pregunta_multiple=${pregunta.id}`);
-          pregunta.opciones = Array.isArray(opcionesResponse.data) ? opcionesResponse.data : [];
-        } catch (error) {
-          console.error(`Error al obtener opciones para la pregunta ${pregunta.id}:`, error);
-          pregunta.opciones = []; // Asegúrate de manejar errores
-        }
-      }));
-
-      setCriterios(prevCriterios => prevCriterios.map(criterio => {
-        if (criterio.id === criterioId) {
-          return { ...criterio, opcionMultiple, puntuacion, complemento };
-        }
-        return criterio;
-      }));
-    } catch (error) {
-      console.error('Error al obtener las preguntas:', error);
     }
   };
 
@@ -65,93 +33,112 @@ const EvaluationForm = () => {
   };
 
   const handleFinish = async () => {
-  const allAnswered = criterios.every(criterio =>
-    (criterio.opcionMultiple || []).every(pregunta => responses[pregunta.id]) &&
-    (criterio.puntuacion || []).every(pregunta => responses[pregunta.id]) &&
-    (criterio.complemento || []).every(pregunta => responses[pregunta.id])
-  );
+    const allAnswered = criterios.every(criterio =>
+      (criterio.pregunta_opcion_multiple || []).every(pregunta => respuestas[pregunta.id]) &&
+      (criterio.pregunta_puntuacion || []).every(pregunta => respuestas[pregunta.id]) &&
+      (criterio.pregunta_complemento || []).every(pregunta => respuestas[pregunta.id])
+    );
 
-  if (!allAnswered) {
-    alert('Por favor, responda todas las preguntas.');
-    return;
-  }
+    if (!allAnswered) {
+      alert('Por favor, responda todas las preguntas.');
+      return;
+    }
+    if (state.onFinish) {
+      state.onFinish(evaluacionId);
+    }
+    try {
+      const promises = [];
 
-  try {
-    const promises = [];
-    criterios.forEach(criterio => {
-      (criterio.opcionMultiple || []).forEach(pregunta => {
-        const respuestaId = responses[pregunta.id];
-        if (respuestaId) {
-          promises.push(guardarRespuestaOpcionMultiple(pregunta.id, respuestaId));
-        }
+      criterios.forEach(criterio => {
+        (criterio.pregunta_opcion_multiple || []).forEach(pregunta => {
+          const respuestaId = respuestas[pregunta.id];
+          if (respuestaId) {
+            promises.push(guardarRespuestaOpcionMultiple(pregunta.id, respuestaId));
+          }
+        });
+        (criterio.pregunta_puntuacion || []).forEach(pregunta => {
+          const puntuacion = respuestas[pregunta.id];
+          if (puntuacion) {
+            promises.push(guardarRespuestaPuntuacion(pregunta.id, puntuacion));
+          }
+        });
+        (criterio.pregunta_complemento || []).forEach(pregunta => {
+          const respuesta = respuestas[pregunta.id];
+          if (respuesta) {
+            promises.push(guardarRespuestaComplemento(pregunta.id, respuesta));
+          }
+        });
       });
-      (criterio.puntuacion || []).forEach(pregunta => {
-        const puntuacion = responses[pregunta.id];
-        if (puntuacion) {
-          promises.push(guardarRespuestaPuntuacion(pregunta.id, puntuacion));
-        }
-      });
-      (criterio.complemento || []).forEach(pregunta => {
-        const respuesta = responses[pregunta.id];
-        if (respuesta) {
-          promises.push(guardarRespuestaComplemento(pregunta.id, respuesta));
-        }
-      });
-    });
-
-    await Promise.all(promises);
-    alert('Evaluación terminada y respuestas guardadas');
-    navigate('/evaluacion');
-  } catch (error) {
-    console.error('Error al guardar las respuestas:', error);
-    alert('Hubo un problema al guardar las respuestas. Inténtalo de nuevo.');
-  }
-};
+      promises.push(axios.patch(`${API_BASE_URL}/asignacionesP/${idAsignacion}`, {
+        estado_evaluacion: true // Cambia esto según el estado que desees establecer
+      }));
+      await Promise.all(promises);
+      alert('Evaluación terminada y respuestas guardadas');
+      navigate('/evaluacion');
+    } catch (error) {
+      console.error('Error al guardar las respuestas:', error);
+      alert('Hubo un problema al guardar las respuestas. Inténtalo de nuevo.');
+    }
+  };
 
   const guardarRespuestaOpcionMultiple = async (preguntaId, respuestaId) => {
-    const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
-    return await axios.post('http://localhost:8000/api/respuestasOpcionMultiple', {
-      id_opcion_pregunta_multiple: respuestaId,
+    const idOpcion = Number(respuestaId);
+
+    if (isNaN(idOpcion)) {
+      throw new Error("respuestaId debe ser un número válido");
+    }
+
+    return await axios.post(`${API_BASE_URL}/respuestasOpcionMultiple`, {
+      id_opcion_pregunta_multiple: idOpcion,
       estado_respuesta_opcion_multiple: 1,
-      id_grupo_evaluacion: grupoEvaluacionId,
+      id_grupo_evaluacion: idAsignacion,
     });
   };
 
   const guardarRespuestaPuntuacion = async (preguntaId, puntuacion) => {
-    const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
-    return await axios.post('http://localhost:8000/api/respuestasPuntuacion', {
-      id_pregunta_puntuacion: preguntaId,
-      respuesta_puntuacion: puntuacion,
-      id_grupo_evaluacion: grupoEvaluacionId,
+    const idPregunta = Number(preguntaId);
+    const idPuntuacion = Number(puntuacion);
+
+    if (isNaN(idPregunta) || isNaN(idPuntuacion)) {
+      throw new Error("preguntaId y puntuacion deben ser números válidos");
+    }
+
+    if (idPuntuacion < 1 || idPuntuacion > 5) {
+      throw new Error("puntuacion debe estar entre 1 y 5");
+    }
+
+    return await axios.post(`${API_BASE_URL}/respuestasPuntuacion`, {
+      id_pregunta_puntuacion: idPregunta,
+      respuesta_puntuacion: idPuntuacion,
+      id_grupo_evaluacion: idAsignacion,
     });
   };
 
   const guardarRespuestaComplemento = async (preguntaId, respuesta) => {
-    const grupoEvaluacionId = 1; // Cambia esto según tu lógica de negocio
-    return await axios.post('http://localhost:8000/api/respuestasComplemento', {
+    return await axios.post(`${API_BASE_URL}/respuestasComplemento`, {
       id_pregunta_complemento: preguntaId,
       respuesta_complemento: respuesta,
-      id_grupo_evaluacion: grupoEvaluacionId,
+      id_grupo_evaluacion: idAsignacion,
     });
   };
 
-  const handleResponseChange = (id, value) => {
+  const handleResponseChange = (id, valor) => {
     setResponses(prevResponses => ({
       ...prevResponses,
-      [id]: value,
+      [id]: valor,
     }));
   };
 
   return (
     <div className="evaluation-form">
-      <h2 className="evaluation-title">Evaluación Primer Sprint</h2>
+      <h2 className="evaluation-title">Evaluación</h2>
 
       {criterios.length > 0 && criterios.map(criterio => (
         <div key={criterio.id} className="criterio-section">
-          <h2>{criterio.titulo_criterio}</h2>
+          <h2 className="criterio-title">{criterio.titulo_criterio}</h2>
 
           {/* Renderiza preguntas de opción múltiple */}
-          {criterio.opcionMultiple && criterio.opcionMultiple.length > 0 && criterio.opcionMultiple.map(pregunta => (
+          {criterio.pregunta_opcion_multiple && criterio.pregunta_opcion_multiple.length > 0 && criterio.pregunta_opcion_multiple.map(pregunta => (
             <div className="criteria-section" key={pregunta.id}>
               <h3 className="criteria-title">{pregunta.pregunta_opcion_multiple}</h3>
               <div className="question">
@@ -173,7 +160,7 @@ const EvaluationForm = () => {
           ))}
 
           {/* Renderiza preguntas de puntuación */}
-          {criterio.puntuacion && criterio.puntuacion.length > 0 && criterio.puntuacion.map(pregunta => (
+          {criterio.pregunta_puntuacion && criterio.pregunta_puntuacion.length > 0 && criterio.pregunta_puntuacion.map(pregunta => (
             <div className="criteria-section" key={pregunta.id}>
               <h3 className="criteria-title">{pregunta.pregunta_puntuacion}</h3>
               <div className="question">
@@ -195,7 +182,7 @@ const EvaluationForm = () => {
           ))}
 
           {/* Renderiza preguntas de complemento */}
-          {criterio.complemento && criterio.complemento.length > 0 && criterio.complemento.map(pregunta => (
+          {criterio.pregunta_complemento && criterio.pregunta_complemento.length > 0 && criterio.pregunta_complemento.map(pregunta => (
             <div className="criteria-section" key={pregunta.id}>
               <h3 className="criteria-title">{pregunta.pregunta_complemento}</h3>
               <div className="question">
@@ -213,7 +200,7 @@ const EvaluationForm = () => {
 
       <div className="buttons">
         <button className="cancel-button" onClick={handleCancel}>Cancelar</button>
-        <button className="submit-button" onClick={handleFinish}>Finalizar</button>
+        <button className="enviar-button" onClick={handleFinish}>Finalizar</button>
       </div>
     </div>
   );
