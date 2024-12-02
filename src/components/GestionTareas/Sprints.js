@@ -18,6 +18,7 @@ function Sprints() {
   const [newSprintName, setNewSprintName] = useState('');
   const [grupo, setGrupo] = useState(null);
   const [selectedSprint, setSelectedSprint] = useState(null);
+  const [tipoUsuario, setTipoUsuario] = useState(null);
   // Fetch historia
   const fetchSprints = async () => {
     obtenerGrupo();
@@ -46,8 +47,8 @@ function Sprints() {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const user = JSON.parse(storedUser);
-      setGrupo(user.grupoId);  
-      console.log('Grupo:', user.grupoId);
+      setGrupo(user.grupoId);
+      setTipoUsuario(user.userData.tipo_usuario);
     }else{
       console.error('Usuario no autenticado');
     }
@@ -131,9 +132,11 @@ function Sprints() {
           <BotonAtras />
         </div>
         <div className="d-flex justify-content-center mt-3">
+          {tipoUsuario === 2 &&(
           <button className="btn btn-primary" onClick={() => {crearClick();}} 
           style={{ backgroundColor: '#007BFF' }}>Agregar Sprint
           </button>
+          )}
         </div>
         <table className="table mt-3">
           <thead>
@@ -151,13 +154,17 @@ function Sprints() {
                 </Link>
               </td>
               <td>
-                <Button style={{ backgroundColor: '#09DDCC', color: 'black' }} className="btn-custom-warning" onClick={() => editarClick(sprint.id)}>
-                  <BsPencilSquare />
-                </Button>
-                {' '}
-                <Button style={{ backgroundColor: 'red' }} className="btn-custom-danger" onClick={() => eliminarClick(sprint.id)}>
-                  <BsTrashFill />
-                </Button>
+                {tipoUsuario === 2 && (
+                  <>
+                  <Button style={{ backgroundColor: '#09DDCC', color: 'black' }} className="btn-custom-warning" onClick={() => editarClick(sprint.id)}>
+                    <BsPencilSquare />
+                  </Button>
+                  {' '}
+                  <Button style={{ backgroundColor: 'red' }} className="btn-custom-danger" onClick={() => eliminarClick(sprint.id)}>
+                    <BsTrashFill />
+                  </Button>
+                  </>
+                )}
               </td>
             </tr>
           ))}
