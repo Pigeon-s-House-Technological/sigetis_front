@@ -26,6 +26,7 @@ function DetalleHistoria() {
   const [grupo, setGrupo] = useState(null);
   const [usuario, setUsuario ] = useState(null);
   const [idAsignar, setIdAsignar] = useState(null);
+  const [tipoUsuario, setTipoUsuario] = useState(null);
   const navigate = useNavigate(); // Inicializar useNavigate
 
   // Fetch historia
@@ -123,6 +124,7 @@ function DetalleHistoria() {
     if (storedUser) {
       const user = JSON.parse(storedUser);
       setUsuario(user.userData.id);
+      setTipoUsuario(user.userData.tipo_usuario);
       setGrupo(user.grupoId);
     }else{
       console.error('Usuario no autenticado');
@@ -249,9 +251,11 @@ function DetalleHistoria() {
           <BotonAtras />
         </div>
         <div className="d-flex justify-content-center mt-3">
+          {tipoUsuario === 2 &&(
           <button className="btn btn-primary" onClick={() => {crearClick();}} 
           style={{ backgroundColor: '#007BFF' }}>Agregar Tarea
           </button>
+          )}
         </div>
         <table className="table mt-3">
           <thead>
@@ -303,6 +307,7 @@ function DetalleHistoria() {
                 <td>{task.fecha_fin}</td>
                 <td><button className="btn-resultados" onClick={() => handleVerResultados(task.id)}>Ver resultados</button></td>
                 <td>
+                  {tipoUsuario === 2 &&(
                   <Dropdown>
                     <Dropdown.Toggle variant="link" id="dropdown-basic">•••</Dropdown.Toggle>
                     <Dropdown.Menu>
@@ -312,6 +317,7 @@ function DetalleHistoria() {
                       <Dropdown.Item onClick={() => eliminarClick(task.id)}>Eliminar</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
+                  )}
                 </td>
               </tr>
             ))}

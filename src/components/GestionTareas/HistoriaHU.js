@@ -20,12 +20,14 @@ function HistoriaHU() {
   const [selectedHistoria, setSelectedHistoria] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedHistoriaId, setSelectedHistoriaId] = useState(null);
+  const [tipoUsuario, setTipoUsuario] = useState(null);
   const navigate = useNavigate(); 
   const { id } = useParams();
 
   const fetchHistorias = async () => {
     try {
       console.log('id:', id);
+      obtenerTipoUsuario();
       const response = await axios.get(endPoint);
       if (Array.isArray(response.data)) {
         const filteredHistorias = response.data.filter(historia => historia.id_sprint === parseInt(id)); 
@@ -40,9 +42,20 @@ function HistoriaHU() {
     }
   };
 
+  const obtenerTipoUsuario = () => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setTipoUsuario(user.userData.tipo_usuario); 
+    }else{
+      console.error('Usuario no autenticado');
+    }
+  };
+
   useEffect(() => {
     fetchHistorias();
   }, []);
+
 
   const closeModal = () => {
     setShowModal(false);
@@ -149,8 +162,11 @@ function HistoriaHU() {
     <div className="container" style={{ color: 'black', padding: '10px 20px', borderRadius: '5px' }}>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3>HISTORIAS DE USUARIO</h3>
+        {tipoUsuario === 2 &&(
         <button onClick={openModalForNewStory} className="btn btn-primary" style={{backgroundColor:"#007BFF", color:"white", borderStyle:"none"}}>
-          AGREGAR HU</button>
+          AGREGAR HU
+        </button>
+        )}
         <BotonAtras />
       </div>
       <ul className="list-group">
@@ -159,6 +175,7 @@ function HistoriaHU() {
             <span onClick={() => viewStoryDetails(historia.id)} style={{ cursor: 'pointer' }}>
               {historia.titulo_hu}
             </span>
+            {tipoUsuario === 2 &&(
             <Dropdown>
               <Dropdown.Toggle variant="link" id="dropdown-basic">•••</Dropdown.Toggle>
               <Dropdown.Menu>
@@ -166,6 +183,7 @@ function HistoriaHU() {
                 <Dropdown.Item onClick={() => eliminarClick(historia.id)}>Eliminar</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
+            )}
           </li>
         ))}
       </ul>

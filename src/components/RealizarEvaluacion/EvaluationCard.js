@@ -145,7 +145,6 @@ const EvaluationCard = () => {
             <h2>{evaluacion.nombre}</h2>
             <p>{evaluacion.tipo}</p>
             <p>Modalidad: {evaluacion.modalidad}</p>
-            <p>Evaluar a: {evaluacion.userAux ? evaluacion.userAux : 'Personal'}</p>
             <div className="evaluation-status">{evaluacion.estado}</div>
             
             {evaluacion.estado_evaluacion !== true ? (

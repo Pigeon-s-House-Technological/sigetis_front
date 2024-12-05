@@ -8,6 +8,8 @@ const EvaluationForm = () => {
   const navigate = useNavigate();
   const [criterios, setCriterios] = useState([]);
   const [respuestas, setResponses] = useState({});
+  const [grupo, setGrupo] = useState(null);
+  const [aux, setAux] = useState(null);
   const { state } = useLocation();
   const evaluacionId = state.id;
   const idAsignacion = state.idAsignacion;
@@ -20,6 +22,10 @@ const EvaluationForm = () => {
     try {
       console.log('idAsignacion', idAsignacion);
       const response = await axios.get(`${API_BASE_URL}/listarPreguntas/${evaluacionId}`);
+      const response2 = await axios.get(`${API_BASE_URL}/asignaciones/${idAsignacion}`);
+      setAux(response2.data.nombre_aux);
+      setGrupo(response2.data.nombre_grupo_aux);
+      console.log('response', response2);
       const datos = response.data.evaluacion.criterios || [];
       setCriterios(datos);
     } catch (error) {
@@ -129,9 +135,13 @@ const EvaluationForm = () => {
     }));
   };
 
+  const evaluarA = grupo && grupo !== 'N/A' ? grupo : aux && aux !== 'N/A' ? aux : null;
+
   return (
     <div className="evaluation-form">
       <h2 className="evaluation-title">Evaluación</h2>
+
+      {evaluarA && <h3><span style={{ color: 'red' }}>Evaluar a:</span> {evaluarA}</h3>}<br /><br />
 
       {criterios.length > 0 && criterios.map(criterio => (
         <div key={criterio.id} className="criterio-section">
