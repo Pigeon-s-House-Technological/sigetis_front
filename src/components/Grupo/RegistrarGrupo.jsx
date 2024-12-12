@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import ModalUsuarios from './ModalUsuarios';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 const GroupForm = ({ onClose }) => {
     const [inputs, setInputs] = useState({
@@ -52,16 +51,16 @@ const GroupForm = ({ onClose }) => {
                 });
 
                 if (response.status === 201) {
+                    toast.success('¡Grupo registrado exitosamente!');
                     const idGrupo = response.data.message.id;
                     const response2 = await axios.get(`${API_BASE_URL}/crearGrupo/${inputs.cantidadInteg}/${idGrupo}`);
                     setUsuarios(response2.data.usuarios);
                     setInputs({ nombreGrupo: '', descripcion: '', cantidadInteg: '' });
-                    toast.success('¡Grupo registrado exitosamente!');
                     handleOpenModal();
                 }
             } catch (error) {
                 console.error('Error al registrar el grupo:', error);
-                setErrors({ apiError: 'Hubo un error al registrar el grupo.' });
+                setErrors({ apiError: error.response.data.errors.nombre_grupo });
                 toast.error('Hubo un error al registrar el grupo.');
             }
         } else {
@@ -74,8 +73,7 @@ const GroupForm = ({ onClose }) => {
 
     return (
         <div className="container">
-        <div className="container-group">
-            <ToastContainer /> 
+        <div className="container-group"> 
             <div className="form-header">
                 <Link to="/homeGrupo">
                     <IoMdClose className="close-icon" />

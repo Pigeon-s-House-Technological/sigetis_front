@@ -100,12 +100,12 @@ const handleClick = () => {
           {(tipo === 0) && (
             <>
               <li>
-                <NavLink to="/registroDocente" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                <NavLink to="/ListaTutor" className={({ isActive }) => (isActive ? 'active-link' : '')}>
                   Docente
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/registroEstudiante" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                <NavLink to="/ListaEstudiante" className={({ isActive }) => (isActive ? 'active-link' : '')}>
                   Estudiante
                 </NavLink>
               </li>

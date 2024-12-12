@@ -84,10 +84,11 @@ function PerfilUsuario() {
   </Col>
   <Col>Rol</Col>
   <Col className="text-end" style={{ color: '#666' }}>
+    {tipoUsuario === 0 && 'Administrador'}
     {tipoUsuario === 1 && 'Docente'}
     {tipoUsuario === 2 && 'Jefe de grupo'}
     {tipoUsuario === 3 && 'Estudiante'}
-    {tipoUsuario === null && 'Desconocido'}
+    {tipoUsuario === null && 'Administrador'}
   </Col>
 </Row>
 

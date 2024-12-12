@@ -12,8 +12,9 @@ const Footer = ({ userType }) => {  // Recibe 'userType' como prop
                 <a href="https://cs.umss.edu.bo">cs.umss.edu.bo</a>
                 <a href="https://fcyt.umss.edu.bo">fcyt.umss.edu.bo</a>
                 <a href="https://umss.edu.bo">umss.edu.bo</a>
+                <a href="https://umss.edu.bo">Como usar</a>
             </div>
-            <p>&copy; SIGETIS 2024</p>
+            <p>&copy; Pigeon's House Technological</p>
         </footer>
     );
 };

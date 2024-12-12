@@ -1,0 +1,25 @@
+.row-home {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .col-h1 {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .col-h3 {
+    
+    flex: 1;
+    text-align: left;
+  }
+  
+  .col-button {
+    margin: 0;
+    flex: 1;
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+  }

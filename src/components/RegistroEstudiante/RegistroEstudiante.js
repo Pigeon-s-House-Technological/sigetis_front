@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button, InputGroup } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import { API_BASE_URL } from '../config'; 
+import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Iconos para mostrar/ocultar contraseña
 
 const endPoint = `${API_BASE_URL}/register`; 
@@ -13,7 +15,7 @@ function RegistroEstudiante() {
   const [correo, setCorreo] = useState('');
   const [error, setError] = useState('');  
   const [exito, setExito] = useState(false);  
-  const [usuario, setUsuario] = useState();  
+  const [usuario, setUsuario] = useState('');  
   const [contrasena_usuario, setContrasena] = useState(''); 
   const [confirmarContrasena, setConfirmarContrasena] = useState('');
  
@@ -25,6 +27,8 @@ function RegistroEstudiante() {
     number: false,
     specialChar: false
   });
+
+  const navigate = useNavigate();
 
   // Función para validar la contraseña
   const validatePassword = (password) => {
@@ -73,7 +77,7 @@ function RegistroEstudiante() {
         window.scrollTo(0, 0);
         return;
       }
-  
+      toast.success('Docente registrado exitosamente!');
 
       const data = {
         nombre: nombre_user,
@@ -88,6 +92,7 @@ function RegistroEstudiante() {
 
       console.log('Datos enviados:', data);
       const response = await axios.post(endPoint, data);
+      console.log('Respuesta del servidor:', response.data);
 
       setExito(true);
       setError('');
@@ -96,6 +101,7 @@ function RegistroEstudiante() {
       setCorreo('');
       setContrasena('');
       setConfirmarContrasena('');
+      navigate('/listaEstudiante');
     } catch (error) {
       if (error.response) {
         setError(`Error al registrar el estudiante: ${error.response.data.message || error.response.data}, usuario o email ya usados.`);
