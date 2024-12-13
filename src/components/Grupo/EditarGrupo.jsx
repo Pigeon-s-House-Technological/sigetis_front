@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
-import './RegistrarGrupo.css';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+import CambiarDocenteModal from './Modales/CambiarDocenteModal';
+import CambiarIntegrantesModal from './Modales/CambiarIntegrantesModal';
+import './RegistrarGrupo.css';
 
 const EditarGrupo = () => {
     const { id } = useParams();
+    const { tipo } = useParams();
     const navigate = useNavigate();
 
     const [inputs, setInputs] = useState({
@@ -23,34 +27,38 @@ const EditarGrupo = () => {
     });
 
     const [loading, setLoading] = useState(true);
+    const [showDocenteModal, setShowDocenteModal] = useState(false);
+    const [showIntegrantesModal, setShowIntegrantesModal] = useState(false);
+    const [idTutor, setIdTutor] = useState(null);
+
+    const fetchGrupo = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/grupos/${id}`);
+            const response2 = await axios.get(`${API_BASE_URL}/gruposUsuarios/integrantes/${id}`);
+            const grupo = response.data.grupo;
+            const datosIntegrantes = response2.data;
+
+            setIdTutor(grupo.id_tutor);
+            setInputs({
+                nombreGrupo: grupo.nombre_grupo,
+                descripcion: grupo.descripcion_grupo,
+                cantidadInteg: grupo.cantidad_integ,
+            });
+
+            setGrupoInfo({
+                docente: datosIntegrantes.tutor_grupo || 'No asignado',
+                jefeDeGrupo: datosIntegrantes.jefe_grupo || 'No asignado',
+                integrantes: datosIntegrantes.integrantes || [],
+            });
+
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            toast.error('Error al cargar los datos del grupo.');
+        }
+    };
 
     useEffect(() => {
-        const fetchGrupo = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/grupos/${id}`);
-                const response2 = await axios.get(`${API_BASE_URL}/gruposUsuarios/integrantes/${id}`);
-                const grupo = response.data.grupo;
-                const datosIntegrantes = response2.data;
-
-                setInputs({
-                    nombreGrupo: grupo.nombre_grupo,
-                    descripcion: grupo.descripcion_grupo,
-                    cantidadInteg: grupo.cantidad_integ,
-                });
-
-                setGrupoInfo({
-                    docente: datosIntegrantes.tutor_grupo || 'No asignado',
-                    jefeDeGrupo: datosIntegrantes.jefe_grupo || 'No asignado',
-                    integrantes: datosIntegrantes.integrantes || [],
-                });
-
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                toast.error('Error al cargar los datos del grupo.');
-            }
-        };
-
         fetchGrupo();
     }, [id]);
 
@@ -88,11 +96,28 @@ const EditarGrupo = () => {
         return <p>Cargando datos del grupo...</p>;
     }
 
+    const handleDocenteChange = () => {
+        toast.success('¡Docente asignado exitosamente!');
+        fetchGrupo(); // Actualiza los datos del grupo después de cambiar el docente
+    };
+
+    const handleShowDocenteModal = (event) => {
+        event.preventDefault();
+        setShowDocenteModal(true);
+    };
+    const handleCloseDocenteModal = () => setShowDocenteModal(false);
+
+    const handleShowIntegrantesModal = (event) => {
+        event.preventDefault();
+        setShowIntegrantesModal(true);
+    };
+    const handleCloseIntegrantesModal = () => setShowIntegrantesModal(false);
+
     return (
         <div className="container-grupo">
-            <ToastContainer />
+            
             <div className="container migrupo">
-                <h2>Mi Grupo</h2>
+                <h2>Datos del Grupo</h2>
                 <label htmlFor="nombreGrupo">Nombre:</label>
                 <p>{inputs.nombreGrupo}</p>
                 <label htmlFor="descripcion">Descripción:</label>
@@ -114,7 +139,7 @@ const EditarGrupo = () => {
             </div>
 
             <div className="container editar">
-                <h2>Datos del Grupo</h2>
+                <h2>Editar Grupo</h2>
                 <form className="group-form" onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="nombreGrupo">Nombre de grupo:</label>
@@ -135,13 +160,34 @@ const EditarGrupo = () => {
                             onChange={handleChange}
                         />
                     </div>
-
-
+                    
+                    {tipo !== null && (tipo === '1' || tipo === '0') && (
+                        <div className="button-container">
+                            <button className="integrante-button" onClick={handleShowDocenteModal} disabled={tipo === '1'}>
+                                Cambiar Docente
+                            </button>
+                            <button className="integrante-button" onClick={handleShowIntegrantesModal}>
+                                Cambiar Integrantes
+                            </button>
+                        </div>
+                    )}
                     <button type="submit" className="submit-button">
                         Guardar Cambios
                     </button>
                 </form>
             </div>
+            <CambiarDocenteModal 
+            show={showDocenteModal} 
+            handleClose={handleCloseDocenteModal}
+            idTutor={idTutor}
+            idGrupo={id}
+            onDocenteChange={handleDocenteChange}/>
+
+            <CambiarIntegrantesModal 
+            show={showIntegrantesModal} 
+            handleClose={handleCloseIntegrantesModal} 
+            idGrupo={id}
+            onDocenteChange={handleDocenteChange}/>
         </div>
     );
 };

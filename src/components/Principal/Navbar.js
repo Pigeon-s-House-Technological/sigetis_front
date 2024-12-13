@@ -57,8 +57,8 @@ const handleClick = () => {
           {(tipo === 1) && (
             <>
               <li>
-                <NavLink to="/homeGrupo" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                  Registrar Grupo
+                <NavLink to={`/homeGrupo/${tipo}`} className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Grupos
                 </NavLink>
               </li>
               <li>
@@ -91,7 +91,7 @@ const handleClick = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to={`/editarGrupo/${grupo}`} className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                <NavLink to={`/editarGrupo/${grupo}/${tipo}`} className={({ isActive }) => (isActive ? 'active-link' : '')}>
                   Grupo
                 </NavLink>
               </li>
@@ -101,17 +101,17 @@ const handleClick = () => {
             <>
               <li>
                 <NavLink to="/ListaTutor" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                  Docente
+                  Docentes
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/ListaEstudiante" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                  Estudiante
+                  Estudiantes
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/homeGrupo" className={({ isActive }) => (isActive ? 'active-link' : '')}>
-                  Registrar Grupo
+                <NavLink to={`/homeGrupo/${tipo}`} className={({ isActive }) => (isActive ? 'active-link' : '')}>
+                  Grupos
                 </NavLink>
               </li>
               

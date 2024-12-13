@@ -73,6 +73,20 @@ textarea {
     margin-bottom: 10px;
 }
 
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.integrante-button {
+    flex: 1;
+    margin: 0 10px;
+    background-color: #09DDCC;
+    border-radius: 4px;
+    color: black;
+}
+
 @media (max-width: 768px) {
     .container-grupo {
         flex-direction: column;

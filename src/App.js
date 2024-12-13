@@ -65,12 +65,11 @@ useEffect(() => {
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<LoginModal userType={userType} toggleUserType={toggleUserType} />} />
           <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
-          <Route path="/editarGrupo/:id" element={<EditarGrupo />} />
 
           <Route element={<ProtectedRoute tipo_usuario={user?.tipo_usuario} allowedTypes={["3", "2", "1", "0"]} redirectTo="/" />} >
             <Route path="/perfil" element={<PerfilUsuario />} />
             <Route path="/editarPerfil" element={<EditarPerfil />} />            
-           
+            <Route path="/editarGrupo/:id/:tipo" element={<EditarGrupo />} /> 
           </Route>
 
           {/* Rutas protegidas para Estudiante */}
@@ -82,8 +81,7 @@ useEffect(() => {
             <Route path="/historiaHU/:id" element={<HistoriaHU />} />
             <Route path="/detalle/:id" element={<DetalleHistoria />} />
             <Route path="/sprints" element={<Sprints />} />
-            <Route path="/resultados/:idActividad" element={<Resultados />} />
-            <Route path="/editarGrupo/:id" element={<EditarGrupo />} /> 
+            <Route path="/resultados/:idUsuario" element={<Resultados />} />
           </Route>
 
           {/* Rutas protegidas para Docente */}
@@ -100,9 +98,7 @@ useEffect(() => {
             <Route path="/asignarEvaluacion" element={<EvaluationType />} />
             <Route path="/asignarEvaluacion/:destinatario/:tipo" element={<Asignar />} />
             <Route path="/registrarGrupo" element={<RegistrarGrupo />} />
-            <Route path="/homeGrupo" element={<HomeGrupo />} />
-            <Route path="/editarGrupo/:id" element={<EditarGrupo />} />
-            <Route path="/homeGrupo" element={<HomeGrupo />} />
+            <Route path="/homeGrupo/:tipo" element={<HomeGrupo />} />
           </Route>
 
           {/* Rutas protegidas para Jefe grupo */}
