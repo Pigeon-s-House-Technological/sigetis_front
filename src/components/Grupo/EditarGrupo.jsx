@@ -86,7 +86,7 @@ const EditarGrupo = () => {
             });
 
             toast.success('¡Cambios guardados exitosamente!');
-            navigate('/homeGrupo');
+            navigate(`/homeGrupo/${tipo}`);
         } catch (error) {
             toast.error('Error al guardar los cambios.');
         }

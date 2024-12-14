@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import BotonAtras from '../General/BotonAtras';
 import { FaPlus } from 'react-icons/fa';
@@ -10,27 +10,49 @@ import './Asignar.css';  // Importamos los estilos CSS
 const Asignar = () => {
   const { tipo } = useParams();
   const { destinatario } = useParams();
-  const { id_tutor } = 1;
+  const navigate = useNavigate();
 
   const destinatarioVar = destinatario === 'grupal' ? 'Grupal' : 'Individual';
   const tipoVar = tipo === '1' ? 'Autoevaluación' : tipo === '2' ? 'Evaluación Cruzada' : 'Evaluación de Pares';
   const tipoDestinatarioOp = destinatario === 'grupal' ? true : false;
   
-  const [ expandedGroup, setExpandedGroup ] = useState(null);  // Estado para manejar qué grupo está expandido
-  const [ grupos, setGrupos ] = useState([]);  // Estado para manejar los grupos
-  const [ evaluaciones, setEvaluaciones ] = useState([]); // Estado para manejar las evaluaciones
+  const [expandedGroup, setExpandedGroup] = useState(null);  // Estado para manejar qué grupo está expandido
+  const [grupos, setGrupos] = useState([]);  // Estado para manejar los grupos
+  const [evaluaciones, setEvaluaciones] = useState([]); // Estado para manejar las evaluaciones
   const [evaluacionSeleccionada, setEvaluacionSeleccionada] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [asignaciones, setAsignaciones] = useState([]);
   const [grupoPrincipal, setGrupoPrincipal] = useState(null);
   const [grupoAux, setGrupoAux] = useState(null);
-  
+  const [idTutor, setIdTutor] = useState(null);
+
+  useEffect(() => {
+    // Obtener el ID del usuario desde el almacenamiento local
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setIdTutor(parsedUser.userData.id);  // Establecer el ID del tutor
+      } catch (error) {
+        console.error('Error al parsear los datos del usuario:', error); 
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (idTutor) {
+      obtnerGrupos();
+      obtenerAsignaciones();
+      obtenerEvaluaciones();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idTutor]);
+
   const obtenerEvaluaciones = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/evaluaciones`); // Reemplaza con la URL de tu API
       const evaluacionesFiltradas = response.data.filter(evaluacion => evaluacion.tipo_evaluacion === parseInt(tipo) && 
                                                           evaluacion.tipo_destinatario === tipoDestinatarioOp);
-      console.log('evaluacionesFiltradas:', tipo, destinatario, evaluacionesFiltradas);
       
       if(evaluacionesFiltradas.length === 0) {
         setEvaluaciones([]);
@@ -43,25 +65,22 @@ const Asignar = () => {
 
   const obtnerGrupos = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/gruposUsuarios`);
-      const usuariosData = response.data;
+      const response = await axios.get(`${API_BASE_URL}/grupos`);
 
-        // Procesar los datos para agrupar los usuarios por sus grupos
-        const gruposMap = new Map();
+      const gruposData = response.data.filter((grupo) => grupo.id_tutor === idTutor);
 
-        usuariosData.forEach(usuario => {
-          usuario.grupos.forEach(grupo => {
-            if (!gruposMap.has(grupo.id)) {
-              gruposMap.set(grupo.id, {
-                ...grupo,
-                integrantes: []
-              });
-            }
-            gruposMap.get(grupo.id).integrantes.push(usuario);
-          });
-        });
+        // Procesar los datos para obtener los integrantes de cada grupo
+        const gruposConIntegrantes = await Promise.all(gruposData.map(async (grupo) => {
+          const integrantesResponse = await axios.get(`${API_BASE_URL}/gruposUsuarios/integrantes/${grupo.id}`);
+          const integrantesData = integrantesResponse.data.integrantes;
+          return {
+            ...grupo,
+            integrantes: integrantesData
+          };
+        }));
 
-        setGrupos(Array.from(gruposMap.values()));
+        setGrupos(gruposConIntegrantes);
+        console.log('grupos:',gruposConIntegrantes);
         
     } catch (error) {
       console.error('Error al obtener los datos:', error);
@@ -85,13 +104,6 @@ const Asignar = () => {
       setExpandedGroup(groupIndex);  // Expande el grupo seleccionado
     }
   };
-
-  useEffect(() => {
-    obtnerGrupos();
-    obtenerAsignaciones();
-    obtenerEvaluaciones();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleEvaluacionChange = (event) => {//para la lista deslizable de evaluaciones
     setEvaluacionSeleccionada(event.target.value);
@@ -144,6 +156,7 @@ const Asignar = () => {
       console.log('requests:', requests);
       await Promise.all(requests);
       alert('Autoevaluaciones asignadas correctamente');
+      obtenerAsignaciones();  // Llamar a obtenerAsignaciones después de asignar
     } catch (error) {
       console.error('Error al asignar autoevaluaciones:', error);
       alert('Error al asignar autoevaluaciones');
@@ -170,7 +183,7 @@ const Asignar = () => {
       const response = await axios.get(`${API_BASE_URL}/pares/${group.id}/${evaluacionId}`);
         
       console.log('requests:', response);
-      obtenerAsignaciones();
+      obtenerAsignaciones();  // Llamar a obtenerAsignaciones después de asignar
       alert('Evaluaciones por pares asignadas correctamente');
     } catch (error) {
       console.error('Error al asignar autoevaluaciones:', error);
@@ -205,6 +218,7 @@ const Asignar = () => {
       
       console.log('requests:', response);
       alert('Autoevaluaciones asignadas correctamente');
+      obtenerAsignaciones();  // Llamar a obtenerAsignaciones después de asignar
     } catch (error) {
       console.error('Error al asignar autoevaluaciones:', error);
       alert('Error al asignar autoevaluaciones');
@@ -243,7 +257,7 @@ const Asignar = () => {
         
       
       console.log('requests:', response);
-      obtenerAsignaciones();
+      obtenerAsignaciones();  // Llamar a obtenerAsignaciones después de asignar
       alert('Evaluacion cruzada asignada correctamente');
       setGrupoPrincipal(null);
       setGrupoAux(null);
@@ -257,6 +271,10 @@ const Asignar = () => {
     setGrupoAux(group);
     // Aquí puedes llamar a la función para asignar la evaluación cruzada
     evaluacionCruzada(grupoPrincipal, group);
+  };
+
+  const handleViewGroupClick = (groupId) => {
+    navigate(`/editarGrupo/${groupId}/1`);
   };
 
   return (
@@ -293,14 +311,14 @@ const Asignar = () => {
                   <ul>
                     {group.integrantes.map((integrante, idx) => (
                       <li key={idx}>
-                        {integrante.nombre} {integrante.apellido} ({integrante.correo})
-                        {integrante.tipo_usuario === 2 && (
+                        {integrante.nombre}
+                        {integrante.jefe === true && (
                           <span style={{ color: 'red', marginLeft: '10px' }}>Scrum Master</span>
                         )}
                       </li>
                     ))}
                   </ul>
-                  <button className="view-group-btn" disabled>Ver Grupo</button>
+                  <button className="view-group-btn" onClick={() => handleViewGroupClick(group.id)}>Ver Grupo</button>
                 </div>
               ) : (
                 <p>No hay miembros asignados.</p>
@@ -324,7 +342,6 @@ const Asignar = () => {
       ))}
     </div>
   );
-  
 };
 
 export default Asignar;

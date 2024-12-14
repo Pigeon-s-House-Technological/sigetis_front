@@ -81,7 +81,7 @@ useEffect(() => {
             <Route path="/historiaHU/:id" element={<HistoriaHU />} />
             <Route path="/detalle/:id" element={<DetalleHistoria />} />
             <Route path="/sprints" element={<Sprints />} />
-            <Route path="/resultados/:idUsuario" element={<Resultados />} />
+            <Route path="/resultados/:idActividad" element={<Resultados />} />
           </Route>
 
           {/* Rutas protegidas para Docente */}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BsTrashFill } from 'react-icons/bs';
+import { BsTrashFill, BsPersonFill  } from 'react-icons/bs';
 import { API_BASE_URL } from '../../config';
 import { toast } from 'react-toastify';
 
@@ -43,6 +43,7 @@ const CambiarIntegrantesModal = ({ show, handleClose, idGrupo, onDocenteChange }
         try {
           await axios.delete(`${API_BASE_URL}/eliminarIntegrante/${idIntegrante}/${idGrupo}`);
           setIntegrantes(integrantes.filter(integrante => integrante.id !== idIntegrante));
+          onDocenteChange();
           toast.success('Integrante eliminado exitosamente.');
         } catch (error) {
           console.error('Error al eliminar el integrante:', error);
@@ -57,8 +58,8 @@ const CambiarIntegrantesModal = ({ show, handleClose, idGrupo, onDocenteChange }
     };
 
     const handleAgregar = async () => {
-        setMostrarComboBox(true);
-        await fetchIntegrantesDisponibles();
+      setMostrarComboBox(true);
+      await fetchIntegrantesDisponibles();
     };
 
     const handleAgregarIntegrante = async () => {
@@ -78,6 +79,21 @@ const CambiarIntegrantesModal = ({ show, handleClose, idGrupo, onDocenteChange }
           console.error('Error al agregar el integrante:', error);
           toast.error('Error al agregar el integrante.');
         }
+    };
+
+    const handleAsignarJefe = async (idIntegrante) => {
+      try {
+        await axios.get(`${API_BASE_URL}/asignarJefe/${idIntegrante}/${idGrupo}`);
+        setIntegrantes(integrantes.map(integrante => ({
+          ...integrante,
+          jefe: integrante.id === idIntegrante
+        })));
+        onDocenteChange();
+        toast.success('Jefe de grupo asignado exitosamente.');
+      } catch (error) {
+        console.error('Error al asignar el jefe de grupo:', error);
+        toast.error('Error al asignar el jefe de grupo.');
+      }
     };
 
     const resetComboBox = () => {
@@ -102,9 +118,15 @@ const CambiarIntegrantesModal = ({ show, handleClose, idGrupo, onDocenteChange }
                         <p id={`formIntegrante${index}`} className="form-control-static">
                             {index+1}. {integrante.nombre || ''}
                         </p>
-                      <button type="button" className="btn btn-danger" onClick={() => handleDeleteIntegrante(integrante.id)}>
-                      <BsTrashFill />
+                      <div>
+                      <button type="button" className={`btn ${integrante.jefe ? 'btn-success' : 'btn-danger'}`} 
+                              style={{ marginLeft: '10px' }} onClick={() => handleAsignarJefe(integrante.id)}>
+                        <BsPersonFill />
                       </button>
+                      <button type="button" className="btn btn-danger" onClick={() => handleDeleteIntegrante(integrante.id)}>
+                        <BsTrashFill />
+                      </button>
+                      </div>
                     </div>
                   ))}
                     {mostrarComboBox && (

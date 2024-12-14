@@ -75,7 +75,7 @@ const GroupForm = ({ onClose }) => {
         <div className="container">
         <div className="container-group"> 
             <div className="form-header">
-                <Link to="/homeGrupo">
+                <Link to="/">
                     <IoMdClose className="close-icon" />
                 </Link>
             </div>

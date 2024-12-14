@@ -20,7 +20,6 @@ const PlanillaEvaluacion = () => {
   
   const obtenerGrupos = async () => {
     await obtenerId();
-    console.log(idTutor);
     try {
       const response = await axios.get(`${API_BASE_URL}/grupos`); // Reemplaza con la URL de tu API
       const gruposFiltrados = response.data.filter((grupo) => grupo.id_tutor === idTutor);
